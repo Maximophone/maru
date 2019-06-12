@@ -1,7 +1,13 @@
-typedef char TokenType[10];
+#include <string>
+
+using namespace std;
+
+string x = "test";
+
+typedef string TokenType;
 
 const TokenType ILLEGAL = "ILLEGAL";
-const TokenType EOF = "EOF";
+const TokenType END = "EOF";
 
 const TokenType IDENT = "IDENT";
 const TokenType INT = "INT";
@@ -19,3 +25,7 @@ const TokenType RBRACE = "RBRACE";
 const TokenType FUNCTION = "FUNCTION";
 const TokenType LET = "LET";
 
+struct Token {
+    TokenType type;
+    string literal;
+};
