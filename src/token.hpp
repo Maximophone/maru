@@ -29,3 +29,16 @@ struct Token {
     TokenType type;
     string literal;
 };
+
+std::map<string, TokenType> keywords = {
+    {"fn", FUNCTION},
+    {"let", LET},
+};
+
+TokenType lookup_ident(string ident){
+    if(keywords.count(ident)){
+        cout << keywords[ident];
+        return keywords[ident];
+    }
+    return IDENT;
+};

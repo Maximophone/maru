@@ -1,29 +1,30 @@
+#define CATCH_CONFIG_MAIN
 #include <stdio.h>
 #include <string>
 #include "catch.hpp"
-#include "token.hpp"
 #include "lexer.hpp"
-#define CATCH_CONFIG_MAIN
+#include <iostream>
 
 using namespace std;
 
-int tests_run = 0;
-int foo = 5;
 
 TEST_CASE("test next_token"){
-    string input = "=*(){},;";
+    string input = "let five = 5;";
     struct test{
         TokenType expected_type;
         string literal;
     };
-    struct test tests[] = {
+    vector<test> tests = {
+        {LET, "let"},
+        {IDENT, "five"},
         {ASSIGN, "="},
-        {PLUS, "="}
+        {INT, "5"},
+        {SEMICOLON, ";"},
     };
 
-    l = new Lexer(input);
+    Lexer l(input);
 
-    for(int i = 0; i<=std::size_t(tests); i++){ 
+    for(int i = 0; i<tests.size(); i++){
         Token tok = l.next_token();
         test t = tests[i];
         REQUIRE(tok.type == t.expected_type);
