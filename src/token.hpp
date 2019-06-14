@@ -3,62 +3,48 @@
 
 using namespace std;
 
-string x = "test";
-
 typedef string TokenType;
 
-const TokenType ILLEGAL = "ILLEGAL";
-const TokenType END = "EOF";
-
-const TokenType IDENT = "IDENT";
-const TokenType INT = "INT";
-
-const TokenType ASSIGN = "ASSIGN";
-const TokenType PLUS = "PLUS";
-const TokenType MINUS = "MINUS";
-const TokenType SLASH = "SLASH";
-const TokenType BANG = "BANG";
-const TokenType ASTERIX = "ASTERIX";
-const TokenType LT = "LT";
-const TokenType GT = "GT";
-
-const TokenType EQUAL = "EQUAL";
-const TokenType NOT_EQUAL = "NOT_EQUAL";
-
-const TokenType COMMA = "COMMA";
-const TokenType SEMICOLON = "SEMICOLON";
-const TokenType LPAREN = "LPAREN";
-const TokenType RPAREN = "RPAREN";
-const TokenType LBRACE = "LBRACE";
-const TokenType RBRACE = "RBRACE";
-
-const TokenType FUNCTION = "FUNCTION";
-const TokenType LET = "LET";
-const TokenType RETURN = "RETURN";
-const TokenType IF = "IF";
-const TokenType ELSE = "ELSE";
-const TokenType TRU = "TRUE";
-const TokenType FALS = "FALSE";
-
-struct Token {
-    TokenType type;
-    string literal;
+class Token{
+    public:
+        TokenType type;
+        string literal;
 };
 
-map<string, TokenType> keywords = {
-    {"fn", FUNCTION},
-    {"let", LET},
-    {"return", RETURN},
-    {"if", IF},
-    {"else", ELSE},
-    {"true", TRU},
-    {"false", FALS},
-};
+TokenType lookup_ident(string);
 
-TokenType lookup_ident(string ident){
-    if(keywords.count(ident)){
-        cout << keywords[ident];
-        return keywords[ident];
-    }
-    return IDENT;
-};
+extern map<string, TokenType> keywords;
+extern const TokenType test;
+
+extern const TokenType ILLEGAL;
+extern const TokenType END;
+
+extern const TokenType IDENT;
+extern const TokenType INT;
+
+extern const TokenType ASSIGN;
+extern const TokenType PLUS;
+extern const TokenType MINUS;
+extern const TokenType SLASH;
+extern const TokenType BANG;
+extern const TokenType ASTERIX;
+extern const TokenType LT;
+extern const TokenType GT;
+
+extern const TokenType EQUAL;
+extern const TokenType NOT_EQUAL;
+
+extern const TokenType COMMA;
+extern const TokenType SEMICOLON;
+extern const TokenType LPAREN;
+extern const TokenType RPAREN;
+extern const TokenType LBRACE;
+extern const TokenType RBRACE;
+
+extern const TokenType FUNCTION;
+extern const TokenType LET;
+extern const TokenType RETURN;
+extern const TokenType IF;
+extern const TokenType ELSE;
+extern const TokenType TRU;
+extern const TokenType FALS;

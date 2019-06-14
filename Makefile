@@ -1,2 +1,2 @@
 test:
-	g++ -std=c++11 src/lexer_test.cpp && ./a.out
+	g++ -std=c++11 src/tests_main.cpp && ./a.out
