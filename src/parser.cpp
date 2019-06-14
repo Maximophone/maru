@@ -13,5 +13,5 @@ void Parser::next_token(){
 };
 
 Program* Parser::parse_program(){
-    return;
+    return 0;
 };

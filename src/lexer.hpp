@@ -1,3 +1,6 @@
+#ifndef LEXER_H
+#define LEXER_H
+
 #include <string>
 #include "token.hpp"
 #include <iostream>
@@ -23,3 +26,5 @@ class Lexer {
 bool is_letter(char ch);
 bool is_letter_or_digit(char ch);
 bool is_digit(char ch);
+
+#endif

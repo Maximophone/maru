@@ -6,7 +6,7 @@ using namespace std;
 
 class Node{
     public:
-        virtual string token_literal();
+        virtual string token_literal(){};
 };
 
 class Expression: public Node{

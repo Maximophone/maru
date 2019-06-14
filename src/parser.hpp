@@ -1,3 +1,6 @@
+#ifndef PARSER_H
+#define PARSER_H
+
 #include "ast.hpp"
 
 class Parser{
@@ -10,3 +13,5 @@ class Parser{
         Parser(Lexer*);
         Program* parse_program();
 };
+
+#endif
