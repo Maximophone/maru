@@ -117,3 +117,27 @@ TEST_CASE("test identifier expression"){
 
     test_identifier(ident, "foobar");
 };
+
+ExpressionStatement* get_first_expr_stmt(Program* program){
+    ExpressionStatement* stmt = dynamic_cast<ExpressionStatement*>(program->statements[0]);
+    REQUIRE(stmt != 0);
+    return stmt;
+};
+
+void test_integer_literal(IntegerLiteral* literal, int value){
+    REQUIRE(literal->value == value);
+    REQUIRE(literal->token_literal() == to_string(value));
+};
+
+TEST_CASE("test integer literal"){
+    string input = "5;";
+
+    Program* program = get_program(input, 1);
+
+    ExpressionStatement* stmt = get_first_expr_stmt(program);
+
+    IntegerLiteral* literal = dynamic_cast<IntegerLiteral*>(stmt->expression);
+    REQUIRE(literal != 0);
+
+    test_integer_literal(literal, 5);
+}

@@ -30,6 +30,7 @@ class Parser{
         ExpressionStatement* parse_expression_statement();
         Expression* parse_expression(int);
         Expression* parse_identifier();
+        Expression* parse_integer_literal();
         bool cur_token_is(TokenType);
         bool peek_token_is(TokenType);
         bool expect_peek(TokenType);

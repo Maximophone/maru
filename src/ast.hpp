@@ -35,6 +35,12 @@ class Identifier: public Expression{
         string to_string();
 };
 
+class IntegerLiteral: public Expression{
+    public:
+        int value;
+        string to_string();
+};
+
 class LetStatement: public Statement{
     public:
         Identifier* name;

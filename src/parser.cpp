@@ -7,6 +7,7 @@ Parser::Parser(Lexer *l){
     next_token();
 
     prefix_parse_funcs[IDENT] = &Parser::parse_identifier;
+    prefix_parse_funcs[INT] = &Parser::parse_integer_literal;
 };
 
 void Parser::next_token(){
@@ -84,14 +85,26 @@ Expression* Parser::parse_expression(int precedence){
     }
     Expression* left_exp = (this->*prefix)();
     return left_exp;
-}
+};
 
 Expression* Parser::parse_identifier(){
     Identifier* ident = new Identifier();
     ident->token = cur_token;
     ident->value = cur_token.literal;
     return ident;
-}
+};
+
+Expression* Parser::parse_integer_literal(){
+    IntegerLiteral* lit = new IntegerLiteral();
+    lit->token = cur_token;
+    try{
+        lit->value = stoi(cur_token.literal);
+    } catch(invalid_argument e) {
+        errors.push_back("could not parse " + cur_token.literal + " as an integer");
+        return 0;
+    }
+    return lit;
+};
 
 bool Parser::cur_token_is(TokenType t){
     return cur_token.type == t;

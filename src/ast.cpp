@@ -54,4 +54,8 @@ string ExpressionStatement::to_string(){
 
 string Identifier::to_string(){
     return value;
-}
+};
+
+string IntegerLiteral::to_string(){
+    return std::to_string(value);
+};
