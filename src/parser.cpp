@@ -8,6 +8,8 @@ Parser::Parser(Lexer *l){
 
     prefix_parse_funcs[IDENT] = &Parser::parse_identifier;
     prefix_parse_funcs[INT] = &Parser::parse_integer_literal;
+    prefix_parse_funcs[BANG] = &Parser::parse_prefix_expression;
+    prefix_parse_funcs[MINUS] = &Parser::parse_prefix_expression;
 };
 
 void Parser::next_token(){
@@ -105,6 +107,15 @@ Expression* Parser::parse_integer_literal(){
         return 0;
     }
     return lit;
+};
+
+Expression* Parser::parse_prefix_expression(){
+    PrefixExpression* exp = new PrefixExpression();
+    exp->token = cur_token;
+    exp->op = cur_token.literal;
+    next_token();
+    exp->right = parse_expression(PREFIX);
+    return exp;
 };
 
 void Parser::no_prefix_parse_func_error(TokenType t){
