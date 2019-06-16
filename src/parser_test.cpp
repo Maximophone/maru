@@ -159,4 +159,32 @@ TEST_CASE("test parsing prefix expressions"){
         REQUIRE(exp->op == t.op);
         test_integer_literal(exp->right, t.int_value);
     };
-}
+};
+
+TEST_CASE("test parsing infix expressions"){
+    struct test{
+        string input;
+        int left_value;
+        string op;
+        int right_value;
+    };
+    vector<test> tests = {
+        {"5+5", 5, "+", 5},
+        {"5-5", 5, "-", 5},
+        {"5 * 5", 5, "*", 5},
+        {"5/ 5", 5, "/", 5},
+        {"5<2", 5, "<", 2},
+        {" 5> 5", 5, ">", 5},
+        {"5 == 5", 5, "==", 5},
+        {"5 != 5", 5, "!=", 5},
+    };
+
+    for(test t : tests){
+        Program* program = get_program(t.input, 1);
+        ExpressionStatement* stmt = get_first_expr_stmt(program);
+        InfixExpression* exp = dynamic_cast<InfixExpression*>(stmt->expression);
+        test_integer_literal(exp->left_value, t.left_value);
+        REQUIRE(exp->op == t.op);
+        test_integer_literal(exp->right_value, t.right_value);
+    };
+};

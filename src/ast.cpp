@@ -63,3 +63,7 @@ string IntegerLiteral::to_string(){
 string PrefixExpression::to_string(){
     return "(" + op + right->to_string() + ")";
 };
+
+string InfixExpression::to_string(){
+    return "(" + left_value->to_string() + op + right_value->to_string() + ")";
+};

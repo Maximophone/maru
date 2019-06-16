@@ -10,6 +10,15 @@ Parser::Parser(Lexer *l){
     prefix_parse_funcs[INT] = &Parser::parse_integer_literal;
     prefix_parse_funcs[BANG] = &Parser::parse_prefix_expression;
     prefix_parse_funcs[MINUS] = &Parser::parse_prefix_expression;
+
+    infix_parse_funcs[PLUS] = &Parser::parse_infix_expression;
+    infix_parse_funcs[MINUS] = &Parser::parse_infix_expression;
+    infix_parse_funcs[SLASH] = &Parser::parse_infix_expression;
+    infix_parse_funcs[ASTERIX] = &Parser::parse_infix_expression;
+    infix_parse_funcs[EQUAL] = &Parser::parse_infix_expression;
+    infix_parse_funcs[NOT_EQUAL] = &Parser::parse_infix_expression;
+    infix_parse_funcs[LT] = &Parser::parse_infix_expression;
+    infix_parse_funcs[GT] = &Parser::parse_infix_expression;
 };
 
 void Parser::next_token(){
@@ -118,6 +127,17 @@ Expression* Parser::parse_prefix_expression(){
     return exp;
 };
 
+Expression* Parser::parse_infix_expression(Expression* left){
+    InfixExpression* exp = new InfixExpression();
+    exp->token = cur_token;
+    exp->op = cur_token.literal;
+    exp->left_value = left;
+    int precedence = cur_precedence();
+    next_token();
+    exp->right_value = parse_expression(precedence);
+    return exp;
+};
+
 void Parser::no_prefix_parse_func_error(TokenType t){
     string message = "no prefix parse function for " + t + " found";
     errors.push_back(message);
@@ -145,4 +165,12 @@ void Parser::peek_error(TokenType t){
     string message = "expected next token to be " + 
         t + " but got " + peek_token.type + " instead";
     errors.push_back(message);
+};
+
+int Parser::cur_precedence(){
+    return precedences[cur_token.type];
+};
+
+int Parser::peek_precedence(){
+    return precedences[peek_token.type];
 };

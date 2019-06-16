@@ -16,6 +16,18 @@ const int PRODUCT = 5;
 const int PREFIX = 6;
 const int CALL = 7;
 
+map<TokenType, int> precedences = {
+    {EQUAL, EQUALS},
+    {NOT_EQUAL, EQUALS},
+    {LT, LESSGREATER},
+    {GT, LESSGREATER},
+    {PLUS, SUM},
+    {MINUS, SUM},
+    {SLASH, PRODUCT},
+    {ASTERIX, PRODUCT},
+    {LPAREN, CALL},
+};
+
 class Parser{
     private:
         Lexer *lexer;
@@ -32,11 +44,14 @@ class Parser{
         Expression* parse_identifier();
         Expression* parse_integer_literal();
         Expression* parse_prefix_expression();
+        Expression* parse_infix_expression(Expression*);
         void no_prefix_parse_func_error(TokenType);
         bool cur_token_is(TokenType);
         bool peek_token_is(TokenType);
         bool expect_peek(TokenType);
         void peek_error(TokenType);
+        int cur_precedence();
+        int peek_precedence();
     public:
         Parser(Lexer*);
         Program* parse_program();

@@ -48,6 +48,14 @@ class PrefixExpression: public Expression{
         string to_string();
 };
 
+class InfixExpression: public Expression{
+    public:
+        Expression* left_value;
+        string op;
+        Expression* right_value;
+        string to_string();
+};
+
 class LetStatement: public Statement{
     public:
         Identifier* name;
