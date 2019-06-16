@@ -81,6 +81,7 @@ ExpressionStatement* Parser::parse_expression_statement(){
 Expression* Parser::parse_expression(int precedence){
     prefix_parse_func prefix = prefix_parse_funcs[cur_token.type];
     if(prefix == 0){
+        no_prefix_parse_func_error(cur_token.type);
         return 0;
     }
     Expression* left_exp = (this->*prefix)();
@@ -104,6 +105,11 @@ Expression* Parser::parse_integer_literal(){
         return 0;
     }
     return lit;
+};
+
+void Parser::no_prefix_parse_func_error(TokenType t){
+    string message = "no prefix parse function for " + t + " found";
+    errors.push_back(message);
 };
 
 bool Parser::cur_token_is(TokenType t){

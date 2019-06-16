@@ -31,6 +31,7 @@ class Parser{
         Expression* parse_expression(int);
         Expression* parse_identifier();
         Expression* parse_integer_literal();
+        void no_prefix_parse_func_error(TokenType);
         bool cur_token_is(TokenType);
         bool peek_token_is(TokenType);
         bool expect_peek(TokenType);

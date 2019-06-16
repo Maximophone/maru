@@ -41,6 +41,13 @@ class IntegerLiteral: public Expression{
         string to_string();
 };
 
+class PrefixExpression: public Expression{
+    public:
+        string op;
+        Expression* right;
+        string to_string();
+};
+
 class LetStatement: public Statement{
     public:
         Identifier* name;

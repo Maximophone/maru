@@ -59,3 +59,7 @@ string Identifier::to_string(){
 string IntegerLiteral::to_string(){
     return std::to_string(value);
 };
+
+string PrefixExpression::to_string(){
+    return "(" + op + right->to_string() + ")";
+};

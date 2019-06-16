@@ -124,7 +124,9 @@ ExpressionStatement* get_first_expr_stmt(Program* program){
     return stmt;
 };
 
-void test_integer_literal(IntegerLiteral* literal, int value){
+void test_integer_literal(Expression* exp, int value){
+    IntegerLiteral* literal = dynamic_cast<IntegerLiteral*>(exp);
+    REQUIRE(literal != 0);
     REQUIRE(literal->value == value);
     REQUIRE(literal->token_literal() == to_string(value));
 };
@@ -136,8 +138,25 @@ TEST_CASE("test integer literal"){
 
     ExpressionStatement* stmt = get_first_expr_stmt(program);
 
-    IntegerLiteral* literal = dynamic_cast<IntegerLiteral*>(stmt->expression);
-    REQUIRE(literal != 0);
+    test_integer_literal(stmt->expression, 5);
+}
 
-    test_integer_literal(literal, 5);
+TEST_CASE("test parsing prefix expressions"){
+    struct test{
+        string input;
+        string op;
+        int int_value;
+    };
+    vector<test> tests = {
+        {"!5;", "!", 5},
+        {"-15", "-", 15},
+    };
+
+    for(test t : tests){
+        Program* program = get_program(t.input, 1);
+        ExpressionStatement* stmt = get_first_expr_stmt(program);
+        PrefixExpression* exp = dynamic_cast<PrefixExpression*>(stmt->expression);
+        REQUIRE(exp->op == t.op);
+        test_integer_literal(exp->right, t.int_value);
+    };
 }
