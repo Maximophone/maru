@@ -71,7 +71,7 @@ ExpressionStatement* Parser::parse_expression_statement(){
     ExpressionStatement* stmt = new ExpressionStatement();
     stmt->token = cur_token;
     stmt->expression = parse_expression(LOWEST);
-    if(!peek_token_is(SEMICOLON)){
+    if(peek_token_is(SEMICOLON)){
         next_token();
     }
     return stmt;

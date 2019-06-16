@@ -16,15 +16,6 @@ Program* get_program(string input, int wanted_size){
     Parser* p = new Parser(l);
     Program* program = p->parse_program();
 
-    cout << "\nPROGRAM STRING\n";
-    cout << program->to_string();
-    cout << "\nEND\n";
-
-    for(Statement* stmt : program->statements){
-        cout << "NEW STATEMENT\n";
-        cout << stmt->to_string() << "\n";
-    }
-
     check_parser_errors(p);
     REQUIRE(program != 0);
     REQUIRE(program->statements.size() == wanted_size);
