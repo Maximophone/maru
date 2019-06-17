@@ -36,6 +36,8 @@ class Parser{
         Expression* parse_boolean_literal();
         Expression* parse_function_literal();
         vector<Identifier*> parse_function_parameters(bool&);
+        Expression* parse_call_expression(Expression*);
+        vector<Expression*> parse_call_arguments(bool&);
         Expression* parse_if_expression();
         BlockStatement* parse_block_statement();
         Expression* parse_prefix_expression();

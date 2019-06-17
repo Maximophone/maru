@@ -37,6 +37,7 @@ Parser::Parser(Lexer *l)
     infix_parse_funcs[NOT_EQUAL] = &Parser::parse_infix_expression;
     infix_parse_funcs[LT] = &Parser::parse_infix_expression;
     infix_parse_funcs[GT] = &Parser::parse_infix_expression;
+    infix_parse_funcs[LPAREN] = &Parser::parse_call_expression;
 };
 
 void Parser::next_token()
@@ -230,7 +231,38 @@ vector<Identifier *> Parser::parse_function_parameters(bool& ok)
     return identifiers;
 };
 
-Expression *Parser::parse_if_expression()
+Expression* Parser::parse_call_expression(Expression* function){
+    CallExpression* exp = new CallExpression();
+    exp->token = cur_token;
+    exp->function = function;
+    bool ok = true;
+    exp->arguments = parse_call_arguments(ok);
+    if(!ok){
+        return 0;
+    }
+    return exp;
+};
+
+vector<Expression*> Parser::parse_call_arguments(bool& ok){
+    vector<Expression*> args = {};
+    if(peek_token_is(RPAREN)){
+        next_token();
+        return args;
+    }
+    next_token();
+    args.push_back(parse_expression(LOWEST));
+    while(peek_token_is(COMMA)){
+        next_token(); next_token();
+        args.push_back(parse_expression(LOWEST));
+    }
+    if(!expect_peek(RPAREN)){
+        ok = false;
+        return {};
+    }
+    return args;
+};
+
+Expression* Parser::parse_if_expression()
 {
     IfExpression *exp = new IfExpression();
     exp->token = cur_token;

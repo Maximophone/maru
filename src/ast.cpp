@@ -82,6 +82,16 @@ string FunctionLiteral::to_string(){
     return "fn(" + param_string + "){" + body->to_string() + "}";
 };
 
+string CallExpression::to_string(){
+    string args_string = "";
+    for(int i = 0; i<arguments.size(); i++){
+        args_string += arguments[i]->to_string();
+        if(i<arguments.size()-1)
+            args_string += ",";
+    }
+    return function->to_string() + "(" + args_string + ")";
+};
+
 string PrefixExpression::to_string(){
     return "(" + op + right->to_string() + ")";
 };

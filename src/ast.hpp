@@ -56,6 +56,13 @@ class FunctionLiteral: public Expression{
         string to_string();      
 };
 
+class CallExpression: public Expression{
+    public:
+        Expression* function;
+        vector<Expression*> arguments;
+        string to_string();
+};
+
 class PrefixExpression: public Expression{
     public:
         string op;

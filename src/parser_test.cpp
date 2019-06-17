@@ -274,6 +274,14 @@ TEST_CASE("test operator precedence parsing"){
             "(5+5)*2",
             "((5+5)*2)",
         },
+        {
+            "a + add(b*c) + d",
+            "((a+add((b*c)))+d)",
+        },
+        {
+            "add(a, b, 1, 2*3, 4+5, add(6, 7*8))",
+            "add(a,b,1,(2*3),(4+5),add(6,(7*8)))",
+        }
     };
 
     for(test t : tests){
@@ -416,4 +424,20 @@ TEST_CASE("test function parameter parsing"){
             test_identifier(ident, t.expected_params[i]);
         }
     };
+};
+
+TEST_CASE("test call expression parsing"){
+    string input = "add(1, 2*3, 4+5)";
+    Program* p = get_program(input, 1);
+    ExpressionStatement* stmt = get_first_expr_stmt(p);
+
+    CallExpression* exp = dynamic_cast<CallExpression*>(stmt->expression);
+    REQUIRE(exp != 0);
+
+    test_identifier(exp->function, "add");
+
+    REQUIRE(exp->arguments.size() == 3);
+    test_integer_literal(exp->arguments[0], 1);
+    test_infix_expression<int, int>(exp->arguments[1], 2, "*", 3);
+    test_infix_expression<int, int>(exp->arguments[2], 4, "+", 5);
 };
