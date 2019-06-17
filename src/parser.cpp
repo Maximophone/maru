@@ -1,6 +1,18 @@
 #include "parser.hpp"
 #include "lexer.hpp"
 
+map<TokenType, int> precedences = {
+    {EQUAL, EQUALS},
+    {NOT_EQUAL, EQUALS},
+    {LT, LESSGREATER},
+    {GT, LESSGREATER},
+    {PLUS, SUM},
+    {MINUS, SUM},
+    {SLASH, PRODUCT},
+    {ASTERIX, PRODUCT},
+    {LPAREN, CALL},
+};
+
 Parser::Parser(Lexer *l){
     lexer = l;
     next_token();
@@ -8,6 +20,8 @@ Parser::Parser(Lexer *l){
 
     prefix_parse_funcs[IDENT] = &Parser::parse_identifier;
     prefix_parse_funcs[INT] = &Parser::parse_integer_literal;
+    prefix_parse_funcs[TRU] = &Parser::parse_boolean_literal;
+    prefix_parse_funcs[FALS] = &Parser::parse_boolean_literal;
     prefix_parse_funcs[BANG] = &Parser::parse_prefix_expression;
     prefix_parse_funcs[MINUS] = &Parser::parse_prefix_expression;
 
@@ -90,12 +104,27 @@ ExpressionStatement* Parser::parse_expression_statement(){
 };
 
 Expression* Parser::parse_expression(int precedence){
+    // cout << "Parsing Expression \n";
+    // cout << "    Current precedence " << precedence << "\n";
+    // cout << "    Next tokens (" << cur_token.literal << ", " << peek_token.literal << ")\n";
     prefix_parse_func prefix = prefix_parse_funcs[cur_token.type];
     if(prefix == 0){
+        // cout << "No prefix parse function found. Error.";
         no_prefix_parse_func_error(cur_token.type);
         return 0;
     }
     Expression* left_exp = (this->*prefix)();
+
+    while(!peek_token_is(SEMICOLON) && precedence < peek_precedence()){
+        // cout << "Checking infix parse functions \n";
+        infix_parse_func infix = infix_parse_funcs[peek_token.type];
+        if(infix == 0){
+            // cout << "No infix function found for type " << cur_token.type << "\n";
+            return left_exp;
+        };
+        next_token();
+        left_exp = (this->*infix)(left_exp);
+    }
     return left_exp;
 };
 
@@ -118,6 +147,13 @@ Expression* Parser::parse_integer_literal(){
     return lit;
 };
 
+Expression* Parser::parse_boolean_literal(){
+    BooleanLiteral* lit = new BooleanLiteral();
+    lit->token = cur_token;
+    lit->value = cur_token_is(TRU);
+    return lit;
+};
+
 Expression* Parser::parse_prefix_expression(){
     PrefixExpression* exp = new PrefixExpression();
     exp->token = cur_token;
@@ -128,11 +164,13 @@ Expression* Parser::parse_prefix_expression(){
 };
 
 Expression* Parser::parse_infix_expression(Expression* left){
+    // cout << "Parsing infix expression\n";
     InfixExpression* exp = new InfixExpression();
     exp->token = cur_token;
     exp->op = cur_token.literal;
     exp->left_value = left;
     int precedence = cur_precedence();
+    // cout << "   Current precedence " << precedence << "\n";
     next_token();
     exp->right_value = parse_expression(precedence);
     return exp;
@@ -172,5 +210,7 @@ int Parser::cur_precedence(){
 };
 
 int Parser::peek_precedence(){
+    // cout << "Peeking precedence for token " << peek_token.type << "\n";
+    // cout << "Found " << precedences[peek_token.type] << "\n";
     return precedences[peek_token.type];
 };

@@ -60,6 +60,10 @@ string IntegerLiteral::to_string(){
     return std::to_string(value);
 };
 
+string BooleanLiteral::to_string(){
+    return value?"true":"false";
+};
+
 string PrefixExpression::to_string(){
     return "(" + op + right->to_string() + ")";
 };

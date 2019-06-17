@@ -18,7 +18,9 @@ Program* get_program(string input, int wanted_size){
 
     check_parser_errors(p);
     REQUIRE(program != 0);
-    REQUIRE(program->statements.size() == wanted_size);
+    if(wanted_size >= 0){
+        REQUIRE(program->statements.size() == wanted_size);
+    }
 
     return program;
 };
@@ -46,7 +48,28 @@ void test_identifier(Identifier* ident, string value){
     REQUIRE(ident->value == value);
 };
 
+void test_integer_literal(Expression* exp, int value){
+    IntegerLiteral* literal = dynamic_cast<IntegerLiteral*>(exp);
+    REQUIRE(literal != 0);
+    REQUIRE(literal->value == value);
+    REQUIRE(literal->token_literal() == to_string(value));
+};
+
+void test_boolean_literal(Expression* exp, bool value){
+    INFO("Testing boolean literal");
+    BooleanLiteral* literal = dynamic_cast<BooleanLiteral*>(exp);
+    REQUIRE(literal != 0);
+    CHECK(literal->value == value);
+    CHECK(literal->token_literal() == (value?"true":"false"));
+};
+
 void check_parser_errors(Parser* p){
+    INFO("Parsing errors happened");
+    string error_messages = "";
+    for(string error : p->errors){
+        error_messages += error + "\n";
+    }
+    INFO(error_messages);
     REQUIRE(p->errors.size() == 0);
 };
 
@@ -118,17 +141,14 @@ TEST_CASE("test identifier expression"){
     test_identifier(ident, "foobar");
 };
 
-ExpressionStatement* get_first_expr_stmt(Program* program){
-    ExpressionStatement* stmt = dynamic_cast<ExpressionStatement*>(program->statements[0]);
+ExpressionStatement* get_expr_stmt(Program* program, int position){
+    ExpressionStatement* stmt = dynamic_cast<ExpressionStatement*>(program->statements[position]);
     REQUIRE(stmt != 0);
     return stmt;
 };
 
-void test_integer_literal(Expression* exp, int value){
-    IntegerLiteral* literal = dynamic_cast<IntegerLiteral*>(exp);
-    REQUIRE(literal != 0);
-    REQUIRE(literal->value == value);
-    REQUIRE(literal->token_literal() == to_string(value));
+ExpressionStatement* get_first_expr_stmt(Program* program){
+    return get_expr_stmt(program, 0);
 };
 
 TEST_CASE("test integer literal"){
@@ -139,7 +159,19 @@ TEST_CASE("test integer literal"){
     ExpressionStatement* stmt = get_first_expr_stmt(program);
 
     test_integer_literal(stmt->expression, 5);
-}
+};
+
+TEST_CASE("test boolean literal"){
+    string input = "true;false;";
+
+    Program* program = get_program(input, 2);
+
+    ExpressionStatement* stmt = get_expr_stmt(program, 0);
+    test_boolean_literal(stmt->expression, true);
+
+    stmt = get_expr_stmt(program, 1);
+    test_boolean_literal(stmt->expression, false);
+};
 
 TEST_CASE("test parsing prefix expressions"){
     struct test{
@@ -186,5 +218,61 @@ TEST_CASE("test parsing infix expressions"){
         test_integer_literal(exp->left_value, t.left_value);
         REQUIRE(exp->op == t.op);
         test_integer_literal(exp->right_value, t.right_value);
+    };
+};
+
+TEST_CASE("test operator precedence parsing"){
+    struct test{
+        string input;
+        string expected;
+    };
+    vector<test> tests = {
+        {
+            "-a * b",
+            "((-a)*b)",
+        },
+        {
+            "!-a",
+            "(!(-a))",
+        },
+        {
+            "a + b+c;",
+            "((a+b)+c)",
+        },
+        {
+            "a+b-c",
+            "((a+b)-c)",
+        },
+        {
+            "a+b*c",
+            "(a+(b*c))",
+        },
+        {
+            "a + b/c",
+            "(a+(b/c))",
+        },
+        {
+            "5<4 != 3 > 4",
+            "((5<4)!=(3>4))",
+        },
+        {
+            "5<4 == 3>4",
+            "((5<4)==(3>4))",
+        },
+        {
+            "3+4; -5*5",
+            "(3+4)((-5)*5)",
+        },
+        {
+            "true + false == true",
+            "((true+false)==true)",
+        },
+    };
+
+    for(test t : tests){
+        Program* program = get_program(t.input, -1);
+        string actual = program->to_string();
+        INFO("parsed program string does not match expected");
+        CHECK(actual == t.expected);
     };
 };

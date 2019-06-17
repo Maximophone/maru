@@ -16,17 +16,7 @@ const int PRODUCT = 5;
 const int PREFIX = 6;
 const int CALL = 7;
 
-map<TokenType, int> precedences = {
-    {EQUAL, EQUALS},
-    {NOT_EQUAL, EQUALS},
-    {LT, LESSGREATER},
-    {GT, LESSGREATER},
-    {PLUS, SUM},
-    {MINUS, SUM},
-    {SLASH, PRODUCT},
-    {ASTERIX, PRODUCT},
-    {LPAREN, CALL},
-};
+extern map<TokenType, int> precedences;
 
 class Parser{
     private:
@@ -43,6 +33,7 @@ class Parser{
         Expression* parse_expression(int);
         Expression* parse_identifier();
         Expression* parse_integer_literal();
+        Expression* parse_boolean_literal();
         Expression* parse_prefix_expression();
         Expression* parse_infix_expression(Expression*);
         void no_prefix_parse_func_error(TokenType);
