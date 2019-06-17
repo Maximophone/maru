@@ -24,6 +24,7 @@ Parser::Parser(Lexer *l){
     prefix_parse_funcs[FALS] = &Parser::parse_boolean_literal;
     prefix_parse_funcs[BANG] = &Parser::parse_prefix_expression;
     prefix_parse_funcs[MINUS] = &Parser::parse_prefix_expression;
+    prefix_parse_funcs[LPAREN] = &Parser::parse_grouped_expression;
 
     infix_parse_funcs[PLUS] = &Parser::parse_infix_expression;
     infix_parse_funcs[MINUS] = &Parser::parse_infix_expression;
@@ -173,6 +174,17 @@ Expression* Parser::parse_infix_expression(Expression* left){
     // cout << "   Current precedence " << precedence << "\n";
     next_token();
     exp->right_value = parse_expression(precedence);
+    return exp;
+};
+
+Expression* Parser::parse_grouped_expression(){
+    next_token();
+
+    Expression* exp = parse_expression(LOWEST);
+
+    if(!expect_peek(RPAREN)){
+        return 0;
+    }
     return exp;
 };
 

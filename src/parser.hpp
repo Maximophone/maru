@@ -36,6 +36,7 @@ class Parser{
         Expression* parse_boolean_literal();
         Expression* parse_prefix_expression();
         Expression* parse_infix_expression(Expression*);
+        Expression* parse_grouped_expression();
         void no_prefix_parse_func_error(TokenType);
         bool cur_token_is(TokenType);
         bool peek_token_is(TokenType);

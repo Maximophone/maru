@@ -267,6 +267,14 @@ TEST_CASE("test operator precedence parsing"){
             "true + false == true",
             "((true+false)==true)",
         },
+        {
+            "1 * (2 + 3 ) - 4",
+            "((1*(2+3))-4)",
+        },
+        {
+            "(5+5)*2",
+            "((5+5)*2)",
+        },
     };
 
     for(test t : tests){
