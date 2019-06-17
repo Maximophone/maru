@@ -72,6 +72,16 @@ string BooleanLiteral::to_string(){
     return value?"true":"false";
 };
 
+string FunctionLiteral::to_string(){
+    string param_string = "";
+    for(int i = 0; i<parameters.size(); i++){
+        param_string += parameters[i]->to_string();
+        if(i<parameters.size()-1)
+            param_string += ",";
+    }
+    return "fn(" + param_string + "){" + body->to_string() + "}";
+};
+
 string PrefixExpression::to_string(){
     return "(" + op + right->to_string() + ")";
 };

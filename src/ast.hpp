@@ -4,6 +4,8 @@
 
 using namespace std;
 
+class BlockStatement;
+
 class Node{
     public:
         virtual string token_literal(){};
@@ -45,6 +47,13 @@ class BooleanLiteral: public Expression{
     public:
         bool value;
         string to_string();
+};
+
+class FunctionLiteral: public Expression{
+    public:
+        vector<Identifier*> parameters;
+        BlockStatement* body;
+        string to_string();      
 };
 
 class PrefixExpression: public Expression{

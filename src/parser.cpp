@@ -13,7 +13,8 @@ map<TokenType, int> precedences = {
     {LPAREN, CALL},
 };
 
-Parser::Parser(Lexer *l){
+Parser::Parser(Lexer *l)
+{
     lexer = l;
     next_token();
     next_token();
@@ -26,6 +27,7 @@ Parser::Parser(Lexer *l){
     prefix_parse_funcs[MINUS] = &Parser::parse_prefix_expression;
     prefix_parse_funcs[LPAREN] = &Parser::parse_grouped_expression;
     prefix_parse_funcs[IF] = &Parser::parse_if_expression;
+    prefix_parse_funcs[FUNCTION] = &Parser::parse_function_literal;
 
     infix_parse_funcs[PLUS] = &Parser::parse_infix_expression;
     infix_parse_funcs[MINUS] = &Parser::parse_infix_expression;
@@ -37,17 +39,21 @@ Parser::Parser(Lexer *l){
     infix_parse_funcs[GT] = &Parser::parse_infix_expression;
 };
 
-void Parser::next_token(){
+void Parser::next_token()
+{
     cur_token = peek_token;
     peek_token = lexer->next_token();
 };
 
-Program* Parser::parse_program(){
+Program *Parser::parse_program()
+{
     Program *program = new Program();
     program->statements = {};
-    while(cur_token.type != END){
-        Statement* stmt = parse_statement();
-        if(stmt != 0){
+    while (cur_token.type != END)
+    {
+        Statement *stmt = parse_statement();
+        if (stmt != 0)
+        {
             program->statements.push_back(stmt);
         }
         next_token();
@@ -55,72 +61,85 @@ Program* Parser::parse_program(){
     return program;
 };
 
-Statement* Parser::parse_statement(){
-    if(cur_token.type==LET)
+Statement *Parser::parse_statement()
+{
+    if (cur_token.type == LET)
         return parse_let_statement();
-    if(cur_token.type==RETURN)
+    if (cur_token.type == RETURN)
         return parse_return_statement();
     return parse_expression_statement();
 };
 
-LetStatement* Parser::parse_let_statement(){
-    LetStatement* stmt = new LetStatement();
+LetStatement *Parser::parse_let_statement()
+{
+    LetStatement *stmt = new LetStatement();
     stmt->token = cur_token;
-    if(!expect_peek(IDENT)){
+    if (!expect_peek(IDENT))
+    {
         return 0;
     }
     stmt->name = new Identifier();
     stmt->name->token = cur_token;
     stmt->name->value = cur_token.literal;
-    if(!expect_peek(ASSIGN)){
+    if (!expect_peek(ASSIGN))
+    {
         return 0;
     }
     // TODO: We're skipping the expressions until we
     // encounter a semicolon
-    while(!cur_token_is(SEMICOLON)){
+    while (!cur_token_is(SEMICOLON))
+    {
         next_token();
     }
     return stmt;
 };
 
-ReturnStatement* Parser::parse_return_statement(){
-    ReturnStatement* stmt = new ReturnStatement();
+ReturnStatement *Parser::parse_return_statement()
+{
+    ReturnStatement *stmt = new ReturnStatement();
     stmt->token = cur_token;
     next_token();
     // TODO: We're skipping the expressions until we
     // encounter a semicolon
-    while(!expect_peek(SEMICOLON)){
+    while (!expect_peek(SEMICOLON))
+    {
         next_token();
     }
     return stmt;
 }
 
-ExpressionStatement* Parser::parse_expression_statement(){
-    ExpressionStatement* stmt = new ExpressionStatement();
+ExpressionStatement *Parser::parse_expression_statement()
+{
+    ExpressionStatement *stmt = new ExpressionStatement();
     stmt->token = cur_token;
     stmt->expression = parse_expression(LOWEST);
-    if(peek_token_is(SEMICOLON)){
+    if (peek_token_is(SEMICOLON))
+    {
         next_token();
     }
     return stmt;
 };
 
-Expression* Parser::parse_expression(int precedence){
+Expression *Parser::parse_expression(int precedence)
+{
     // cout << "Parsing Expression \n";
     // cout << "    Current precedence " << precedence << "\n";
     // cout << "    Next tokens (" << cur_token.literal << ", " << peek_token.literal << ")\n";
     prefix_parse_func prefix = prefix_parse_funcs[cur_token.type];
-    if(prefix == 0){
+    if (prefix == 0)
+    {
         // cout << "No prefix parse function found. Error.";
         no_prefix_parse_func_error(cur_token.type);
         return 0;
     }
-    Expression* left_exp = (this->*prefix)();
+    Expression *left_exp = (this->*prefix)();
 
-    while(!peek_token_is(SEMICOLON) && precedence < peek_precedence()){
+    while (!peek_token_is(SEMICOLON) && precedence < peek_precedence())
+    {
         // cout << "Checking infix parse functions \n";
         infix_parse_func infix = infix_parse_funcs[peek_token.type];
-        if(infix == 0){
+        if (infix == 0)
+        {
             // cout << "No infix function found for type " << cur_token.type << "\n";
             return left_exp;
         };
@@ -130,37 +149,94 @@ Expression* Parser::parse_expression(int precedence){
     return left_exp;
 };
 
-Expression* Parser::parse_identifier(){
-    Identifier* ident = new Identifier();
+Expression *Parser::parse_identifier()
+{
+    Identifier *ident = new Identifier();
     ident->token = cur_token;
     ident->value = cur_token.literal;
     return ident;
 };
 
-Expression* Parser::parse_integer_literal(){
-    IntegerLiteral* lit = new IntegerLiteral();
+Expression *Parser::parse_integer_literal()
+{
+    IntegerLiteral *lit = new IntegerLiteral();
     lit->token = cur_token;
-    try{
+    try
+    {
         lit->value = stoi(cur_token.literal);
-    } catch(invalid_argument e) {
+    }
+    catch (invalid_argument e)
+    {
         errors.push_back("could not parse " + cur_token.literal + " as an integer");
         return 0;
     }
     return lit;
 };
 
-Expression* Parser::parse_boolean_literal(){
-    BooleanLiteral* lit = new BooleanLiteral();
+Expression *Parser::parse_boolean_literal()
+{
+    BooleanLiteral *lit = new BooleanLiteral();
     lit->token = cur_token;
     lit->value = cur_token_is(TRU);
     return lit;
 };
 
-Expression* Parser::parse_if_expression(){
-    IfExpression* exp = new IfExpression();
+Expression *Parser::parse_function_literal()
+{
+    FunctionLiteral *lit = new FunctionLiteral();
+    lit->token = cur_token;
+    if (!expect_peek(LPAREN))
+    {
+        return 0;
+    }
+    bool ok = true;
+    lit->parameters = parse_function_parameters(ok);
+    if(!ok){
+        return 0;
+    }
+    if (!expect_peek(LBRACE))
+    {
+        return 0;
+    }
+    lit->body = parse_block_statement();
+    return lit;
+};
+
+vector<Identifier *> Parser::parse_function_parameters(bool& ok)
+{
+    vector<Identifier *> identifiers = {};
+    if (peek_token_is(RPAREN))
+    {
+        next_token();
+        return identifiers;
+    }
+    next_token();
+    Identifier* ident = new Identifier();
+    ident->token = cur_token;
+    ident->value = cur_token.literal;
+    identifiers.push_back(ident);
+    while (peek_token_is(COMMA))
+    {
+        next_token(); next_token();
+        ident = new Identifier();
+        ident->token = cur_token;
+        ident->value = cur_token.literal;
+        identifiers.push_back(ident);
+    }
+    if(!expect_peek(RPAREN)){
+        ok = false;
+        return {};
+    }
+    return identifiers;
+};
+
+Expression *Parser::parse_if_expression()
+{
+    IfExpression *exp = new IfExpression();
     exp->token = cur_token;
 
-    if(!expect_peek(LPAREN)){
+    if (!expect_peek(LPAREN))
+    {
         return 0;
     }
 
@@ -168,20 +244,24 @@ Expression* Parser::parse_if_expression(){
 
     exp->condition = parse_expression(LOWEST);
 
-    if(!expect_peek(RPAREN)){
+    if (!expect_peek(RPAREN))
+    {
         return 0;
     }
 
-    if(!expect_peek(LBRACE)){
+    if (!expect_peek(LBRACE))
+    {
         return 0;
     }
 
     exp->consequence = parse_block_statement();
 
-    if(peek_token_is(ELSE)){
+    if (peek_token_is(ELSE))
+    {
         next_token();
 
-        if(!expect_peek(LBRACE)){
+        if (!expect_peek(LBRACE))
+        {
             return 0;
         }
 
@@ -191,15 +271,18 @@ Expression* Parser::parse_if_expression(){
     return exp;
 };
 
-BlockStatement* Parser::parse_block_statement(){
-    BlockStatement* block = new BlockStatement();
+BlockStatement *Parser::parse_block_statement()
+{
+    BlockStatement *block = new BlockStatement();
     block->token = cur_token;
-    
+
     next_token();
 
-    while(!cur_token_is(RBRACE)){
-        Statement* stmt = parse_statement();
-        if(stmt!=0){
+    while (!cur_token_is(RBRACE))
+    {
+        Statement *stmt = parse_statement();
+        if (stmt != 0)
+        {
             block->statements.push_back(stmt);
         }
         next_token();
@@ -207,8 +290,9 @@ BlockStatement* Parser::parse_block_statement(){
     return block;
 };
 
-Expression* Parser::parse_prefix_expression(){
-    PrefixExpression* exp = new PrefixExpression();
+Expression *Parser::parse_prefix_expression()
+{
+    PrefixExpression *exp = new PrefixExpression();
     exp->token = cur_token;
     exp->op = cur_token.literal;
     next_token();
@@ -216,9 +300,10 @@ Expression* Parser::parse_prefix_expression(){
     return exp;
 };
 
-Expression* Parser::parse_infix_expression(Expression* left){
+Expression *Parser::parse_infix_expression(Expression *left)
+{
     // cout << "Parsing infix expression\n";
-    InfixExpression* exp = new InfixExpression();
+    InfixExpression *exp = new InfixExpression();
     exp->token = cur_token;
     exp->op = cur_token.literal;
     exp->left_value = left;
@@ -229,51 +314,63 @@ Expression* Parser::parse_infix_expression(Expression* left){
     return exp;
 };
 
-Expression* Parser::parse_grouped_expression(){
+Expression *Parser::parse_grouped_expression()
+{
     next_token();
 
-    Expression* exp = parse_expression(LOWEST);
+    Expression *exp = parse_expression(LOWEST);
 
-    if(!expect_peek(RPAREN)){
+    if (!expect_peek(RPAREN))
+    {
         return 0;
     }
     return exp;
 };
 
-void Parser::no_prefix_parse_func_error(TokenType t){
+void Parser::no_prefix_parse_func_error(TokenType t)
+{
     string message = "no prefix parse function for " + t + " found";
     errors.push_back(message);
 };
 
-bool Parser::cur_token_is(TokenType t){
+bool Parser::cur_token_is(TokenType t)
+{
     return cur_token.type == t;
 };
 
-bool Parser::peek_token_is(TokenType t){
+bool Parser::peek_token_is(TokenType t)
+{
     return peek_token.type == t;
 };
 
-bool Parser::expect_peek(TokenType t){
-    if(peek_token_is(t)){
+bool Parser::expect_peek(TokenType t)
+{
+    if (peek_token_is(t))
+    {
         next_token();
         return true;
-    } else {
+    }
+    else
+    {
         peek_error(t);
         return false;
     }
 };
 
-void Parser::peek_error(TokenType t){
-    string message = "expected next token to be " + 
-        t + " but got " + peek_token.type + " instead";
+void Parser::peek_error(TokenType t)
+{
+    string message = "expected next token to be " +
+                     t + " but got " + peek_token.type + " instead";
     errors.push_back(message);
 };
 
-int Parser::cur_precedence(){
+int Parser::cur_precedence()
+{
     return precedences[cur_token.type];
 };
 
-int Parser::peek_precedence(){
+int Parser::peek_precedence()
+{
     // cout << "Peeking precedence for token " << peek_token.type << "\n";
     // cout << "Found " << precedences[peek_token.type] << "\n";
     return precedences[peek_token.type];

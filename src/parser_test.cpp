@@ -365,3 +365,55 @@ TEST_CASE("test if else expression"){
 
     test_identifier(exp_stmt_alt->expression, "y");
 };
+
+TEST_CASE("test function literal parsing"){
+    string input = "fn(x, y){x + y;}";
+
+    Program* program = get_program(input, 1);
+
+    ExpressionStatement* stmt = get_first_expr_stmt(program);
+
+    FunctionLiteral* fn = dynamic_cast<FunctionLiteral*>(stmt->expression);
+    REQUIRE(fn!=0);
+
+    INFO("wrong number of parameters");
+    CHECK(fn->parameters.size()==2);
+
+    INFO("wrong parameters");
+    test_identifier(fn->parameters[0], "x");
+    test_identifier(fn->parameters[1], "y");
+
+    INFO("wrong body");
+    BlockStatement* body = dynamic_cast<BlockStatement*>(fn->body);
+    REQUIRE(body->statements.size() == 1);
+
+    ExpressionStatement* exp = dynamic_cast<ExpressionStatement*>(body->statements[0]);
+    REQUIRE(exp!=0);
+
+    test_infix_expression<string, string>(exp->expression, "x", "+", "y");
+
+};
+
+TEST_CASE("test function parameter parsing"){
+    struct test {
+        string input;
+        vector<string> expected_params;
+    };
+    vector<test> tests = {
+        {"fn(){};", {}},
+        {"fn(x){};", {"x"}},
+        {"fn(x, y, z){};", {"x", "y", "z"}},
+    };
+
+    for(test t : tests){
+        Program* p = get_program(t.input, 1);
+        ExpressionStatement* stmt = get_first_expr_stmt(p);
+        FunctionLiteral* fn = dynamic_cast<FunctionLiteral*>(stmt->expression);
+        REQUIRE(fn!=0);
+        CHECK(fn->parameters.size() == t.expected_params.size());
+        for(int i = 0; i<fn->parameters.size(); i++){
+            Identifier* ident = fn->parameters[i];
+            test_identifier(ident, t.expected_params[i]);
+        }
+    };
+};
