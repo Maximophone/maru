@@ -25,6 +25,7 @@ Parser::Parser(Lexer *l){
     prefix_parse_funcs[BANG] = &Parser::parse_prefix_expression;
     prefix_parse_funcs[MINUS] = &Parser::parse_prefix_expression;
     prefix_parse_funcs[LPAREN] = &Parser::parse_grouped_expression;
+    prefix_parse_funcs[IF] = &Parser::parse_if_expression;
 
     infix_parse_funcs[PLUS] = &Parser::parse_infix_expression;
     infix_parse_funcs[MINUS] = &Parser::parse_infix_expression;
@@ -153,6 +154,57 @@ Expression* Parser::parse_boolean_literal(){
     lit->token = cur_token;
     lit->value = cur_token_is(TRU);
     return lit;
+};
+
+Expression* Parser::parse_if_expression(){
+    IfExpression* exp = new IfExpression();
+    exp->token = cur_token;
+
+    if(!expect_peek(LPAREN)){
+        return 0;
+    }
+
+    next_token();
+
+    exp->condition = parse_expression(LOWEST);
+
+    if(!expect_peek(RPAREN)){
+        return 0;
+    }
+
+    if(!expect_peek(LBRACE)){
+        return 0;
+    }
+
+    exp->consequence = parse_block_statement();
+
+    if(peek_token_is(ELSE)){
+        next_token();
+
+        if(!expect_peek(LBRACE)){
+            return 0;
+        }
+
+        exp->alternative = parse_block_statement();
+    }
+
+    return exp;
+};
+
+BlockStatement* Parser::parse_block_statement(){
+    BlockStatement* block = new BlockStatement();
+    block->token = cur_token;
+    
+    next_token();
+
+    while(!cur_token_is(RBRACE)){
+        Statement* stmt = parse_statement();
+        if(stmt!=0){
+            block->statements.push_back(stmt);
+        }
+        next_token();
+    }
+    return block;
 };
 
 Expression* Parser::parse_prefix_expression(){

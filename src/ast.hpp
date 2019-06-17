@@ -62,6 +62,20 @@ class InfixExpression: public Expression{
         string to_string();
 };
 
+class BlockStatement: public Statement{
+    public:
+        vector<Statement*> statements;
+        string to_string();
+};
+
+class IfExpression: public Expression{
+    public:
+        Expression* condition;
+        BlockStatement* consequence;
+        BlockStatement* alternative;
+        string to_string();
+};
+
 class LetStatement: public Statement{
     public:
         Identifier* name;
@@ -80,4 +94,3 @@ class ExpressionStatement: public Statement{
         Expression* expression;
         string to_string();
 };
-

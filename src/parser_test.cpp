@@ -42,17 +42,19 @@ void test_expression_statement(Statement* statement){
     REQUIRE(dynamic_cast<ExpressionStatement*>(statement)!=0);
 };
 
-void test_identifier(Identifier* ident, string value){
-    REQUIRE(ident->token_literal() == value);
-    REQUIRE(ident->token.type == IDENT);
-    REQUIRE(ident->value == value);
+void test_identifier(Expression* exp, string value){
+    Identifier* ident = dynamic_cast<Identifier*>(exp);
+    REQUIRE(ident != 0);
+    CHECK(ident->token_literal() == value);
+    CHECK(ident->token.type == IDENT);
+    CHECK(ident->value == value);
 };
 
 void test_integer_literal(Expression* exp, int value){
     IntegerLiteral* literal = dynamic_cast<IntegerLiteral*>(exp);
     REQUIRE(literal != 0);
-    REQUIRE(literal->value == value);
-    REQUIRE(literal->token_literal() == to_string(value));
+    CHECK(literal->value == value);
+    CHECK(literal->token_literal() == to_string(value));
 };
 
 void test_boolean_literal(Expression* exp, bool value){
@@ -135,10 +137,7 @@ TEST_CASE("test identifier expression"){
     ExpressionStatement* stmt = dynamic_cast<ExpressionStatement*>(program->statements[0]);
     REQUIRE(stmt != 0);
 
-    Identifier* ident = dynamic_cast<Identifier*>(stmt->expression);
-    REQUIRE(ident != 0);
-
-    test_identifier(ident, "foobar");
+    test_identifier(stmt->expression, "foobar");
 };
 
 ExpressionStatement* get_expr_stmt(Program* program, int position){
@@ -283,4 +282,86 @@ TEST_CASE("test operator precedence parsing"){
         INFO("parsed program string does not match expected");
         CHECK(actual == t.expected);
     };
+};
+
+template <typename T>
+void test_variable_literal(Expression* exp, T literal){};
+
+template<>
+void test_variable_literal<string>(Expression* exp, string literal){
+    test_identifier(exp, literal);
+};
+
+template<>
+void test_variable_literal<int>(Expression* exp, int literal){
+    test_integer_literal(exp, literal);
+};
+
+template<>
+void test_variable_literal<bool>(Expression* exp, bool literal){
+    test_boolean_literal(exp, literal);
+};
+
+template<typename T_left, typename T_right>
+void test_infix_expression(Expression* exp, T_left left, string op, T_right right){
+    InfixExpression* inf_exp = dynamic_cast<InfixExpression*>(exp);
+    REQUIRE(inf_exp != 0);
+    test_variable_literal<T_left>(inf_exp->left_value, left);
+    CHECK(inf_exp->op == op);
+    test_variable_literal<T_right>(inf_exp->right_value, right);
+};
+
+TEST_CASE("test if expression"){
+    string input = "if(x<y){x}";
+
+    Program* program = get_program(input, 1);
+
+    ExpressionStatement* stmt = get_first_expr_stmt(program);
+
+    IfExpression* exp = dynamic_cast<IfExpression*>(stmt->expression);
+    REQUIRE(exp != 0);
+
+    test_infix_expression<string, string>(exp->condition, "x", "<", "y");
+
+    BlockStatement* cons = dynamic_cast<BlockStatement*>(exp->consequence);
+    REQUIRE(cons != 0);
+    REQUIRE(cons->statements.size()==1);
+
+    ExpressionStatement* exp_stmt = dynamic_cast<ExpressionStatement*>(cons->statements[0]);
+    REQUIRE(exp_stmt != 0);
+
+    test_identifier(exp_stmt->expression, "x");
+
+    REQUIRE(exp->alternative == 0);
+};
+
+TEST_CASE("test if else expression"){
+    string input = "if(x<y){x}else{y}";
+
+    Program* program = get_program(input, 1);
+
+    ExpressionStatement* stmt = get_first_expr_stmt(program);
+
+    IfExpression* exp = dynamic_cast<IfExpression*>(stmt->expression);
+    REQUIRE(exp != 0);
+
+    test_infix_expression<string, string>(exp->condition, "x", "<", "y");
+
+    BlockStatement* cons = dynamic_cast<BlockStatement*>(exp->consequence);
+    REQUIRE(cons != 0);
+    REQUIRE(cons->statements.size()==1);
+
+    ExpressionStatement* exp_stmt = dynamic_cast<ExpressionStatement*>(cons->statements[0]);
+    REQUIRE(exp_stmt != 0);
+
+    test_identifier(exp_stmt->expression, "x");
+
+    BlockStatement* alt = dynamic_cast<BlockStatement*>(exp->alternative);
+    REQUIRE(alt != 0);
+    REQUIRE(alt->statements.size()==1);
+
+    ExpressionStatement* exp_stmt_alt = dynamic_cast<ExpressionStatement*>(alt->statements[0]);
+    REQUIRE(exp_stmt_alt != 0);
+
+    test_identifier(exp_stmt_alt->expression, "y");
 };
