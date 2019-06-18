@@ -1,5 +1,9 @@
 #include "evaluator.hpp"
 
+Null* NULL_ = new Null();
+Boolean* TRUE = new Boolean(true);
+Boolean* FALSE = new Boolean(false);
+
 Object* eval(Node* node){
     // STATEMENTS
     if(Program* program = dynamic_cast<Program*>(node)){
@@ -14,6 +18,9 @@ Object* eval(Node* node){
         Integer* i = new Integer();
         i->value = lit->value;
         return i;
+    }
+    if(BooleanLiteral* lit = dynamic_cast<BooleanLiteral*>(node)){
+        return lit->value?TRUE:FALSE;
     }
     return 0;
 }

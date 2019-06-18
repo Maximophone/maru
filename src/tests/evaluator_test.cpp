@@ -19,7 +19,15 @@ void test_integer_object(Object* obj, int expected){
     Integer* int_obj = dynamic_cast<Integer*>(obj);
     REQUIRE(int_obj != 0);
     CHECK(int_obj->value == expected);
-}
+};
+
+void test_boolean_object(Object* obj, bool expected){
+    INFO("Testing boolean object");
+
+    Boolean* bool_obj = dynamic_cast<Boolean*>(obj);
+    REQUIRE(bool_obj != 0);
+    CHECK(bool_obj->value == expected);
+};
 
 TEST_CASE("test eval integer expression"){
     struct test {
@@ -34,5 +42,21 @@ TEST_CASE("test eval integer expression"){
     for(test t : tests){
         Object* evaluated = test_eval(t.input);
         test_integer_object(evaluated, t.expected);
+    }
+};
+
+TEST_CASE("test eval boolean expression"){
+    struct test {
+        string input;
+        bool expected;
+    };
+    vector<test> tests = {
+        {"true", true},
+        {"false", false},
+    };
+
+    for(test t : tests){
+        Object* evaluated = test_eval(t.input);
+        test_boolean_object(evaluated, t.expected);
     }
 };

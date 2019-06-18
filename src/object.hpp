@@ -29,6 +29,7 @@ class Boolean: public Object {
         bool value;
         ObjectType type = BOOLEAN_OBJ;
         string inspect();
+        Boolean(bool val){value=val;};
 };
 
 class Null: public Object {
