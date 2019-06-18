@@ -1,7 +1,8 @@
 #include "repl.hpp"
-#include <iostream>
 #include "parser.hpp"
+#include "evaluator.hpp"
 #include <string>
+#include <iostream>
 
 using namespace std;
 
@@ -34,7 +35,10 @@ void start(){
             continue;
         }
 
-        cout << program->to_string();
-        cout << "\n";
+        Object* evaluated = eval(program);
+        if(evaluated != 0){
+            cout << evaluated->inspect();
+            cout << "\n";
+        }
     }
 }
