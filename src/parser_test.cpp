@@ -4,6 +4,7 @@
 #include "parser.hpp"
 
 using namespace std;
+using namespace std::literals::string_literals;
 
 void check_parser_errors(Parser*);
 Program* get_program(string, int);
@@ -75,38 +76,71 @@ void check_parser_errors(Parser* p){
     REQUIRE(p->errors.size() == 0);
 };
 
+class Var{
+    public:
+        int i;
+        string s;
+        bool b;
+        char type;
+    Var(int i_){type='i'; i=i_;};
+    Var(string s_){type='s'; s=s_;};
+    Var(bool b_){type='b'; b=b_;};
+};
+
+void test_var_literal(Expression* exp, Var literal){
+        switch(literal.type){
+            case 'i':
+                test_integer_literal(exp, literal.i);
+                break;
+            case 'b':
+                test_boolean_literal(exp, literal.b);
+                break;
+            case 's':
+                test_identifier(exp, literal.s);
+                break;
+        }
+}
+
 TEST_CASE("test let statements"){
-    string input = "let x = 5;"
-    "let y = 10;"
-    "let foobar = 838383;";
-
-    Program* program = get_program(input, 3);
-
-    struct test{string exp_ident;};
+    struct test {
+        string input;
+        string expected_ident;
+        Var value;
+    };
     vector<test> tests = {
-        {"x"},
-        {"y"},
-        {"foobar"},
+        {"let x = 5;", "x", Var(5)},
+        {"let y = true;", "y", Var(true)},
+        {"let foobar = y", "foobar", Var("y"s)},
     };
 
-    int i = 0;
-    for(test t : tests){
-        Statement* statement = program->statements[i];
-        test_let_statement(statement, t.exp_ident);
-        i++;
+    for(test t: tests){
+        INFO("INPUT: " + t.input)
+        INFO(t.value.type);
+        INFO(t.value.s);
+        Program* p = get_program(t.input, 1);
+        LetStatement* stmt = dynamic_cast<LetStatement*>(p->statements[0]);
+        REQUIRE(stmt != 0);
+        test_let_statement(stmt, t.expected_ident);
+        test_var_literal(stmt->value, t.value);
     }
 };
 
 TEST_CASE("test return statement"){
-    string input = ""
-    "return 5;"
-    "return 10;"
-    "return 198374;";
+    struct test {
+        string input;
+        Var value;
+    };
+    vector<test> tests = {
+        {"return 5;", Var(5)},
+        {"return a;", Var("a"s)},
+        {"return true;", Var(true)},
+    };
 
-    Program* program = get_program(input, 3);
-
-    for(Statement* stmt : program->statements){
-        test_return_statement(stmt);
+    for(test t : tests){
+        Program* p = get_program(t.input, 1);
+        ReturnStatement* stmt = dynamic_cast<ReturnStatement*>(p->statements[0]);
+        REQUIRE(stmt != 0);
+        test_var_literal(stmt->return_value, t.value);
     }
 };
 

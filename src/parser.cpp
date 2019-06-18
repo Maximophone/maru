@@ -86,12 +86,10 @@ LetStatement *Parser::parse_let_statement()
     {
         return 0;
     }
-    // TODO: We're skipping the expressions until we
-    // encounter a semicolon
-    while (!cur_token_is(SEMICOLON))
-    {
+    next_token();
+    stmt->value = parse_expression(LOWEST);
+    if(peek_token_is(SEMICOLON))
         next_token();
-    }
     return stmt;
 };
 
@@ -100,12 +98,9 @@ ReturnStatement *Parser::parse_return_statement()
     ReturnStatement *stmt = new ReturnStatement();
     stmt->token = cur_token;
     next_token();
-    // TODO: We're skipping the expressions until we
-    // encounter a semicolon
-    while (!expect_peek(SEMICOLON))
-    {
+    stmt->return_value = parse_expression(LOWEST);
+    if(peek_token_is(SEMICOLON))
         next_token();
-    }
     return stmt;
 }
 

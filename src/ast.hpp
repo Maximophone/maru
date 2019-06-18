@@ -8,7 +8,7 @@ class BlockStatement;
 
 class Node{
     public:
-        virtual string token_literal(){};
+        virtual string token_literal() = 0;
         virtual string to_string() = 0;
 };
 

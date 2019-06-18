@@ -17,4 +17,4 @@ map<string, TokenType> keywords = {
     {"else", ELSE},
     {"true", TRU},
     {"false", FALS},
-};
+}; 
