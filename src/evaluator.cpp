@@ -90,5 +90,13 @@ Object* eval_integer_infix_expression(string op, Object* left, Object* right){
         return new Integer(l->value * r->value);
     if(op=="/")
         return new Integer(l->value / r->value);
+    if(op=="<")
+        return (l->value < r->value)?TRUE:FALSE;
+    if(op==">")
+        return (l->value > r->value)?TRUE:FALSE;
+    if(op=="==")
+        return (l->value == r->value)?TRUE:FALSE;
+    if(op=="!=")
+        return (l->value != r->value)?TRUE:FALSE;
     return NULL_;
 };
