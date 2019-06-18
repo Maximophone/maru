@@ -22,6 +22,8 @@ class Integer: public Object {
         int value;
         ObjectType type = INTEGER_OBJ;
         string inspect();
+        Integer(){};
+        Integer(int val){value=val;};
 };
 
 class Boolean: public Object {

@@ -41,6 +41,9 @@ Object* eval_prefix_expression(string op, Object* right){
     if(op=="!"){
         return eval_bang_operator_expression(right);
     };
+    if(op=="-"){
+        return eval_minus_prefix_operator_expression(right);
+    };
     return NULL_;
 };
 
@@ -55,4 +58,11 @@ Object* eval_bang_operator_expression(Object* right){
         return TRUE;
     }
     return FALSE;
+};
+
+Object* eval_minus_prefix_operator_expression(Object* right){
+    
+    if(Integer* int_obj = dynamic_cast<Integer*>(right))
+        return new Integer(-int_obj->value);
+    return NULL_;
 };

@@ -37,6 +37,8 @@ TEST_CASE("test eval integer expression"){
     vector<test> tests = {
         {"5", 5},
         {"10", 10},
+        {"-5", -5},
+        {"-10", -10},
     };
 
     for(test t : tests){
