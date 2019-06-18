@@ -60,3 +60,23 @@ TEST_CASE("test eval boolean expression"){
         test_boolean_object(evaluated, t.expected);
     }
 };
+
+TEST_CASE("test bang operator"){
+    struct test {
+        string input;
+        bool expected;
+    };
+    vector<test> tests = {
+        {"!true", false},
+        {"!false", true},
+        {"!5", false},
+        {"!!true", true},
+        {"!!false", false},
+        {"!!5", true},
+    };
+
+    for(test t : tests){
+        Object* evaluated = test_eval(t.input);
+        test_boolean_object(evaluated, t.expected);
+    }
+};
