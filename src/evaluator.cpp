@@ -76,6 +76,10 @@ Object* eval_infix_expression(string op, Object* left, Object* right){
     if(dynamic_cast<Integer*>(left) && dynamic_cast<Integer*>(right)){
         return eval_integer_infix_expression(op, left, right);
     }
+    if(op == "==")
+        return (left==right)?TRUE:FALSE;
+    if(op == "!=")
+        return (left!=right)?TRUE:FALSE;
     return NULL_;
 };
 
