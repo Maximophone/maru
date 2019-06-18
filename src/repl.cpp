@@ -1,10 +1,18 @@
+#include "repl.hpp"
 #include <iostream>
-#include "lexer.hpp"
+#include "parser.hpp"
 #include <string>
 
 using namespace std;
 
 const string PROMPT = ">> ";
+
+void print_parser_errors(vector<string> errors){
+    cout << "Parser Errors: \n";
+    for(string msg : errors){
+        cout << "\t" << msg << "\n";
+    }
+};
 
 void start(){
     string line;
@@ -17,12 +25,16 @@ void start(){
             return;
         }
 
-        Lexer l(line);
+        Lexer* l = new Lexer(line);
+        Parser* p = new Parser(l);
+        Program* program = p->parse_program();
 
-        for(Token tok = l.next_token(); tok.type != END; tok = l.next_token()){
-            cout << "(" << tok.type << "," << tok.literal << ")";
+        if(p->errors.size() != 0){
+            print_parser_errors(p->errors);
+            continue;
         }
-        cout << "\n";
 
+        cout << program->to_string();
+        cout << "\n";
     }
 }

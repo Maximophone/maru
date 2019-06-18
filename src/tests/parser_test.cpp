@@ -1,7 +1,7 @@
 #include "catch.hpp"
 #include <string>
 #include <vector>
-#include "parser.hpp"
+#include "../parser.hpp"
 
 using namespace std;
 using namespace std::literals::string_literals;

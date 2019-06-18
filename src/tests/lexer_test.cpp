@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string>
 #include "catch.hpp"
-#include "lexer.hpp"
+#include "../lexer.hpp"
 #include <iostream>
 
 using namespace std;
