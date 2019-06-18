@@ -1,3 +1,6 @@
+#ifndef AST_H
+#define AST_H
+
 #include <string>
 #include "lexer.hpp"
 #include <vector>
@@ -110,3 +113,5 @@ class ExpressionStatement: public Statement{
         Expression* expression;
         string to_string();
 };
+
+#endif
