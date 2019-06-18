@@ -26,6 +26,11 @@ Object* eval(Node* node){
         Object* right = eval(exp->right);
         return eval_prefix_expression(exp->op, right);
     }
+    if(InfixExpression* exp = dynamic_cast<InfixExpression*>(node)){
+        Object* left = eval(exp->left_value);
+        Object* right = eval(exp->right_value);
+        return eval_infix_expression(exp->op, left, right);
+    }
     return 0;
 }
 
@@ -64,5 +69,26 @@ Object* eval_minus_prefix_operator_expression(Object* right){
     
     if(Integer* int_obj = dynamic_cast<Integer*>(right))
         return new Integer(-int_obj->value);
+    return NULL_;
+};
+
+Object* eval_infix_expression(string op, Object* left, Object* right){
+    if(dynamic_cast<Integer*>(left) && dynamic_cast<Integer*>(right)){
+        return eval_integer_infix_expression(op, left, right);
+    }
+    return NULL_;
+};
+
+Object* eval_integer_infix_expression(string op, Object* left, Object* right){
+    Integer* l = (Integer*) left;
+    Integer* r = (Integer*) right;
+    if(op=="+")
+        return new Integer(l->value + r->value);
+    if(op=="-")
+        return new Integer(l->value - r->value);
+    if(op=="*")
+        return new Integer(l->value * r->value);
+    if(op=="/")
+        return new Integer(l->value / r->value);
     return NULL_;
 };
