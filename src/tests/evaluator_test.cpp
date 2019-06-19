@@ -1,6 +1,7 @@
 #include "catch.hpp"
 #include "../evaluator.hpp"
 #include "../parser.hpp"
+#include "test_utils.cpp"
 #include <string>
 
 using namespace std;
@@ -27,6 +28,28 @@ void test_boolean_object(Object* obj, bool expected){
     Boolean* bool_obj = dynamic_cast<Boolean*>(obj);
     REQUIRE(bool_obj != 0);
     CHECK(bool_obj->value == expected);
+};
+
+void test_null_object(Object* obj){
+    INFO("Testing NULL object");
+
+    Null* null_obj = dynamic_cast<Null*>(obj);
+    REQUIRE(null_obj != 0);
+    CHECK(null_obj == NULL_);
+};
+
+void test_var_object(Object* obj, Var expected){
+    switch(expected.type){
+        case 'n':
+            return test_null_object(obj);
+            break;
+        case 'i':
+            return test_integer_object(obj, expected.i);
+            break;
+        case 'b':
+            return test_boolean_object(obj, expected.b);
+            break;
+    }
 };
 
 TEST_CASE("test eval integer expression"){
@@ -108,5 +131,52 @@ TEST_CASE("test bang operator"){
     for(test t : tests){
         Object* evaluated = test_eval(t.input);
         test_boolean_object(evaluated, t.expected);
+    }
+};
+
+TEST_CASE("test if else expressions"){
+    struct test{
+        string input;
+        Var expected;
+    };
+    vector<test> tests = {
+        {"if(true) {10}", Var(10)},
+        {"if(false){8}", Var()},
+        {"if (1) {10}", Var(10)},
+        {"if (1 < 2) { 10 }", Var(10)},
+        {"if (1 > 2) { 10 }", Var()},
+        {"if (1 > 2) { 10 } else { 20 }", Var(20)},
+        {"if (1 < 2) { 10 } else { 20 }", Var(10)},
+    };
+
+    for (test t : tests){
+        INFO("Expression: " + t.input);
+        Object* evaluated = test_eval(t.input);
+        test_var_object(evaluated, t.expected);
+    }
+};
+
+TEST_CASE("test return statements"){
+    struct test{
+        string input;
+        int expected;
+    };
+    vector<test> tests = {
+        {"return 10;", 10},
+        {"return 10; 9;", 10},
+        {"return 2 * 5; 9;", 10},
+        {"9; return 2 * 5; 9;", 10},
+        {"if (10 > 1) {"
+            "if (10 > 1) {"
+                "return 10;"
+            "}"
+            "return 1;"
+        "}", 10},
+    };
+
+    for(test t : tests){
+        INFO("Expression: " + t.input);
+        Object* evaluated = test_eval(t.input);
+        test_integer_object(evaluated, t.expected);
     }
 };

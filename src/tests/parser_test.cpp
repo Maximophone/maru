@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include "../parser.hpp"
+#include "test_utils.cpp"
 
 using namespace std;
 using namespace std::literals::string_literals;
@@ -74,17 +75,6 @@ void check_parser_errors(Parser* p){
     }
     INFO(error_messages);
     REQUIRE(p->errors.size() == 0);
-};
-
-class Var{
-    public:
-        int i;
-        string s;
-        bool b;
-        char type;
-    Var(int i_){type='i'; i=i_;};
-    Var(string s_){type='s'; s=s_;};
-    Var(bool b_){type='b'; b=b_;};
 };
 
 void test_var_literal(Expression* exp, Var literal){

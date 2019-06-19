@@ -40,4 +40,11 @@ class Null: public Object {
         string inspect();
 };
 
+class ReturnValue: public Object{
+    public:
+        Object* value;
+        string inspect();
+        ReturnValue(Object* obj){value=obj;};
+};
+
 #endif

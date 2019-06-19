@@ -14,3 +14,7 @@ string Boolean::inspect(){
 string Null::inspect(){
     return "null";
 };
+
+string ReturnValue::inspect(){
+    return value->inspect();
+};

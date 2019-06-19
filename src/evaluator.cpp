@@ -7,10 +7,17 @@ Boolean* FALSE = new Boolean(false);
 Object* eval(Node* node){
     // STATEMENTS
     if(Program* program = dynamic_cast<Program*>(node)){
-        return eval_statements(program->statements);
+        return eval_program(program);
     }
     if(ExpressionStatement* stmt = dynamic_cast<ExpressionStatement*>(node)){
         return eval(stmt->expression);
+    }
+    if(BlockStatement* stmt = dynamic_cast<BlockStatement*>(node)){
+        return eval_block_statement(stmt);
+    }
+    if(ReturnStatement* stmt = dynamic_cast<ReturnStatement*>(node)){
+        Object* val = eval(stmt->return_value);
+        return new ReturnValue(val);
     }
 
     // EXPRESSIONS
@@ -31,13 +38,30 @@ Object* eval(Node* node){
         Object* right = eval(exp->right_value);
         return eval_infix_expression(exp->op, left, right);
     }
+    if(IfExpression* exp = dynamic_cast<IfExpression*>(node)){
+        return eval_if_expression(exp);
+    }
     return 0;
 }
 
-Object* eval_statements(vector<Statement*> statements){
+Object* eval_program(Program* program){
     Object* result;
-    for(Statement* stmt : statements){
+    for(Statement* stmt : program->statements){
         result = eval(stmt);
+        if(ReturnValue* ret_val = dynamic_cast<ReturnValue*>(result)){
+            return ret_val->value;
+        }
+    }
+    return result;
+};
+
+Object* eval_block_statement(BlockStatement* block){
+    Object* result;
+    for(Statement* stmt : block->statements){
+        result = eval(stmt);
+        if(ReturnValue* ret_val = dynamic_cast<ReturnValue*>(result)){
+            return ret_val;
+        }
     }
     return result;
 };
@@ -53,16 +77,7 @@ Object* eval_prefix_expression(string op, Object* right){
 };
 
 Object* eval_bang_operator_expression(Object* right){
-    if(right==TRUE){
-        return FALSE;
-    }
-    if(right==FALSE){
-        return TRUE;
-    }
-    if(right==NULL_){
-        return TRUE;
-    }
-    return FALSE;
+    return is_truthy(right)?FALSE:TRUE;
 };
 
 Object* eval_minus_prefix_operator_expression(Object* right){
@@ -103,4 +118,25 @@ Object* eval_integer_infix_expression(string op, Object* left, Object* right){
     if(op=="!=")
         return (l->value != r->value)?TRUE:FALSE;
     return NULL_;
+};
+
+Object* eval_if_expression(IfExpression* exp){
+    Object* condition = eval(exp->condition);
+    if(is_truthy(condition)){
+        return eval(exp->consequence);
+    } else if (exp->alternative!=0){
+        return eval(exp->alternative);
+    } else {
+        return NULL_;
+    }
+};
+
+bool is_truthy(Object* obj){
+    if(obj == NULL_)
+        return false;
+    if(obj == TRUE)
+        return true;
+    if(obj == FALSE)
+        return false;
+    return true;
 };
