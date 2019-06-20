@@ -11,7 +11,8 @@ Object* test_eval(string input){
     Parser* p = new Parser(l);
     Program* program = p->parse_program();
 
-    return eval(dynamic_cast<Node*>(program));
+    Environment* env = new Environment();
+    return eval(dynamic_cast<Node*>(program), env);
 };
 
 void test_integer_object(Object* obj, int expected){
@@ -36,6 +37,14 @@ void test_null_object(Object* obj){
     Null* null_obj = dynamic_cast<Null*>(obj);
     REQUIRE(null_obj != 0);
     CHECK(null_obj == NULL_);
+};
+
+void test_error_object(Object* obj, string expected_message){
+    INFO("Testing ERROR object");
+
+    Error* error_obj = dynamic_cast<Error*>(obj);
+    REQUIRE(error_obj != 0);
+    CHECK(error_obj->message == expected_message);
 };
 
 void test_var_object(Object* obj, Var expected){
@@ -179,4 +188,69 @@ TEST_CASE("test return statements"){
         Object* evaluated = test_eval(t.input);
         test_integer_object(evaluated, t.expected);
     }
+};
+
+TEST_CASE("test error handling"){
+    struct test {
+        string input;
+        string expected_message;
+    };
+    vector<test> tests = {
+        {
+            "5 + true;",
+            "type mismatch: INTEGER+BOOLEAN",
+        },
+        {
+            "5 + true; 5;",
+            "type mismatch: INTEGER+BOOLEAN",
+        },
+        {
+            "-true",
+            "unknown operator: -BOOLEAN",
+        },
+        {
+            "true + false;",
+            "unknown operator: BOOLEAN+BOOLEAN",
+        },
+        {
+            "5; true + false; 5",
+            "unknown operator: BOOLEAN+BOOLEAN",
+        },
+        {
+            "if (10 > 1) { true + false; }",
+            "unknown operator: BOOLEAN+BOOLEAN",
+        },
+        {
+"if (10 > 1) {"
+  "if (10 > 1) {"
+    "return true + false;"
+  "}"
+  "return 1;"
+"}",
+            "unknown operator: BOOLEAN+BOOLEAN",
+        },
+        {"foobar", "identifier not found: foobar"},
+    };
+
+    for(test t : tests){
+        INFO("Input: " + t.input);
+        Object* evaluated = test_eval(t.input);
+        test_error_object(evaluated, t.expected_message);
+    }
+};
+
+TEST_CASE("test evaluating let statements"){
+    struct test {
+        string input;
+        int expected;
+    };
+    vector<test> tests = {
+        {"let a = 5; a;", 5},
+        {"let a = 5 * 5; a;", 25},
+        {"let a = 5; let b = a; b;", 5},
+        {"let a = 5; let b = a; let c = a + b + 5; c;", 15},
+    };
+    for(test t : tests){
+        test_integer_object(test_eval(t.input), t.expected);
+    };
 };

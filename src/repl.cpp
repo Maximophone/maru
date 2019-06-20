@@ -17,6 +17,7 @@ void print_parser_errors(vector<string> errors){
 
 void start(){
     string line;
+    Environment* env = new Environment();
     while(true){
         
         cout << PROMPT;
@@ -35,7 +36,7 @@ void start(){
             continue;
         }
 
-        Object* evaluated = eval(program);
+        Object* evaluated = eval(program, env);
         if(evaluated != 0){
             cout << evaluated->inspect();
             cout << "\n";

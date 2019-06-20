@@ -18,3 +18,19 @@ string Null::inspect(){
 string ReturnValue::inspect(){
     return value->inspect();
 };
+
+string Error::inspect(){
+    return "ERROR: " + message;
+};
+
+Object* Environment::get(string name, bool& ok){
+    Object* obj = store[name];
+    if(obj==0)
+        ok = false;
+    return obj;
+};
+
+Object* Environment::set(string name, Object* value){
+    store[name] = value;
+    return value;
+};
