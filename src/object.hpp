@@ -13,6 +13,7 @@ const ObjectType BOOLEAN_OBJ = "BOOLEAN";
 const ObjectType NULL_OBJ = "NULL";
 const ObjectType RETURN_OBJ = "RETURN";
 const ObjectType ERROR_OBJ = "ERROR";
+const ObjectType FUNCTION_OBJ = "FUNCTION";
 
 class Object {
     public:
@@ -56,6 +57,15 @@ class Error: public Object {
         string inspect();
         Error(){type=ERROR_OBJ;};
         Error(string msg):Error(){message=msg;};
+};
+
+class Function: public Object {
+    public:
+        vector<Identifier*> parameters;
+        BlockStatement* body;
+        Environment* env;
+        string inspect();
+        Function(){type=FUNCTION_OBJ;};
 };
 
 class Environment{

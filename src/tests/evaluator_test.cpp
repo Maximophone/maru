@@ -254,3 +254,19 @@ TEST_CASE("test evaluating let statements"){
         test_integer_object(test_eval(t.input), t.expected);
     };
 };
+
+TEST_CASE("test function object"){
+    string input = "fn(x){x+2;};";
+
+    Object* evaluated = test_eval(input);
+    Function* fn = dynamic_cast<Function*>(evaluated);
+    REQUIRE(fn != 0);
+
+    REQUIRE(fn->parameters.size() == 1);
+    CHECK(fn->parameters[0]->to_string()=="x");
+
+    string expected_body = "(x+2)";
+    CHECK(fn->body->to_string() == expected_body);
+};
+
+
