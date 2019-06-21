@@ -23,7 +23,7 @@ void start(){
         cout << PROMPT;
         getline(cin, line);
 
-        if(line == ""){
+        if(line == "exit"){
             return;
         }
 

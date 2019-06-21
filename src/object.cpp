@@ -11,6 +11,10 @@ string Boolean::inspect(){
     return value?"true":"false";
 };
 
+string String::inspect(){
+    return value;
+};
+
 string Null::inspect(){
     return "null";
 };

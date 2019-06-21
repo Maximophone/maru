@@ -24,7 +24,9 @@ void run_program(string input){
     cout << "evaluating program \n";
     Object* evaluated = eval(program, env);
 
-    cout << evaluated->inspect() << "\n";
+    if(evaluated != 0){
+        cout << evaluated->inspect() << "\n";
+    }
 };
 
 int main(int argc, char *argv[]){

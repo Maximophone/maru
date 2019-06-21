@@ -11,6 +11,7 @@ typedef string ObjectType;
 
 const ObjectType INTEGER_OBJ = "INTEGER";
 const ObjectType BOOLEAN_OBJ = "BOOLEAN";
+const ObjectType STRING_OBJ = "STRING";
 const ObjectType NULL_OBJ = "NULL";
 const ObjectType RETURN_OBJ = "RETURN";
 const ObjectType ERROR_OBJ = "ERROR";
@@ -38,6 +39,14 @@ class Boolean: public Object {
         string inspect();
         Boolean(){type=BOOLEAN_OBJ;};
         Boolean(bool val):Boolean(){value=val;};
+};
+
+class String: public Object {
+    public:
+        string value;
+        string inspect();
+        String(){type=STRING_OBJ;};
+        String(string val):String(){value=val;};
 };
 
 class Null: public Object {

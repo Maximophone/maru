@@ -31,6 +31,14 @@ void test_boolean_object(Object* obj, bool expected){
     CHECK(bool_obj->value == expected);
 };
 
+void test_string_object(Object* obj, string expected){
+    INFO("Testing string object");
+
+    String* string_obj = dynamic_cast<String*>(obj);
+    REQUIRE(string_obj != 0);
+    CHECK(string_obj->value == expected);
+};
+
 void test_null_object(Object* obj){
     INFO("Testing NULL object");
 
@@ -230,6 +238,7 @@ TEST_CASE("test error handling"){
             "unknown operator: BOOLEAN+BOOLEAN",
         },
         {"foobar", "identifier not found: foobar"},
+        {"\"Hello\" - \"World\"", "unknown operator: STRING-STRING"},
     };
 
     for(test t : tests){
@@ -296,4 +305,20 @@ TEST_CASE("test closures"){
     "add_two(2);";
 
     test_integer_object(test_eval(input), 4);
+};
+
+TEST_CASE("test string literal"){
+    string input = "\"Hello World!\"";
+    
+    Object* evaluated = test_eval(input);
+
+    test_string_object(evaluated, "Hello World!");
+};
+
+TEST_CASE("test string concatenation"){
+    string input = "\"Hello\" + \" \" + \"World!\"";
+
+    Object* evaluated = test_eval(input);
+    
+    test_string_object(evaluated, "Hello World!");
 };

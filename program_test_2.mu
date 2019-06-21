@@ -7,4 +7,5 @@ let counter = fn(n){
     }
 };
 
-counter(1454);
+counter(1455);
+counter(5000);

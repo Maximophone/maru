@@ -37,6 +37,9 @@ Object* eval(Node* node, Environment* env){
     if(BooleanLiteral* lit = dynamic_cast<BooleanLiteral*>(node)){
         return lit->value?TRUE:FALSE;
     }
+    if(StringLiteral* lit = dynamic_cast<StringLiteral*>(node)){
+        return new String(lit->value);
+    }
     if(PrefixExpression* exp = dynamic_cast<PrefixExpression*>(node)){
         Object* right = eval(exp->right, env);
         if(is_error(right))
@@ -79,7 +82,7 @@ Object* eval(Node* node, Environment* env){
 }
 
 Object* eval_program(Program* program, Environment* env){
-    Object* result;
+    Object* result = 0;
     for(Statement* stmt : program->statements){
         result = eval(stmt, env);
         if(ReturnValue* ret_val = dynamic_cast<ReturnValue*>(result)){
@@ -93,7 +96,7 @@ Object* eval_program(Program* program, Environment* env){
 };
 
 Object* eval_block_statement(BlockStatement* block, Environment* env){
-    Object* result;
+    Object* result = 0;
     for(Statement* stmt : block->statements){
         result = eval(stmt, env);
         if(ReturnValue* ret_val = dynamic_cast<ReturnValue*>(result)){
@@ -131,6 +134,9 @@ Object* eval_infix_expression(string op, Object* left, Object* right, Environmen
     if(dynamic_cast<Integer*>(left) && dynamic_cast<Integer*>(right)){
         return eval_integer_infix_expression(op, left, right, env);
     }
+    if(dynamic_cast<String*>(left) && dynamic_cast<String*>(right)){
+        return eval_string_infix_expression(op, left, right, env);
+    }
     if(op == "==")
         return (left==right)?TRUE:FALSE;
     if(op == "!=")
@@ -162,6 +168,19 @@ Object* eval_integer_infix_expression(string op, Object* left, Object* right, En
         return (l->value != r->value)?TRUE:FALSE;
     return new_error("unknown operator: " + left->type + op + right->type);
 };
+
+Object* eval_string_infix_expression(string op, Object* left, Object* right, Environment* env){
+    if(op!="+")
+        return new_error("unknown operator: " + left->type + op + right->type);
+    String* left_str = dynamic_cast<String*>(left);
+    String* right_str = dynamic_cast<String*>(right);
+    if((left_str == 0) || (right_str == 0)){
+        return new_error("not a string (how did you even get that here??)");
+    }
+    string left_val = left_str->value;
+    string right_val = right_str->value;
+    return new String(left_val + right_val);
+}
 
 Object* eval_if_expression(IfExpression* exp, Environment* env){
     Object* condition = eval(exp->condition, env);

@@ -16,6 +16,7 @@ Object* eval_bang_operator_expression(Object*, Environment* env);
 Object* eval_minus_prefix_operator_expression(Object*, Environment* env);
 Object* eval_infix_expression(string, Object*, Object*, Environment* env);
 Object* eval_integer_infix_expression(string, Object*, Object*, Environment* env);
+Object* eval_string_infix_expression(string, Object*, Object*, Environment* env);
 Object* eval_if_expression(IfExpression*, Environment* env);
 Object* eval_identifier(Identifier*, Environment* env);
 vector<Object*> eval_expressions(vector<Expression*>, Environment* env);
