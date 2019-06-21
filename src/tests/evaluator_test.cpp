@@ -239,6 +239,7 @@ TEST_CASE("test error handling"){
         },
         {"foobar", "identifier not found: foobar"},
         {"\"Hello\" - \"World\"", "unknown operator: STRING-STRING"},
+        {"let x = fn(a){}; x()", "not enough arguments, expected 1"}
     };
 
     for(test t : tests){
@@ -337,9 +338,7 @@ TEST_CASE("test builtin functions"){
     };
 
     for(test t : tests){
-        //cout << "\nevaluation\n";
         Object* evaluated = test_eval(t.input);
-        cout << "\nswitching\n";
         switch(t.expected.type){
             case 'i':
                 test_integer_object(evaluated, t.expected.i);

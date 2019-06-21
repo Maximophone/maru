@@ -97,7 +97,7 @@ class Environment{
     public:
         Object* get(string, bool&);
         Object* set(string, Object*);
-        Environment(){};
+        Environment(){outer=0;};
         Environment(Environment* env){outer=env;};
 };
 

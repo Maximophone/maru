@@ -221,6 +221,9 @@ vector<Object*> eval_expressions(vector<Expression*> exps, Environment* env){
 
 Object* apply_function(Object* fn, vector<Object*> args){
     if(Function* function = dynamic_cast<Function*>(fn)){
+        if(args.size()<function->parameters.size()){
+            return new_error("not enough arguments, expected " + to_string(function->parameters.size()));
+        }
         Environment* extended_env = extend_function_env(function, args);
         Object* evaluated = eval(function->body, extended_env);
         return unwrap_return_value(evaluated);
@@ -235,7 +238,7 @@ Object* apply_function(Object* fn, vector<Object*> args){
 Environment* extend_function_env(Function* function, vector<Object*> args){
     Environment* env = new Environment(function->env);
 
-    for(int i = 0; i<args.size(); i++){
+    for(int i = 0; i<function->parameters.size(); i++){
         env->set(function->parameters[i]->value, args[i]);
     }
 
