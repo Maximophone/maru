@@ -15,6 +15,7 @@ class Lexer {
         char ch;
         void skip_whitespace();
         string read_number();
+        string read_string();
         char peek_char();
     public:
         Lexer(string);

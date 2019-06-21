@@ -37,7 +37,6 @@ int main(int argc, char *argv[]){
         if(file.is_open()){
             cout << "reading file \n";
             while(getline(file, line)){
-                cout << "new line read \n";
                 input += line + "\n";
             }
             file.close();

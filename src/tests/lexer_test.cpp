@@ -20,7 +20,9 @@ TEST_CASE("test next_token"){
     "  return true;\n"
     "} else {\n"
     "  return false;\n"
-    "};\n";
+    "};\n"
+    "\"foobar\""
+    "\"foo bar\"";
 
     struct test{
         TokenType expected_type;
@@ -65,6 +67,9 @@ TEST_CASE("test next_token"){
         rb, else_, lb,
         ret, fals, semi,
         rb, semi,
+        {STRING, "foobar"},
+        {STRING, "foo bar"},
+        {END, ""}
     };
 
     Lexer l(input);

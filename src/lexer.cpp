@@ -80,6 +80,9 @@ Token Lexer::next_token(){
         case 0:
             tok = Token{END, ""};
             break;
+        case '"':
+            tok = Token{STRING, read_string()};
+            break;
         default:
             if(is_letter(ch)){
                 tok.literal = read_identifier();
@@ -113,6 +116,15 @@ string Lexer::read_number(){
     };
     return input.substr(prev_pos, position-prev_pos);
 };
+
+string Lexer::read_string(){
+    read_char();
+    int prev_pos = position;
+    while(ch!='"'){
+        read_char();
+    }
+    return input.substr(prev_pos, position-prev_pos);
+}
 
 char Lexer::peek_char(){
     if(read_position >= input.length()){
