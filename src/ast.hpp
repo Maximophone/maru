@@ -52,6 +52,12 @@ class BooleanLiteral: public Expression{
         string to_string();
 };
 
+class StringLiteral: public Expression{
+    public:
+        string value;
+        string to_string();
+};
+
 class FunctionLiteral: public Expression{
     public:
         vector<Identifier*> parameters;

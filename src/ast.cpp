@@ -72,6 +72,10 @@ string BooleanLiteral::to_string(){
     return value?"true":"false";
 };
 
+string StringLiteral::to_string(){
+    return value;
+};
+
 string FunctionLiteral::to_string(){
     string param_string = "";
     for(int i = 0; i<parameters.size(); i++){

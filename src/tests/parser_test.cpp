@@ -67,6 +67,14 @@ void test_boolean_literal(Expression* exp, bool value){
     CHECK(literal->token_literal() == (value?"true":"false"));
 };
 
+void test_string_literal(Expression* exp, string value){
+    INFO("Testing string literal");
+    StringLiteral* literal = dynamic_cast<StringLiteral*>(exp);
+    REQUIRE(literal != 0);
+    CHECK(literal->value == value);
+    CHECK(literal->token_literal() == value);
+}
+
 void check_parser_errors(Parser* p){
     INFO("Parsing errors happened");
     string error_messages = "";
@@ -465,3 +473,12 @@ TEST_CASE("test call expression parsing"){
     test_infix_expression<int, int>(exp->arguments[1], 2, "*", 3);
     test_infix_expression<int, int>(exp->arguments[2], 4, "+", 5);
 };
+
+TEST_CASE("test string literal expression"){
+    string input = "\"hello world\"";
+
+    Program* p = get_program(input, 1);
+    ExpressionStatement* stmt = get_first_expr_stmt(p);
+
+    test_string_literal(stmt->expression, "hello world");
+}

@@ -21,6 +21,7 @@ Parser::Parser(Lexer *l)
 
     prefix_parse_funcs[IDENT] = &Parser::parse_identifier;
     prefix_parse_funcs[INT] = &Parser::parse_integer_literal;
+    prefix_parse_funcs[STRING] = &Parser::parse_string_literal;
     prefix_parse_funcs[TRU] = &Parser::parse_boolean_literal;
     prefix_parse_funcs[FALS] = &Parser::parse_boolean_literal;
     prefix_parse_funcs[BANG] = &Parser::parse_prefix_expression;
@@ -174,6 +175,14 @@ Expression *Parser::parse_boolean_literal()
     BooleanLiteral *lit = new BooleanLiteral();
     lit->token = cur_token;
     lit->value = cur_token_is(TRU);
+    return lit;
+};
+
+Expression *Parser::parse_string_literal()
+{
+    StringLiteral *lit = new StringLiteral();
+    lit->token = cur_token;
+    lit->value = cur_token.literal;
     return lit;
 };
 

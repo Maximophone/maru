@@ -34,6 +34,7 @@ class Parser{
         Expression* parse_identifier();
         Expression* parse_integer_literal();
         Expression* parse_boolean_literal();
+        Expression* parse_string_literal();
         Expression* parse_function_literal();
         vector<Identifier*> parse_function_parameters(bool&);
         Expression* parse_call_expression(Expression*);
