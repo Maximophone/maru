@@ -16,6 +16,7 @@ const ObjectType NULL_OBJ = "NULL";
 const ObjectType RETURN_OBJ = "RETURN";
 const ObjectType ERROR_OBJ = "ERROR";
 const ObjectType FUNCTION_OBJ = "FUNCTION";
+const ObjectType BUILTIN_OBJ = "BUILTIN";
 
 class Environment;
 
@@ -24,6 +25,8 @@ class Object {
         ObjectType type;
         virtual string inspect() = 0;
 };
+
+typedef Object* (*builtin_function)(vector<Object*>);
 
 class Integer: public Object {
     public:
@@ -78,6 +81,13 @@ class Function: public Object {
         Environment* env;
         string inspect();
         Function(){type=FUNCTION_OBJ;};
+};
+
+class Builtin: public Object {
+    public:
+        builtin_function fn;
+        string inspect();
+        Builtin(builtin_function f){type=BUILTIN_OBJ; fn=f;};
 };
 
 class Environment{

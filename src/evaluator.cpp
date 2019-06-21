@@ -1,4 +1,5 @@
 #include "evaluator.hpp"
+#include "builtins.hpp"
 
 Null* NULL_ = new Null();
 Boolean* TRUE = new Boolean(true);
@@ -198,10 +199,13 @@ Object* eval_if_expression(IfExpression* exp, Environment* env){
 Object* eval_identifier(Identifier* ident, Environment* env){
     bool ok = true;
     Object* val = env->get(ident->value, ok);
-    if(!ok){
-        return new_error("identifier not found: " + ident->value);
+    if(ok){
+        return val;
     }
-    return val;
+    if(Builtin* builtin = builtins[ident->value]){
+        return builtin;
+    }
+    return new_error("identifier not found: " + ident->value);
 };
 
 vector<Object*> eval_expressions(vector<Expression*> exps, Environment* env){
@@ -216,12 +220,16 @@ vector<Object*> eval_expressions(vector<Expression*> exps, Environment* env){
 };
 
 Object* apply_function(Object* fn, vector<Object*> args){
-    Function* function = dynamic_cast<Function*>(fn);
-    if(function == 0)
-        return new_error("Not a function: " + fn->type);
-    Environment* extended_env = extend_function_env(function, args);
-    Object* evaluated = eval(function->body, extended_env);
-    return unwrap_return_value(evaluated);
+    if(Function* function = dynamic_cast<Function*>(fn)){
+        Environment* extended_env = extend_function_env(function, args);
+        Object* evaluated = eval(function->body, extended_env);
+        return unwrap_return_value(evaluated);
+    }
+    if(Builtin* builtin = dynamic_cast<Builtin*>(fn)){
+        return builtin->fn(args);
+    }
+    return new_error("Not a function: " + fn->type);
+    
 };
 
 Environment* extend_function_env(Function* function, vector<Object*> args){

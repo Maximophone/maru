@@ -50,3 +50,7 @@ string Function::inspect(){
     }
     return "fn(" + param_string + "){" + body->to_string() + "}";
 };
+
+string Builtin::inspect(){
+    return "builtin function";
+};

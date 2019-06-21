@@ -322,3 +322,31 @@ TEST_CASE("test string concatenation"){
     
     test_string_object(evaluated, "Hello World!");
 };
+
+TEST_CASE("test builtin functions"){
+    struct test {
+        string input;
+        Var expected;
+    };
+    vector<test> tests = {
+        {"len(\"\")", Var(0)},
+        {"len(\"four\")", Var(4)},
+        {"len(\"hello world\")", Var(11)},
+        {"len(1)", Var("argument to 'len' not supported, got INTEGER")},
+        {"len(\"one\", \"two\")", Var("wrong number of arguments. got=2, want=1")},
+    };
+
+    for(test t : tests){
+        //cout << "\nevaluation\n";
+        Object* evaluated = test_eval(t.input);
+        cout << "\nswitching\n";
+        switch(t.expected.type){
+            case 'i':
+                test_integer_object(evaluated, t.expected.i);
+                break;
+            case 's':
+                test_error_object(evaluated, t.expected.s);
+                break;
+        }
+    }
+};
