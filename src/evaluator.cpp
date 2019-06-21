@@ -58,6 +58,23 @@ Object* eval(Node* node, Environment* env){
     if(Identifier* ident = dynamic_cast<Identifier*>(node)){
         return eval_identifier(ident, env);
     }
+    if(FunctionLiteral* fn_lit = dynamic_cast<FunctionLiteral*>(node)){
+        Function* fn = new Function();
+        fn->parameters = fn_lit->parameters;
+        fn->body = fn_lit->body;
+        fn->env = env;
+        return fn;
+    }
+    if(CallExpression* exp = dynamic_cast<CallExpression*>(node)){
+        Object* function = eval(exp->function, env);
+        if(is_error(function))
+            return function;
+        vector<Object*> args = eval_expressions(exp->arguments, env);
+        if(args.size()==1 && is_error(args[0])){
+            return args[0];
+        }
+        return apply_function(function, args);
+    }
     return 0;
 }
 
@@ -166,6 +183,42 @@ Object* eval_identifier(Identifier* ident, Environment* env){
         return new_error("identifier not found: " + ident->value);
     }
     return val;
+};
+
+vector<Object*> eval_expressions(vector<Expression*> exps, Environment* env){
+    vector<Object*> result;
+    for(Expression* exp : exps){
+        Object* evaluated = eval(exp, env);
+        if(is_error(evaluated))
+            return {evaluated};
+        result.push_back(evaluated);
+    }
+    return result;
+};
+
+Object* apply_function(Object* fn, vector<Object*> args){
+    Function* function = dynamic_cast<Function*>(fn);
+    if(function == 0)
+        return new_error("Not a function: " + fn->type);
+    Environment* extended_env = extend_function_env(function, args);
+    Object* evaluated = eval(function->body, extended_env);
+    return unwrap_return_value(evaluated);
+};
+
+Environment* extend_function_env(Function* function, vector<Object*> args){
+    Environment* env = new Environment(function->env);
+
+    for(int i = 0; i<args.size(); i++){
+        env->set(function->parameters[i]->value, args[i]);
+    }
+
+    return env;
+};
+
+Object* unwrap_return_value(Object* obj){
+    if(ReturnValue* ret_val = dynamic_cast<ReturnValue*>(obj))
+        return ret_val->value;
+    return obj;
 };
 
 bool is_truthy(Object* obj){

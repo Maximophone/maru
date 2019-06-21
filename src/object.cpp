@@ -25,8 +25,10 @@ string Error::inspect(){
 
 Object* Environment::get(string name, bool& ok){
     Object* obj = store[name];
-    if(obj==0)
-        ok = false;
+    ok = obj!=0;
+    if(!ok && outer != 0){
+        return outer->get(name, ok);
+    }
     return obj;
 };
 

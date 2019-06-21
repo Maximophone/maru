@@ -269,4 +269,31 @@ TEST_CASE("test function object"){
     CHECK(fn->body->to_string() == expected_body);
 };
 
+TEST_CASE("test function application"){
+    struct test {
+        string input;
+        int expected;
+    };
+    vector<test> tests = {
+        {"let identity = fn(x) { x; }; identity(5);", 5},
+        {"let identity = fn(x) { return x; }; identity(5);", 5},
+        {"let double = fn(x) { x * 2; }; double(5);", 10},
+        {"let add = fn(x, y) { x + y; }; add(5, 5);", 10},
+        {"let add = fn(x, y) { x + y; }; add(5 + 5, add(5, 5));", 20},
+        {"fn(x) { x; }(5)", 5},
+    };
 
+    for(test t : tests){
+        test_integer_object(test_eval(t.input), t.expected);
+    }
+};
+
+TEST_CASE("test closures"){
+    string input = "let new_adder = fn(x){"
+    "fn(y){x + y};"
+    "};"
+    "let add_two = new_adder(2);"
+    "add_two(2);";
+
+    test_integer_object(test_eval(input), 4);
+};

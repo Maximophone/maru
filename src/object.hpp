@@ -3,6 +3,7 @@
 
 #include <string>
 #include <map>
+#include "ast.hpp"
 
 using namespace std;
 
@@ -14,6 +15,8 @@ const ObjectType NULL_OBJ = "NULL";
 const ObjectType RETURN_OBJ = "RETURN";
 const ObjectType ERROR_OBJ = "ERROR";
 const ObjectType FUNCTION_OBJ = "FUNCTION";
+
+class Environment;
 
 class Object {
     public:
@@ -71,9 +74,12 @@ class Function: public Object {
 class Environment{
     private:
         map<string, Object*> store;
+        Environment* outer;
     public:
         Object* get(string, bool&);
         Object* set(string, Object*);
+        Environment(){};
+        Environment(Environment* env){outer=env;};
 };
 
 #endif
