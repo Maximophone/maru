@@ -9,11 +9,8 @@
 using namespace std;
 
 void run_program(string input){
-    cout << "running program \n";
-    cout << input << "\n";
     Environment* env = new Environment();
     Lexer* l = new Lexer(input);
-    cout << "parsing input \n";
     Parser* p = new Parser(l);
     Program* program = p->parse_program();
     if(p->errors.size() != 0){
@@ -21,7 +18,6 @@ void run_program(string input){
         cout << "Exiting.";
         return;
     }
-    cout << "evaluating program \n";
     Object* evaluated = eval(program, env);
 
     if(evaluated != 0){
@@ -37,7 +33,6 @@ int main(int argc, char *argv[]){
         string line;
         string input;
         if(file.is_open()){
-            cout << "reading file \n";
             while(getline(file, line)){
                 input += line + "\n";
             }

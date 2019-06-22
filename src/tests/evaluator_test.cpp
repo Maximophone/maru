@@ -241,6 +241,7 @@ TEST_CASE("test error handling"){
         {"\"Hello\" - \"World\"", "unknown operator: STRING-STRING"},
         {"let x = fn(a){}; x()", "not enough arguments, expected 1"},
         {"print(1)", "arguments to 'print' must be STRING, got INTEGER"},
+        {"let a = fn(){a();}; a();", "stack overflow, recursion depth cannot exceed 2000"},
     };
 
     for(test t : tests){
