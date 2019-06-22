@@ -346,3 +346,71 @@ TEST_CASE("test builtin functions"){
         test_var_object(evaluated, t.expected);
     }
 };
+
+TEST_CASE("test array literals"){
+    string input = "[1, 2*2, 3+3]";
+
+    Object* evaluated = test_eval(input);
+
+    Array* arr = dynamic_cast<Array*>(evaluated);
+    REQUIRE(arr != 0);
+    REQUIRE(arr->elements.size() == 3);
+    test_integer_object(arr->elements[0], 1);
+    test_integer_object(arr->elements[1], 4);
+    test_integer_object(arr->elements[2], 6);
+
+};
+
+TEST_CASE("test array index expressions"){
+    struct test {
+        string input;
+        Var expected;
+    };
+    vector<test> tests = {
+        {
+            "[1, 2, 3][0]",
+            Var(1),
+        },
+        {
+            "[1, 2, 3][1]",
+            Var(2),
+        },
+        {
+            "[1, 2, 3][2]",
+            Var(3),
+        },
+        {
+            "let i = 0; [1][i];",
+            Var(1),
+        },
+        {
+            "[1, 2, 3][1 + 1];",
+            Var(3),
+        },
+        {
+            "let myArray = [1, 2, 3]; myArray[2];",
+            Var(3),
+        },
+        {
+            "let myArray = [1, 2, 3]; myArray[0] + myArray[1] + myArray[2];",
+            Var(6),
+        },
+        {
+            "let myArray = [1, 2, 3]; let i = myArray[0]; myArray[i]",
+            Var(2),
+        },
+        {
+            "[1, 2, 3][3]",
+            Var(),
+        },
+        {
+            "[1, 2, 3][-1]",
+            Var(),
+        },
+    };
+
+    for(test t: tests){
+        Object* evaluated = test_eval(t.input);
+        test_var_object(evaluated, t.expected);
+    }
+};

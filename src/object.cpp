@@ -15,6 +15,16 @@ string String::inspect(){
     return value;
 };
 
+string Array::inspect(){
+    string el_string = "";
+    for(int i = 0; i<elements.size(); i++){
+        el_string += elements[i]->inspect();
+        if(i<elements.size()-1)
+            el_string += ",";
+    }
+    return "[" + el_string + "]";
+};
+
 string Null::inspect(){
     return "null";
 };

@@ -21,6 +21,8 @@ Object* eval_if_expression(IfExpression*, Environment* env);
 Object* eval_identifier(Identifier*, Environment* env);
 vector<Object*> eval_expressions(vector<Expression*>, Environment* env);
 Object* apply_function(Object*, vector<Object*>);
+Object* eval_index_expression(Object* left, Object* index);
+Object* eval_array_index_expression(Object* array, Object* index);
 Environment* extend_function_env(Function*, vector<Object*>);
 Object* unwrap_return_value(Object*);
 bool is_truthy(Object*);

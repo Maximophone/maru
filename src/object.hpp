@@ -12,6 +12,7 @@ typedef string ObjectType;
 const ObjectType INTEGER_OBJ = "INTEGER";
 const ObjectType BOOLEAN_OBJ = "BOOLEAN";
 const ObjectType STRING_OBJ = "STRING";
+const ObjectType ARRAY_OBJ = "ARRAY";
 const ObjectType NULL_OBJ = "NULL";
 const ObjectType RETURN_OBJ = "RETURN";
 const ObjectType ERROR_OBJ = "ERROR";
@@ -50,6 +51,13 @@ class String: public Object {
         string inspect();
         String(){type=STRING_OBJ;};
         String(string val):String(){value=val;};
+};
+
+class Array: public Object {
+    public:
+        vector<Object*> elements;
+        string inspect();
+        Array(){type=ARRAY_OBJ;};
 };
 
 class Null: public Object {

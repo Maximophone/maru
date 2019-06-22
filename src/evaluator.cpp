@@ -47,6 +47,15 @@ Object* eval(Node* node, Environment* env){
     if(StringLiteral* lit = dynamic_cast<StringLiteral*>(node)){
         return new String(lit->value);
     }
+    if(ArrayLiteral* lit = dynamic_cast<ArrayLiteral*>(node)){
+        vector<Object*> elements = eval_expressions(lit->elements, env);
+        if(elements.size() == 1 && is_error(elements[0])){
+            return elements[0];
+        }
+        Array* arr = new Array();
+        arr->elements = elements;
+        return arr;
+    }
     if(PrefixExpression* exp = dynamic_cast<PrefixExpression*>(node)){
         Object* right = eval(exp->right, env);
         if(is_error(right))
@@ -84,6 +93,15 @@ Object* eval(Node* node, Environment* env){
             return args[0];
         }
         return apply_function(function, args);
+    }
+    if(IndexExpression* exp = dynamic_cast<IndexExpression*>(node)){
+        Object* left = eval(exp->left, env);
+        if(is_error(left))
+            return left;
+        Object* index = eval(exp->index, env);
+        if(is_error(index))
+            return index;
+        return eval_index_expression(left, index);
     }
     return 0;
 }
@@ -241,6 +259,23 @@ Object* apply_function(Object* fn, vector<Object*> args){
     }
     return new_error("Not a function: " + fn->type);
     
+};
+
+Object* eval_index_expression(Object* left, Object* index){
+    if(left->type == ARRAY_OBJ && index->type == INTEGER_OBJ){
+        return eval_array_index_expression(left, index);
+    }
+    return new_error("index operator not supported: "+left->type+"["+index->type+"]");
+};
+
+Object* eval_array_index_expression(Object* left, Object* index){
+    Array* arr = (Array*) left;
+    int idx = ((Integer*)index)->value;
+    int max = arr->elements.size() - 1;
+    if(idx < 0 || idx > max){
+        return NULL_;
+    }
+    return arr->elements[idx];
 };
 
 Environment* extend_function_env(Function* function, vector<Object*> args){
