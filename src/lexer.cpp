@@ -48,6 +48,12 @@ Token Lexer::next_token(){
         case '}':
             tok = Token{RBRACE, sch};
             break;
+        case '[':
+            tok = Token{LBRACKET, sch};
+            break;
+        case ']':
+            tok = Token{RBRACKET, sch};
+            break;
         case ',':
             tok = Token{COMMA, sch};
             break;

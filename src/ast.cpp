@@ -76,6 +76,16 @@ string StringLiteral::to_string(){
     return value;
 };
 
+string ArrayLiteral::to_string(){
+    string el_string = "";
+    for(int i = 0; i<elements.size(); i++){
+        el_string += elements[i]->to_string();
+        if(i<elements.size()-1)
+            el_string += ",";
+    }
+    return "["+el_string+"]"; 
+};
+
 string FunctionLiteral::to_string(){
     string param_string = "";
     for(int i = 0; i<parameters.size(); i++){

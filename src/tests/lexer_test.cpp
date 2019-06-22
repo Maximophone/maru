@@ -22,7 +22,8 @@ TEST_CASE("test next_token"){
     "  return false;\n"
     "};\n"
     "\"foobar\""
-    "\"foo bar\"";
+    "\"foo bar\""
+    "[1, 2]";
 
     struct test{
         TokenType expected_type;
@@ -45,6 +46,8 @@ TEST_CASE("test next_token"){
     test asterix = {ASTERIX, "*"};
     test lt = {LT, "<"};
     test gt = {GT, ">"};
+    test lbra = {LBRACKET, "["};
+    test rbra = {RBRACKET, "]"};
     test if_ = {IF, "if"};
     test else_ = {ELSE, "else"};
     test tru = {TRU, "true"};
@@ -69,6 +72,7 @@ TEST_CASE("test next_token"){
         rb, semi,
         {STRING, "foobar"},
         {STRING, "foo bar"},
+        lbra, {INT, "1"}, comma, {INT, "2"}, rbra,
         {END, ""}
     };
 

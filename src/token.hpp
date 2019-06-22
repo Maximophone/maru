@@ -44,6 +44,8 @@ const TokenType LPAREN = "LPAREN";
 const TokenType RPAREN = "RPAREN";
 const TokenType LBRACE = "LBRACE";
 const TokenType RBRACE = "RBRACE";
+const TokenType LBRACKET = "LBRACKET";
+const TokenType RBRACKET = "RBRACKET";
 
 const TokenType FUNCTION = "FUNCTION";
 const TokenType LET = "LET";

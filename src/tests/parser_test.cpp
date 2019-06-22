@@ -482,3 +482,14 @@ TEST_CASE("test string literal expression"){
 
     test_string_literal(stmt->expression, "hello world");
 }
+
+TEST_CASE("test parsing array literals"){
+    string input = "[1, 2*2, 3 + 3]";
+    Program* p = get_program(input, 1);
+    ExpressionStatement* stmt = get_first_expr_stmt(p);
+    ArrayLiteral* arr = dynamic_cast<ArrayLiteral*>(stmt->expression);
+    REQUIRE(arr->elements.size() == 3);
+    test_integer_literal(arr->elements[0], 1);
+    test_infix_expression(arr->elements[1], 2, "*", 2);
+    test_infix_expression(arr->elements[2], 3, "+", 3);
+}

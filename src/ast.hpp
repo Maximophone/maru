@@ -58,6 +58,12 @@ class StringLiteral: public Expression{
         string to_string();
 };
 
+class ArrayLiteral: public Expression{
+    public:
+        vector<Expression*> elements;
+        string to_string();
+};
+
 class FunctionLiteral: public Expression{
     public:
         vector<Identifier*> parameters;
