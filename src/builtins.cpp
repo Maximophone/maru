@@ -11,8 +11,20 @@ Object* len(vector<Object*> args){
         return new_error("argument to 'len' not supported, got "+args[0]->type);
     }
     return new Integer(arg->value.length());
-}
+};
+
+Object* print(vector<Object*> args){
+    for(Object* arg : args){
+        String* arg_str = dynamic_cast<String*>(arg);
+        if(arg_str == 0){
+            return new_error("arguments to 'print' must be STRING, got "+arg->type);
+        }
+        cout << arg_str->value;
+    }
+    return NULL_;
+};
 
 map<string, Builtin*> builtins = {
-    {"len", new Builtin(len)}
+    {"len", new Builtin(len)},
+    {"print", new Builtin(print)},
 };

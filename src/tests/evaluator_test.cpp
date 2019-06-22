@@ -239,7 +239,8 @@ TEST_CASE("test error handling"){
         },
         {"foobar", "identifier not found: foobar"},
         {"\"Hello\" - \"World\"", "unknown operator: STRING-STRING"},
-        {"let x = fn(a){}; x()", "not enough arguments, expected 1"}
+        {"let x = fn(a){}; x()", "not enough arguments, expected 1"},
+        {"print(1)", "arguments to 'print' must be STRING, got INTEGER"},
     };
 
     for(test t : tests){
@@ -333,19 +334,14 @@ TEST_CASE("test builtin functions"){
         {"len(\"\")", Var(0)},
         {"len(\"four\")", Var(4)},
         {"len(\"hello world\")", Var(11)},
-        {"len(1)", Var("argument to 'len' not supported, got INTEGER")},
-        {"len(\"one\", \"two\")", Var("wrong number of arguments. got=2, want=1")},
+        {"len(1)", Var("argument to 'len' not supported, got INTEGER"s)},
+        {"len(\"one\", \"two\")", Var("wrong number of arguments. got=2, want=1"s)},
+        {"print(\"test\")", Var()},
     };
 
     for(test t : tests){
+        INFO("testing input: " + t.input);
         Object* evaluated = test_eval(t.input);
-        switch(t.expected.type){
-            case 'i':
-                test_integer_object(evaluated, t.expected.i);
-                break;
-            case 's':
-                test_error_object(evaluated, t.expected.s);
-                break;
-        }
+        test_var_object(evaluated, t.expected);
     }
 };

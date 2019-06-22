@@ -28,6 +28,19 @@
                 "src/*.cpp",
                 "src/tests/*.cpp",
             ]
+        },
+        {
+            "type": "shell",
+            "label": "g++ build main",
+            "command": "/usr/bin/g++",
+            "args": [
+                "-std=c++14",
+                "-g",
+                "-o",
+                "${fileDirname}/${fileBasenameNoExtension}",
+                "main.cpp",
+                "src/*.cpp",
+            ]
         }
     ],
     "version": "2.0.0"

@@ -24,6 +24,27 @@
             ],
             "preLaunchTask": "g++ build test",
             "miDebuggerPath": "/usr/bin/gdb"
+        },
+        {
+            "name": "g++ build and debug test_program",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${fileDirname}/${fileBasenameNoExtension}",
+            "args": ["program_test_2.mu"],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "g++ build main",
+            "miDebuggerPath": "/usr/bin/gdb"
         }
     ]
 }

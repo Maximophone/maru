@@ -4,8 +4,14 @@
 Null* NULL_ = new Null();
 Boolean* TRUE = new Boolean(true);
 Boolean* FALSE = new Boolean(false);
+int STACK_OVERFLOW_LIMIT = 2000;
+int CURRENT_RECURSION_DEPTH = 0;
 
 Object* eval(Node* node, Environment* env){
+    // STACK OVERFLOW ERROR
+    if(CURRENT_RECURSION_DEPTH>=STACK_OVERFLOW_LIMIT){
+        return new_error("stack overflow, recursion depth cannot exceed " + to_string(STACK_OVERFLOW_LIMIT));
+    }
     // STATEMENTS
     if(Program* program = dynamic_cast<Program*>(node)){
         return eval_program(program, env);
@@ -225,7 +231,9 @@ Object* apply_function(Object* fn, vector<Object*> args){
             return new_error("not enough arguments, expected " + to_string(function->parameters.size()));
         }
         Environment* extended_env = extend_function_env(function, args);
+        CURRENT_RECURSION_DEPTH += 1;
         Object* evaluated = eval(function->body, extended_env);
+        CURRENT_RECURSION_DEPTH -= 1;
         return unwrap_return_value(evaluated);
     }
     if(Builtin* builtin = dynamic_cast<Builtin*>(fn)){
