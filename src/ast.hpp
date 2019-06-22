@@ -78,6 +78,13 @@ class CallExpression: public Expression{
         string to_string();
 };
 
+class IndexExpression: public Expression{
+    public:
+        Expression* left;
+        Expression* index;
+        string to_string();
+};
+
 class PrefixExpression: public Expression{
     public:
         string op;

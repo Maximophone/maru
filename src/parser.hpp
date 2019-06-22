@@ -15,6 +15,7 @@ const int SUM = 4;
 const int PRODUCT = 5;
 const int PREFIX = 6;
 const int CALL = 7;
+const int INDEX = 8;
 
 extern map<TokenType, int> precedences;
 
@@ -35,15 +36,17 @@ class Parser{
         Expression* parse_integer_literal();
         Expression* parse_boolean_literal();
         Expression* parse_string_literal();
+        Expression* parse_array_literal();
         Expression* parse_function_literal();
         vector<Identifier*> parse_function_parameters(bool&);
         Expression* parse_call_expression(Expression*);
-        vector<Expression*> parse_call_arguments(bool&);
+        Expression* parse_index_expression(Expression*);
         Expression* parse_if_expression();
         BlockStatement* parse_block_statement();
         Expression* parse_prefix_expression();
         Expression* parse_infix_expression(Expression*);
         Expression* parse_grouped_expression();
+        vector<Expression*> parse_expression_list(TokenType, bool&);
         void no_prefix_parse_func_error(TokenType);
         bool cur_token_is(TokenType);
         bool peek_token_is(TokenType);

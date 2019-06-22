@@ -106,6 +106,10 @@ string CallExpression::to_string(){
     return function->to_string() + "(" + args_string + ")";
 };
 
+string IndexExpression::to_string(){
+    return "(" + left->to_string() + "[" + index->to_string() + "])";
+};
+
 string PrefixExpression::to_string(){
     return "(" + op + right->to_string() + ")";
 };

@@ -313,7 +313,15 @@ TEST_CASE("test operator precedence parsing"){
         {
             "add(a, b, 1, 2*3, 4+5, add(6, 7*8))",
             "add(a,b,1,(2*3),(4+5),add(6,(7*8)))",
-        }
+        },
+        {
+            "a * [1, 2, 3, 4][b * c] * d",
+            "((a*([1,2,3,4][(b*c)]))*d)",
+        },
+        {
+            "add(a * b[2], b[1], 2 * [1, 2][1])",
+            "add((a*(b[2])),(b[1]),(2*([1,2][1])))",
+        },
     };
 
     for(test t : tests){
@@ -481,7 +489,7 @@ TEST_CASE("test string literal expression"){
     ExpressionStatement* stmt = get_first_expr_stmt(p);
 
     test_string_literal(stmt->expression, "hello world");
-}
+};
 
 TEST_CASE("test parsing array literals"){
     string input = "[1, 2*2, 3 + 3]";
@@ -492,4 +500,16 @@ TEST_CASE("test parsing array literals"){
     test_integer_literal(arr->elements[0], 1);
     test_infix_expression(arr->elements[1], 2, "*", 2);
     test_infix_expression(arr->elements[2], 3, "+", 3);
-}
+};
+
+TEST_CASE("test parsing index expressions"){
+    string input = "my_array[1 + 1]";
+
+    Program* p = get_program(input, 1);
+    ExpressionStatement* stmt = get_first_expr_stmt(p);
+
+    IndexExpression* exp = dynamic_cast<IndexExpression*>(stmt->expression);
+    REQUIRE(exp != 0);
+    test_identifier(exp->left, "my_array");
+    test_infix_expression(exp->index, 1, "+", 1);
+};

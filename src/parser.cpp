@@ -11,6 +11,7 @@ map<TokenType, int> precedences = {
     {SLASH, PRODUCT},
     {ASTERIX, PRODUCT},
     {LPAREN, CALL},
+    {LBRACKET, INDEX},
 };
 
 Parser::Parser(Lexer *l)
@@ -29,6 +30,7 @@ Parser::Parser(Lexer *l)
     prefix_parse_funcs[LPAREN] = &Parser::parse_grouped_expression;
     prefix_parse_funcs[IF] = &Parser::parse_if_expression;
     prefix_parse_funcs[FUNCTION] = &Parser::parse_function_literal;
+    prefix_parse_funcs[LBRACKET] = &Parser::parse_array_literal;
 
     infix_parse_funcs[PLUS] = &Parser::parse_infix_expression;
     infix_parse_funcs[MINUS] = &Parser::parse_infix_expression;
@@ -39,6 +41,7 @@ Parser::Parser(Lexer *l)
     infix_parse_funcs[LT] = &Parser::parse_infix_expression;
     infix_parse_funcs[GT] = &Parser::parse_infix_expression;
     infix_parse_funcs[LPAREN] = &Parser::parse_call_expression;
+    infix_parse_funcs[LBRACKET] = &Parser::parse_index_expression;
 };
 
 void Parser::next_token()
@@ -186,6 +189,16 @@ Expression *Parser::parse_string_literal()
     return lit;
 };
 
+Expression *Parser::parse_array_literal()
+{
+    ArrayLiteral* array = new ArrayLiteral();
+    bool ok = true;
+    array->elements = parse_expression_list(RBRACKET, ok);
+    if(!ok)
+        return 0;
+    return array;
+};
+
 Expression *Parser::parse_function_literal()
 {
     FunctionLiteral *lit = new FunctionLiteral();
@@ -240,16 +253,27 @@ Expression* Parser::parse_call_expression(Expression* function){
     exp->token = cur_token;
     exp->function = function;
     bool ok = true;
-    exp->arguments = parse_call_arguments(ok);
+    exp->arguments = parse_expression_list(RPAREN, ok);
     if(!ok){
         return 0;
     }
     return exp;
 };
 
-vector<Expression*> Parser::parse_call_arguments(bool& ok){
+Expression* Parser::parse_index_expression(Expression* left){
+    IndexExpression* exp = new IndexExpression();
+    exp->token = cur_token;
+    exp->left = left;
+    next_token();
+    exp->index = parse_expression(LOWEST);
+    if(!expect_peek(RBRACKET))
+        return 0;
+    return exp;
+};
+
+vector<Expression*> Parser::parse_expression_list(TokenType end, bool& ok){
     vector<Expression*> args = {};
-    if(peek_token_is(RPAREN)){
+    if(peek_token_is(end)){
         next_token();
         return args;
     }
@@ -259,7 +283,7 @@ vector<Expression*> Parser::parse_call_arguments(bool& ok){
         next_token(); next_token();
         args.push_back(parse_expression(LOWEST));
     }
-    if(!expect_peek(RPAREN)){
+    if(!expect_peek(end)){
         ok = false;
         return {};
     }
