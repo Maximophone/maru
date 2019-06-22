@@ -12,7 +12,7 @@ string Boolean::inspect(){
 };
 
 string String::inspect(){
-    return value;
+    return "\""+value+"\"";
 };
 
 string Array::inspect(){

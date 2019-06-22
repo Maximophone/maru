@@ -337,7 +337,14 @@ TEST_CASE("test builtin functions"){
         {"len(\"hello world\")", Var(11)},
         {"len(1)", Var("argument to 'len' not supported, got INTEGER"s)},
         {"len(\"one\", \"two\")", Var("wrong number of arguments. got=2, want=1"s)},
+        {"len()", Var("wrong number of arguments. got=0, want=1"s)},
         {"print(\"test\")", Var()},
+        {"len([])", Var(0)},
+        {"len([1,2,3])", Var(3)},
+        {"let x = []; append(x, 3); x[0];", Var(3)},
+        {"append([]);", Var("wrong number of arguments. got=1, wanted>1"s)},
+        {"append();", Var("wrong number of arguments. got=0, want>1"s)},
+        {"append([1,2], 3, 4, 5)[3]", Var(4)},
     };
 
     for(test t : tests){

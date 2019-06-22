@@ -6,11 +6,34 @@ Object* len(vector<Object*> args){
     if(args.size() != 1){
         return new_error("wrong number of arguments. got=" + to_string(args.size()) + ", want=1");
     }
-    String* arg = dynamic_cast<String*>(args[0]);
-    if(arg == 0){
-        return new_error("argument to 'len' not supported, got "+args[0]->type);
+    if(String* arg = dynamic_cast<String*>(args[0])){
+        return new Integer(arg->value.length());
     }
-    return new Integer(arg->value.length());
+    if(Array* arg = dynamic_cast<Array*>(args[0])){
+        return new Integer(arg->elements.size());
+    }
+    return new_error("argument to 'len' not supported, got "+args[0]->type);
+};
+
+Object* append(vector<Object*> args){
+    if(args.size() <= 1){
+        return new_error("wrong number of arguments. got="+to_string(args.size())+", wanted>1");
+    }
+    bool first = true;
+    Array* arr = 0;
+    for(Object* arg : args){
+        if(first){
+            first = false;
+            arr = dynamic_cast<Array*>(arg);
+            if(arr == 0){
+                return new_error("first argument must be array. got=" + arg->type);
+            }
+        }
+        else{
+            arr->elements.push_back(arg);
+        }
+    }
+    return arr;
 };
 
 Object* print(vector<Object*> args){
@@ -26,5 +49,6 @@ Object* print(vector<Object*> args){
 
 map<string, Builtin*> builtins = {
     {"len", new Builtin(len)},
+    {"append", new Builtin(append)},
     {"print", new Builtin(print)},
 };
