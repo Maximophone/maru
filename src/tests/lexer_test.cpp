@@ -23,7 +23,8 @@ TEST_CASE("test next_token"){
     "};\n"
     "\"foobar\""
     "\"foo bar\""
-    "[1, 2]";
+    "[1, 2]"
+    "{1: 3}";
 
     struct test{
         TokenType expected_type;
@@ -39,6 +40,7 @@ TEST_CASE("test next_token"){
     test rb = {RBRACE, "}"};
     test semi = {SEMICOLON, ";"};
     test comma = {COMMA, ","};
+    test colon = {COLON, ":"};
     test bang = {BANG, "!"};
     test plus = {PLUS, "+"};
     test minus = {MINUS, "-"};
@@ -73,6 +75,7 @@ TEST_CASE("test next_token"){
         {STRING, "foobar"},
         {STRING, "foo bar"},
         lbra, {INT, "1"}, comma, {INT, "2"}, rbra,
+        lb, {INT, "1"}, colon, {INT, "3"}, rb,
         {END, ""}
     };
 

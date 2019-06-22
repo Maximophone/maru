@@ -31,6 +31,7 @@ Parser::Parser(Lexer *l)
     prefix_parse_funcs[IF] = &Parser::parse_if_expression;
     prefix_parse_funcs[FUNCTION] = &Parser::parse_function_literal;
     prefix_parse_funcs[LBRACKET] = &Parser::parse_array_literal;
+    prefix_parse_funcs[LBRACE] = &Parser::parse_hash_literal;
 
     infix_parse_funcs[PLUS] = &Parser::parse_infix_expression;
     infix_parse_funcs[MINUS] = &Parser::parse_infix_expression;
@@ -198,6 +199,28 @@ Expression *Parser::parse_array_literal()
         return 0;
     return array;
 };
+
+Expression *Parser::parse_hash_literal()
+{
+    HashLiteral* hash = new HashLiteral();
+    while(!peek_token_is(RBRACE)){
+        next_token();
+        Expression* key = parse_expression(LOWEST);
+        if(!expect_peek(COLON)){
+            return 0;
+        }
+        next_token();
+        Expression* value = parse_expression(LOWEST);
+        hash->pairs[key] = value;
+        if(!peek_token_is(RBRACE) && !expect_peek(COMMA)){
+            return 0;
+        }
+    }
+    if(!expect_peek(RBRACE)){
+        return 0;
+    }
+    return hash;
+}
 
 Expression *Parser::parse_function_literal()
 {

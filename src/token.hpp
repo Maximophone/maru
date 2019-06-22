@@ -40,6 +40,7 @@ const TokenType NOT_EQUAL = "NOT_EQUAL";
 
 const TokenType COMMA = "COMMA";
 const TokenType SEMICOLON = "SEMICOLON";
+const TokenType COLON = "COLON";
 const TokenType LPAREN = "LPAREN";
 const TokenType RPAREN = "RPAREN";
 const TokenType LBRACE = "LBRACE";

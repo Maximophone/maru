@@ -513,3 +513,36 @@ TEST_CASE("test parsing index expressions"){
     test_identifier(exp->left, "my_array");
     test_infix_expression(exp->index, 1, "+", 1);
 };
+
+TEST_CASE("test parsing hash literals string keys"){
+    string input = "{\"one\":1, \"two\":2}";
+    
+    Program* p = get_program(input, 1);
+    ExpressionStatement* stmt = get_first_expr_stmt(p);
+
+    HashLiteral* hash = dynamic_cast<HashLiteral*>(stmt->expression);
+    REQUIRE(hash != 0);
+    REQUIRE(hash->pairs.size()==2);
+
+    map<string, int> expected = {
+        {"one", 1},
+        {"two", 2},
+    };
+
+    for(pair<Expression*, Expression*> p : hash->pairs){
+        StringLiteral* lit = dynamic_cast<StringLiteral*>(p.first);
+        REQUIRE(lit!=0);
+        test_integer_literal(p.second, expected[lit->value]);
+    }
+};
+
+TEST_CASE("test parsing empty hash literal"){
+    string input = "{}";
+
+    Program* p = get_program(input, 1);
+    ExpressionStatement* stmt = get_first_expr_stmt(p);
+
+    HashLiteral* hash = dynamic_cast<HashLiteral*>(stmt->expression);
+    REQUIRE(hash != 0);
+    REQUIRE(hash->pairs.size()==0);
+};

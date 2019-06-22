@@ -86,6 +86,20 @@ string ArrayLiteral::to_string(){
     return "["+el_string+"]"; 
 };
 
+string HashLiteral::to_string(){
+    string pairs_string = "";
+    map<Expression*, Expression*>::iterator it;
+    int i = 0;
+    for(it=pairs.begin(); it!=pairs.end(); it++){
+        pairs_string += it->first->to_string() + ":" + it->second->to_string();
+        if(i<pairs.size()-1){
+            pairs_string += ",";
+        }
+        i++;
+    }
+    return "{"+pairs_string+"}";
+};
+
 string FunctionLiteral::to_string(){
     string param_string = "";
     for(int i = 0; i<parameters.size(); i++){

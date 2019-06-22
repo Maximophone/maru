@@ -36,6 +36,9 @@ Token Lexer::next_token(){
         case ';':
             tok = Token{SEMICOLON, sch};
             break;
+        case ':':
+            tok = Token{COLON, sch};
+            break;
         case '(':
             tok = Token{LPAREN, sch};
             break;

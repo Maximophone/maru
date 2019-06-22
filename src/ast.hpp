@@ -64,6 +64,12 @@ class ArrayLiteral: public Expression{
         string to_string();
 };
 
+class HashLiteral: public Expression{
+    public:
+        map<Expression*, Expression*> pairs;
+        string to_string();
+};
+
 class FunctionLiteral: public Expression{
     public:
         vector<Identifier*> parameters;
