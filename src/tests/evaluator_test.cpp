@@ -533,6 +533,8 @@ TEST_CASE("test assign expressions"){
     vector<test> tests = {
         {"x=2;", Var(2)},
         {"x=3*2; x;", Var(6)},
+        {"(x=3)*2;", Var(6)},
+        {"(x=3)*2; x;", Var(3)},
         {"x=3*(y=2);y;", Var(2)},
     };
 
