@@ -5,9 +5,11 @@
 #include <map>
 #include "ast.hpp"
 
+
 using namespace std;
 
 typedef string ObjectType;
+typedef pair<ObjectType, int> HashKey;
 
 const ObjectType INTEGER_OBJ = "INTEGER";
 const ObjectType BOOLEAN_OBJ = "BOOLEAN";
@@ -20,12 +22,20 @@ const ObjectType FUNCTION_OBJ = "FUNCTION";
 const ObjectType BUILTIN_OBJ = "BUILTIN";
 
 class Environment;
+class Object;
+class Boolean;
+class Integer;
+class String;
 
 class Object {
     public:
         ObjectType type;
         virtual string inspect() = 0;
 };
+
+HashKey hash_key(Boolean*);
+HashKey hash_key(Integer*);
+HashKey hash_key(String*);
 
 typedef Object* (*builtin_function)(vector<Object*>);
 

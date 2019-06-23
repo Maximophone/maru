@@ -1,5 +1,6 @@
 #include "object.hpp"
 #include <string>
+#include <functional>
 
 using namespace std;
 
@@ -63,4 +64,18 @@ string Function::inspect(){
 
 string Builtin::inspect(){
     return "builtin function";
+};
+
+HashKey hash_key(Boolean* b){
+    return b->value?HashKey{b->type, 1}:HashKey{b->type, 0};
+};
+
+HashKey hash_key(Integer* i){
+    return HashKey{i->type, i->value};
+};
+
+HashKey hash_key(String* s){
+    hash<string> hasher;
+    int h = hasher(s->value);
+    return HashKey{s->type, h};
 };
