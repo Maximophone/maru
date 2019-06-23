@@ -24,7 +24,7 @@
                 "-g",
                 "-o",
                 "${fileDirname}/${fileBasenameNoExtension}",
-                "${file}",
+                "tests_main.cpp",
                 "src/*.cpp",
                 "src/tests/*.cpp",
             ]

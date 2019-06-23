@@ -79,3 +79,29 @@ HashKey hash_key(String* s){
     int h = hasher(s->value);
     return HashKey{s->type, h};
 };
+
+HashKey hash_key(Hashable* h){
+    if(String* s = dynamic_cast<String*>(h))
+        return hash_key(s);
+    if(Integer* i = dynamic_cast<Integer*>(h))
+        return hash_key(i);
+    if(Boolean* b = dynamic_cast<Boolean*>(h))
+        return hash_key(b);
+    return HashKey(ERROR_OBJ, 0);
+};
+
+string Hash::inspect(){
+    string pairs_string = "";
+    map<HashKey, HashPair>::iterator it;
+    int i = 0;
+    for(it=pairs.begin(); it!=pairs.end(); it++){
+        Object* key = it->second.key;
+        Object* value = it->second.value;
+        pairs_string += key->inspect()+ ":" + value->inspect();
+        if(i<pairs.size()-1){
+            pairs_string += ",";
+        }
+        i++;
+    }
+    return "{"+pairs_string+"}";
+};

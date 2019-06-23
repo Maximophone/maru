@@ -15,6 +15,7 @@ const ObjectType INTEGER_OBJ = "INTEGER";
 const ObjectType BOOLEAN_OBJ = "BOOLEAN";
 const ObjectType STRING_OBJ = "STRING";
 const ObjectType ARRAY_OBJ = "ARRAY";
+const ObjectType HASH_OBJ = "HASH";
 const ObjectType NULL_OBJ = "NULL";
 const ObjectType RETURN_OBJ = "RETURN";
 const ObjectType ERROR_OBJ = "ERROR";
@@ -23,6 +24,7 @@ const ObjectType BUILTIN_OBJ = "BUILTIN";
 
 class Environment;
 class Object;
+class Hashable;
 class Boolean;
 class Integer;
 class String;
@@ -36,10 +38,13 @@ class Object {
 HashKey hash_key(Boolean*);
 HashKey hash_key(Integer*);
 HashKey hash_key(String*);
+HashKey hash_key(Hashable*);
 
 typedef Object* (*builtin_function)(vector<Object*>);
 
-class Integer: public Object {
+class Hashable: public Object {};
+
+class Integer: public Hashable {
     public:
         int value;
         string inspect();
@@ -47,7 +52,7 @@ class Integer: public Object {
         Integer(int val):Integer(){value=val;};
 };
 
-class Boolean: public Object {
+class Boolean: public Hashable {
     public:
         bool value;
         string inspect();
@@ -55,7 +60,7 @@ class Boolean: public Object {
         Boolean(bool val):Boolean(){value=val;};
 };
 
-class String: public Object {
+class String: public Hashable {
     public:
         string value;
         string inspect();
@@ -68,6 +73,19 @@ class Array: public Object {
         vector<Object*> elements;
         string inspect();
         Array(){type=ARRAY_OBJ;};
+};
+
+class HashPair {
+    public:
+        Object* key;
+        Object* value;
+};
+
+class Hash: public Object {
+    public:
+        map<HashKey, HashPair> pairs;
+        string inspect();
+        Hash(){type=HASH_OBJ;};
 };
 
 class Null: public Object {

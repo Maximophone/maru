@@ -4,7 +4,7 @@
 Null* NULL_ = new Null();
 Boolean* TRUE = new Boolean(true);
 Boolean* FALSE = new Boolean(false);
-int STACK_OVERFLOW_LIMIT = 2000;
+const int STACK_OVERFLOW_LIMIT = 2000;
 int CURRENT_RECURSION_DEPTH = 0;
 
 Object* eval(Node* node, Environment* env){
@@ -55,6 +55,9 @@ Object* eval(Node* node, Environment* env){
         Array* arr = new Array();
         arr->elements = elements;
         return arr;
+    }
+    if(HashLiteral* lit = dynamic_cast<HashLiteral*>(node)){
+        return eval_hash_literal(lit, env);
     }
     if(PrefixExpression* exp = dynamic_cast<PrefixExpression*>(node)){
         Object* right = eval(exp->right, env);
@@ -265,6 +268,9 @@ Object* eval_index_expression(Object* left, Object* index){
     if(left->type == ARRAY_OBJ && index->type == INTEGER_OBJ){
         return eval_array_index_expression(left, index);
     }
+    if(left->type == HASH_OBJ){
+        return eval_hash_index_expression(left, index);
+    }
     return new_error("index operator not supported: "+left->type+"["+index->type+"]");
 };
 
@@ -276,6 +282,38 @@ Object* eval_array_index_expression(Object* left, Object* index){
         return NULL_;
     }
     return arr->elements[idx];
+};
+
+Object* eval_hash_index_expression(Object* left, Object* index){
+    Hash* hash = (Hash*) left;
+    Hashable* index_hashable = dynamic_cast<Hashable*>(index);
+    if(index_hashable == 0)
+        return new_error("unusable as hash key: " + index->type);
+    HashKey key = hash_key(index_hashable);
+    if(hash->pairs.find(key) == hash->pairs.end())
+        return NULL_;
+    HashPair pair = hash->pairs[hash_key(index_hashable)];
+    return pair.value;
+};
+
+Object* eval_hash_literal(HashLiteral* hash_lit, Environment* env){
+    map<HashKey, HashPair> pairs;
+    for(pair<Expression*, Expression*> p : hash_lit->pairs){
+        Object* key = eval(p.first, env);
+        if(is_error(key))
+            return key;
+        Hashable* hk = dynamic_cast<Hashable*>(key);
+        if(hk == 0)
+            return new_error("unusable as hash key: " + key->type);
+        Object* value = eval(p.second, env);
+        if(is_error(value))
+            return value;
+        HashKey hashed = hash_key(hk);
+        pairs[hashed] = HashPair{key, value};
+    }
+    Hash* hash = new Hash();
+    hash->pairs = pairs;
+    return hash;
 };
 
 Environment* extend_function_env(Function* function, vector<Object*> args){

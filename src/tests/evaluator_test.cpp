@@ -242,6 +242,10 @@ TEST_CASE("test error handling"){
         {"let x = fn(a){}; x()", "not enough arguments, expected 1"},
         {"print(1)", "arguments to 'print' must be STRING, got INTEGER"},
         {"let a = fn(){a();}; a();", "stack overflow, recursion depth cannot exceed 2000"},
+        {
+            "{5:2}[fn(x){x}]",
+            "unusable as hash key: FUNCTION",
+        },
     };
 
     for(test t : tests){
@@ -417,6 +421,79 @@ TEST_CASE("test array index expressions"){
     };
 
     for(test t: tests){
+        Object* evaluated = test_eval(t.input);
+        test_var_object(evaluated, t.expected);
+    }
+};
+
+TEST_CASE("test hash literals"){
+    string input = "let two = \"two\""
+    "{"
+    "\"one\": 10 - 9,"
+    "two: 1 + 1,"
+    "\"thr\" + \"ee\": 6/2,"
+    "4: 4,"
+    "true: 5,"
+    "false: 6"
+    "}";
+
+    Object* evaluated = test_eval(input);
+    Hash* hash = dynamic_cast<Hash*>(evaluated);
+    REQUIRE(hash != 0);
+
+    map<HashKey, int> expected = {
+        {hash_key(new String("one")), 1},
+        {hash_key(new String("two")), 2},
+        {hash_key(new String("three")), 3},
+        {hash_key(new Integer(4)), 4},
+        {hash_key(TRUE), 5},
+        {hash_key(FALSE), 6},
+    };
+
+    REQUIRE(hash->pairs.size() == expected.size());
+
+    for(pair<HashKey, int> p : expected){
+        HashKey key = p.first;
+        int value = p.second;
+        HashPair hash_pair = hash->pairs[key];
+        test_integer_object(hash_pair.value, value);
+    };
+};
+
+TEST_CASE("test hash index expressions"){
+    struct test {
+        string input;
+        Var expected;
+    };
+    vector<test> tests = {
+        {
+            "{\"foo\": 5}[\"foo\"]", 
+            Var(5)
+        },
+        {
+            "{4: 5}[3]",
+            Var()
+        },
+        {
+            "let key = \"foo\"; {\"foo\": 5}[key]",
+            Var(5)
+        },
+        {
+            "{}[true]",
+            Var()
+        },
+        {
+            "{5: 1}[5]",
+            Var(1)
+        },
+        {
+            "{false: 1}[false]",
+            Var(1)
+        },
+    };
+
+    for(test t : tests){
+        INFO("Input: " + t.input);
         Object* evaluated = test_eval(t.input);
         test_var_object(evaluated, t.expected);
     }
