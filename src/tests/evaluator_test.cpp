@@ -176,6 +176,24 @@ TEST_CASE("test if else expressions"){
     }
 };
 
+TEST_CASE("test eval for loop"){
+    struct test{
+        string input;
+        Var expected;
+    };
+    vector<test> tests = {
+        {"for(x in range(5)){}; x;", Var(4)},
+        {"for(x in range(5)){x+1};", Var(5)},
+        {"let i = 0; for(x in range(5)){let i = i + x}; i;", Var(10)},
+        {"for(x in 2){}", Var("can only iterate over ARRAY objects, got INTEGER"s)},
+    };
+
+    for(test t : tests){
+        INFO("Input: " + t.input);
+        test_var_object(test_eval(t.input), t.expected);
+    }
+};
+
 TEST_CASE("test return statements"){
     struct test{
         string input;

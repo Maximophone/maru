@@ -77,6 +77,9 @@ Object* eval(Node* node, Environment* env){
     if(IfExpression* exp = dynamic_cast<IfExpression*>(node)){
         return eval_if_expression(exp, env);
     }
+    if(ForExpression* exp = dynamic_cast<ForExpression*>(node)){
+        return eval_for_expression(exp, env);
+    }
     if(Identifier* ident = dynamic_cast<Identifier*>(node)){
         return eval_identifier(ident, env);
     }
@@ -223,6 +226,23 @@ Object* eval_if_expression(IfExpression* exp, Environment* env){
     }
 };
 
+Object* eval_for_expression(ForExpression* exp, Environment* env){
+    Object* iterated_obj = eval(exp->iterated, env);
+    if(is_error(iterated_obj))
+        return iterated_obj;
+    Array* iterated = dynamic_cast<Array*>(iterated_obj);
+    if(iterated == 0)
+        return new_error("can only iterate over ARRAY objects, got " + iterated_obj->type);
+    Object* body_value = NULL_;
+    for(Object* element : iterated->elements){
+        env->set(exp->iterator->value, element);
+        body_value = eval_block_statement(exp->body, env);
+        if(is_error(body_value) || is_return(body_value))
+            return body_value;
+    }
+    return body_value;
+};
+
 Object* eval_identifier(Identifier* ident, Environment* env){
     bool ok = true;
     Object* val = env->get(ident->value, ok);
@@ -351,4 +371,8 @@ bool is_error(Object* obj){
         return obj->type == ERROR_OBJ;
     }
     return false;
+};
+
+bool is_return(Object* obj){
+    return dynamic_cast<ReturnValue*>(obj)!=0;
 };
