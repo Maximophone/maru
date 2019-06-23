@@ -524,3 +524,21 @@ TEST_CASE("test hash index expressions"){
         test_var_object(evaluated, t.expected);
     }
 };
+
+TEST_CASE("test assign expressions"){
+    struct test {
+        string input;
+        Var expected;
+    };
+    vector<test> tests = {
+        {"x=2;", Var(2)},
+        {"2*x=3", Var(6)},
+        {"2*x=3;x;", Var(3)},
+    };
+
+    for(test t : tests){
+        INFO("Input: " + t.input);
+        Object* evaluated = test_eval(t.input);
+        test_var_object(evaluated, t.expected);
+    }
+};

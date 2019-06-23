@@ -22,6 +22,7 @@ Object* eval_for_expression(ForExpression*, Environment*);
 Object* eval_identifier(Identifier*, Environment*);
 vector<Object*> eval_expressions(vector<Expression*>, Environment* env);
 Object* apply_function(Object*, vector<Object*>);
+Object* eval_assign_expression(AssignExpression*, Environment*);
 Object* eval_index_expression(Object*, Object*);
 Object* eval_array_index_expression(Object*, Object*);
 Object* eval_hash_index_expression(Object*, Object*);

@@ -124,7 +124,7 @@ TEST_CASE("test let statements"){
     }
 };
 
-TEST_CASE("test assign expressions"){
+TEST_CASE("test parsing assign expressions"){
     struct test {
         string input;
         string expected_ident;

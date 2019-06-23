@@ -47,6 +47,9 @@ Object* eval(Node* node, Environment* env){
     if(StringLiteral* lit = dynamic_cast<StringLiteral*>(node)){
         return new String(lit->value);
     }
+    if(AssignExpression* exp = dynamic_cast<AssignExpression*>(node)){
+        return eval_assign_expression(exp, env);
+    }
     if(ArrayLiteral* lit = dynamic_cast<ArrayLiteral*>(node)){
         vector<Object*> elements = eval_expressions(lit->elements, env);
         if(elements.size() == 1 && is_error(elements[0])){
@@ -282,6 +285,14 @@ Object* apply_function(Object* fn, vector<Object*> args){
     }
     return new_error("Not a function: " + fn->type);
     
+};
+
+Object* eval_assign_expression(AssignExpression* exp, Environment* env){
+    Object* value = eval(exp->value, env);
+    if(is_error(value))
+        return value;
+    env->set(exp->name->value, value);
+    return value;
 };
 
 Object* eval_index_expression(Object* left, Object* index){
