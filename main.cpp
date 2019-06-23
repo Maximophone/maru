@@ -18,11 +18,7 @@ void run_program(string input){
         cout << "Exiting.";
         return;
     }
-    Object* evaluated = eval(program, env);
-
-    if(evaluated != 0){
-        cout << evaluated->inspect() << "\n";
-    }
+    eval(program, env);
 };
 
 int main(int argc, char *argv[]){

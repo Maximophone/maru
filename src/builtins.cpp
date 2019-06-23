@@ -47,8 +47,15 @@ Object* print(vector<Object*> args){
     return NULL_;
 };
 
+Object* printline(vector<Object*> args){
+    print(args);
+    cout << "\n";
+};
+
 map<string, Builtin*> builtins = {
     {"len", new Builtin(len)},
     {"append", new Builtin(append)},
     {"print", new Builtin(print)},
+    {"printline", new Builtin(printline)},
+    {"printl", new Builtin(printline)},
 };

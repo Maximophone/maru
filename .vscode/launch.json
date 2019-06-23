@@ -30,7 +30,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${fileDirname}/${fileBasenameNoExtension}",
-            "args": ["program_test_2.mu"],
+            "args": ["program_test.mu"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
