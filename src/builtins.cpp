@@ -36,6 +36,13 @@ Object* append(vector<Object*> args){
     return arr;
 };
 
+Object* repr(vector<Object*> args){
+    for(Object* arg: args){
+        cout << arg->inspect();
+    }
+    return NULL_;
+};
+
 Object* print(vector<Object*> args){
     for(Object* arg : args){
         String* arg_str = dynamic_cast<String*>(arg);
@@ -55,6 +62,7 @@ Object* printline(vector<Object*> args){
 map<string, Builtin*> builtins = {
     {"len", new Builtin(len)},
     {"append", new Builtin(append)},
+    {"repr", new Builtin(repr)},
     {"print", new Builtin(print)},
     {"printline", new Builtin(printline)},
     {"printl", new Builtin(printline)},
