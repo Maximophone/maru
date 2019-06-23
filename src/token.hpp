@@ -55,5 +55,7 @@ const TokenType IF = "IF";
 const TokenType ELSE = "ELSE";
 const TokenType TRU = "TRUE";
 const TokenType FALS = "FALSE";
+const TokenType FOR = "FOR";
+const TokenType IN = "IN";
 
 #endif

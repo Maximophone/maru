@@ -17,4 +17,6 @@ map<string, TokenType> keywords = {
     {"else", ELSE},
     {"true", TRU},
     {"false", FALS},
+    {"for", FOR},
+    {"in", IN},
 }; 

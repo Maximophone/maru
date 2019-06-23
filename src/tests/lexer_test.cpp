@@ -24,7 +24,8 @@ TEST_CASE("test next_token"){
     "\"foobar\""
     "\"foo bar\""
     "[1, 2]"
-    "{1: 3}";
+    "{1: 3}"
+    "for(x in range(5)){}";
 
     struct test{
         TokenType expected_type;
@@ -57,6 +58,8 @@ TEST_CASE("test next_token"){
     test ret = {RETURN, "return"};
     test equal = {EQUAL, "=="};
     test not_equal = {NOT_EQUAL, "!="};
+    test for_ = {FOR, "for"};
+    test in_ = {IN, "in"};
 
     vector<test> tests = {
         let, {IDENT, "five"}, assign, {INT, "5"}, semi,
@@ -76,6 +79,7 @@ TEST_CASE("test next_token"){
         {STRING, "foo bar"},
         lbra, {INT, "1"}, comma, {INT, "2"}, rbra,
         lb, {INT, "1"}, colon, {INT, "3"}, rb,
+        for_, lp, {IDENT, "x"}, in_, {IDENT, "range"}, lp, {INT, "5"}, rp, rp, lb, rb,
         {END, ""}
     };
 
