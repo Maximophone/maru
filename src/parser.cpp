@@ -12,6 +12,7 @@ map<TokenType, int> precedences = {
     {ASTERIX, PRODUCT},
     {LPAREN, CALL},
     {LBRACKET, INDEX},
+    {ASSIGN, ASSIGNMENT},
 };
 
 Parser::Parser(Lexer *l)
@@ -44,6 +45,7 @@ Parser::Parser(Lexer *l)
     infix_parse_funcs[GT] = &Parser::parse_infix_expression;
     infix_parse_funcs[LPAREN] = &Parser::parse_call_expression;
     infix_parse_funcs[LBRACKET] = &Parser::parse_index_expression;
+    infix_parse_funcs[ASSIGN] = &Parser::parse_assign_expression;
 };
 
 void Parser::next_token()
@@ -425,6 +427,21 @@ Expression *Parser::parse_infix_expression(Expression *left)
     // cout << "   Current precedence " << precedence << "\n";
     next_token();
     exp->right_value = parse_expression(precedence);
+    return exp;
+};
+
+Expression* Parser::parse_assign_expression(Expression* obj){
+    AssignExpression* exp = new AssignExpression();
+    exp->token = cur_token;
+    Identifier* ident = dynamic_cast<Identifier*>(obj);
+    if(ident == 0){
+        errors.push_back("left of assign expression must be an identifier");
+        return 0;
+    }
+    exp->name = ident;
+    int precedence = cur_precedence();
+    next_token();
+    exp->value = parse_expression(precedence);
     return exp;
 };
 

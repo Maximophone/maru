@@ -12,6 +12,7 @@ Program* get_program(string, int);
 void test_let_statement(Statement*, string);
 void test_return_statement(Statement*);
 void check_parser_errors(Parser*);
+ExpressionStatement* get_first_expr_stmt(Program*);
 
 Program* get_program(string input, int wanted_size){
     Lexer* l = new Lexer(input);
@@ -120,6 +121,29 @@ TEST_CASE("test let statements"){
         REQUIRE(stmt != 0);
         test_let_statement(stmt, t.expected_ident);
         test_var_literal(stmt->value, t.value);
+    }
+};
+
+TEST_CASE("test assign expressions"){
+    struct test {
+        string input;
+        string expected_ident;
+        Var expected_value;
+    };
+    vector<test> tests = {
+        {"x = 5;", "x", Var(5)},
+        {"y = true", "y", Var(true)},
+        {"foobar = y", "foobar", Var("y"s)},
+    };
+
+    for(test t: tests){
+        INFO("INPUT: " + t.input);
+        Program* p = get_program(t.input, 1);
+        ExpressionStatement* stmt = get_first_expr_stmt(p);
+        AssignExpression* exp = dynamic_cast<AssignExpression*>(stmt->expression);
+        REQUIRE(exp!=0);
+        test_identifier(exp->name, t.expected_ident);
+        test_var_literal(exp->value, t.expected_value);
     }
 };
 

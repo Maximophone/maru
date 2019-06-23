@@ -77,6 +77,13 @@ class FunctionLiteral: public Expression{
         string to_string();      
 };
 
+class AssignExpression: public Expression{
+    public:
+        Identifier* name;
+        Expression* value;
+        string to_string();
+};
+
 class CallExpression: public Expression{
     public:
         Expression* function;

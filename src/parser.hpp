@@ -14,8 +14,9 @@ const int LESSGREATER = 3;
 const int SUM = 4;
 const int PRODUCT = 5;
 const int PREFIX = 6;
-const int CALL = 7;
-const int INDEX = 8;
+const int ASSIGNMENT = 7;
+const int CALL = 8;
+const int INDEX = 9;
 
 extern map<TokenType, int> precedences;
 
@@ -32,6 +33,7 @@ class Parser{
         ReturnStatement* parse_return_statement();
         ExpressionStatement* parse_expression_statement();
         Expression* parse_expression(int);
+        Expression* parse_assign_expression(Expression*);
         Expression* parse_identifier();
         Expression* parse_integer_literal();
         Expression* parse_boolean_literal();

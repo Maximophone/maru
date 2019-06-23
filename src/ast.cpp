@@ -37,6 +37,14 @@ string LetStatement::to_string(){
     return s;
 };
 
+string AssignExpression::to_string(){
+    string s = name->to_string() + " = ";
+    if(value != 0){
+        s += value->to_string();
+    }
+    return s;
+};
+
 string ReturnStatement::to_string(){
     string s = token_literal() + " ";
     if(return_value!=0){
