@@ -43,6 +43,7 @@ class Parser{
         Expression* parse_call_expression(Expression*);
         Expression* parse_index_expression(Expression*);
         Expression* parse_if_expression();
+        Expression* parse_for_expression();
         BlockStatement* parse_block_statement();
         Expression* parse_prefix_expression();
         Expression* parse_infix_expression(Expression*);

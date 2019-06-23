@@ -414,6 +414,31 @@ TEST_CASE("test if else expression"){
     test_identifier(exp_stmt_alt->expression, "y");
 };
 
+TEST_CASE("test for loop"){
+    string input = "for(x in my_array){x}";
+
+    INFO("input: " + input);
+    Program* program = get_program(input, 1);
+    ExpressionStatement* stmt = get_first_expr_stmt(program);
+
+    ForExpression* exp = dynamic_cast<ForExpression*>(stmt->expression);
+    REQUIRE(exp != 0);
+
+    test_identifier(exp->iterator, "x");
+    test_identifier(exp->iterated, "my_array");
+
+    BlockStatement* body = exp->body;
+    REQUIRE(body->statements.size() == 1);
+
+    ExpressionStatement* exp_stmt = dynamic_cast<ExpressionStatement*>(body->statements[0]);
+    REQUIRE(exp_stmt != 0);
+
+    Identifier* ident = dynamic_cast<Identifier*>(exp_stmt->expression);
+    REQUIRE(ident != 0);
+
+    test_identifier(ident, "x");
+};
+
 TEST_CASE("test function literal parsing"){
     string input = "fn(x, y){x + y;}";
 

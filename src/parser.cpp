@@ -29,6 +29,7 @@ Parser::Parser(Lexer *l)
     prefix_parse_funcs[MINUS] = &Parser::parse_prefix_expression;
     prefix_parse_funcs[LPAREN] = &Parser::parse_grouped_expression;
     prefix_parse_funcs[IF] = &Parser::parse_if_expression;
+    prefix_parse_funcs[FOR] = &Parser::parse_for_expression;
     prefix_parse_funcs[FUNCTION] = &Parser::parse_function_literal;
     prefix_parse_funcs[LBRACKET] = &Parser::parse_array_literal;
     prefix_parse_funcs[LBRACE] = &Parser::parse_hash_literal;
@@ -350,6 +351,36 @@ Expression* Parser::parse_if_expression()
 
         exp->alternative = parse_block_statement();
     }
+
+    return exp;
+};
+
+Expression* Parser::parse_for_expression()
+{
+    ForExpression *exp = new ForExpression();
+    exp->token = cur_token;
+
+    if(!expect_peek(LPAREN))
+        return 0;
+
+    if(!expect_peek(IDENT))
+        return 0;
+
+    exp->iterator = dynamic_cast<Identifier*>(parse_identifier());
+
+    if(!expect_peek(IN))
+        return 0;
+    next_token();
+
+    exp->iterated = parse_expression(LOWEST);
+
+    if(!expect_peek(RPAREN))
+        return 0;
+
+    if(!expect_peek(LBRACE))
+        return 0;
+
+    exp->body = parse_block_statement();
 
     return exp;
 };

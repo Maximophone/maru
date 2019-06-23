@@ -140,3 +140,6 @@ string IfExpression::to_string(){
     return s;
 };
 
+string ForExpression::to_string(){
+    return "for(" + iterator->to_string() + " in " + iterated->to_string() + "){" + body->to_string() + "}";
+};

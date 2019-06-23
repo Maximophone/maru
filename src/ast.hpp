@@ -120,6 +120,14 @@ class IfExpression: public Expression{
         string to_string();
 };
 
+class ForExpression: public Expression{
+    public:
+        Identifier* iterator;
+        Expression* iterated;
+        BlockStatement* body;
+        string to_string();
+};
+
 class LetStatement: public Statement{
     public:
         Identifier* name;
