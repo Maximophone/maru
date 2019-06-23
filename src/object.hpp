@@ -73,6 +73,7 @@ class Array: public Object {
         vector<Object*> elements;
         string inspect();
         Array(){type=ARRAY_OBJ;};
+        Array(vector<Object*> el):Array(){elements=el;};
 };
 
 class HashPair {

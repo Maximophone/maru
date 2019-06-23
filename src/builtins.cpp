@@ -36,6 +36,30 @@ Object* append(vector<Object*> args){
     return arr;
 };
 
+Object* range(vector<Object*> args){
+    if(args.size() < 1 || args.size() > 2){
+        return new_error("wrong number of arguments. range takes 1 or 2 but got=" + to_string(args.size()));
+    }
+    for(Object* arg : args){
+        if(!dynamic_cast<Integer*>(arg))
+            return new_error("all arguments to range should be INTEGER. got " + arg->type);
+    }
+    int n_min = 0;
+    int n_max = 0;
+    if(args.size() == 1){
+        n_max = dynamic_cast<Integer*>(args[0])->value;
+    }
+    if(args.size() == 2){
+        n_min = dynamic_cast<Integer*>(args[0])->value;
+        n_max = dynamic_cast<Integer*>(args[1])->value;
+    }
+    vector<Object*> elements;
+    for(int i = n_min; i<n_max; i++){
+        elements.push_back(new Integer(i));
+    }
+    return new Array(elements);
+}
+
 Object* repr(vector<Object*> args){
     for(Object* arg: args){
         cout << arg->inspect();
@@ -62,6 +86,7 @@ Object* printline(vector<Object*> args){
 map<string, Builtin*> builtins = {
     {"len", new Builtin(len)},
     {"append", new Builtin(append)},
+    {"range", new Builtin(range)},
     {"repr", new Builtin(repr)},
     {"print", new Builtin(print)},
     {"printline", new Builtin(printline)},

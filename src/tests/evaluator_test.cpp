@@ -66,6 +66,9 @@ void test_var_object(Object* obj, Var expected){
         case 'b':
             return test_boolean_object(obj, expected.b);
             break;
+        case 's':
+            return test_error_object(obj, expected.s);
+            break;
     }
 };
 
@@ -347,8 +350,13 @@ TEST_CASE("test builtin functions"){
         {"len([1,2,3])", Var(3)},
         {"let x = []; append(x, 3); x[0];", Var(3)},
         {"append([]);", Var("wrong number of arguments. got=1, wanted>1"s)},
-        {"append();", Var("wrong number of arguments. got=0, want>1"s)},
+        {"append();", Var("wrong number of arguments. got=0, wanted>1"s)},
         {"append([1,2], 3, 4, 5)[3]", Var(4)},
+        {"let x = range(5); x[3];", Var(3)},
+        {"let x = range(1,5); x[3]", Var(4)},
+        {"len(range(5));", Var(5)},
+        {"append(range(5), 8)[5]", Var(8)},
+        {"range();", Var("wrong number of arguments. range takes 1 or 2 but got=0"s)},
     };
 
     for(test t : tests){
