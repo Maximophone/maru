@@ -8,13 +8,13 @@ class Parser;
 typedef Expression* (Parser::*prefix_parse_func)();
 typedef Expression* (Parser::*infix_parse_func)(Expression*);
 
-const int LOWEST = 1;
+const int LOWEST = 0;
+const int ASSIGNMENT = 1;
 const int EQUALS = 2;
 const int LESSGREATER = 3;
 const int SUM = 4;
 const int PRODUCT = 5;
 const int PREFIX = 6;
-const int ASSIGNMENT = 7;
 const int CALL = 8;
 const int INDEX = 9;
 
