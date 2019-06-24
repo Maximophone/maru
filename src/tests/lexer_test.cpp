@@ -26,7 +26,11 @@ TEST_CASE("test next_token"){
     "[1, 2]"
     "{1: 3}"
     "for(x in range(5)){}"
-    "while(x>1){}";
+    "while(x>1){}"
+    "class Test{"
+    " a;"
+    " b=1;"
+    "}";
 
     struct test{
         TokenType expected_type;
@@ -63,7 +67,10 @@ TEST_CASE("test next_token"){
     test in_ = {IN, "in"};
     test while_ = {WHILE, "while"};
     test x_ = {IDENT, "x"};
+    test b_ = {IDENT ,"b"};
+    test a_ = {IDENT, "a"};
     test one_ = {INT, "1"};
+    test class_ = {CLASS, "class"};
 
     vector<test> tests = {
         let, {IDENT, "five"}, assign, {INT, "5"}, semi,
@@ -85,6 +92,10 @@ TEST_CASE("test next_token"){
         lb, {INT, "1"}, colon, {INT, "3"}, rb,
         for_, lp, {IDENT, "x"}, in_, {IDENT, "range"}, lp, {INT, "5"}, rp, rp, lb, rb,
         while_, lp, x_, gt, one_, rp, lb, rb,
+        class_, {IDENT, "Test"}, lb,
+        a_, semi,
+        b_, assign, one_, semi,
+        rb,
         {END, ""}
     };
 
