@@ -60,6 +60,9 @@ Token Lexer::next_token(){
         case ',':
             tok = Token{COMMA, sch};
             break;
+        case '.':
+            tok = Token{DOT, sch};
+            break;
         case '+':
             tok = Token{PLUS, sch};
             break;

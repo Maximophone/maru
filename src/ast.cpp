@@ -155,3 +155,11 @@ string ForExpression::to_string(){
 string WhileExpression::to_string(){
     return "while(" + condition->to_string() + "){" + body->to_string() + "}";
 };
+
+string ClassLiteral::to_string(){
+    return "class{" + body->to_string() + "}";
+};
+
+string AccessExpression::to_string(){
+    return "(" + object->to_string() + "." + attribute->to_string() + ")";
+};

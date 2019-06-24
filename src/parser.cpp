@@ -13,6 +13,7 @@ map<TokenType, int> precedences = {
     {LPAREN, CALL},
     {LBRACKET, INDEX},
     {ASSIGN, ASSIGNMENT},
+    {DOT, ATTR},
 };
 
 Parser::Parser(Lexer *l)
@@ -35,6 +36,7 @@ Parser::Parser(Lexer *l)
     prefix_parse_funcs[FUNCTION] = &Parser::parse_function_literal;
     prefix_parse_funcs[LBRACKET] = &Parser::parse_array_literal;
     prefix_parse_funcs[LBRACE] = &Parser::parse_hash_literal;
+    prefix_parse_funcs[CLASS] = &Parser::parse_class_literal;
 
     infix_parse_funcs[PLUS] = &Parser::parse_infix_expression;
     infix_parse_funcs[MINUS] = &Parser::parse_infix_expression;
@@ -47,6 +49,7 @@ Parser::Parser(Lexer *l)
     infix_parse_funcs[LPAREN] = &Parser::parse_call_expression;
     infix_parse_funcs[LBRACKET] = &Parser::parse_index_expression;
     infix_parse_funcs[ASSIGN] = &Parser::parse_assign_expression;
+    infix_parse_funcs[DOT] = &Parser::parse_access_expression;
 };
 
 void Parser::next_token()
@@ -224,7 +227,17 @@ Expression *Parser::parse_hash_literal()
         return 0;
     }
     return hash;
-}
+};
+
+Expression *Parser::parse_class_literal()
+{
+    ClassLiteral *lit = new ClassLiteral();
+    lit->token = cur_token;
+    if(!expect_peek(LBRACE))
+        return 0;
+    lit->body = parse_block_statement();
+    return lit;
+};
 
 Expression *Parser::parse_function_literal()
 {
@@ -295,6 +308,16 @@ Expression* Parser::parse_index_expression(Expression* left){
     exp->index = parse_expression(LOWEST);
     if(!expect_peek(RBRACKET))
         return 0;
+    return exp;
+};
+
+Expression* Parser::parse_access_expression(Expression* left){
+    AccessExpression* exp = new AccessExpression();
+    exp->token = cur_token;
+    exp->object = left;
+    if(!expect_peek(IDENT))
+        return 0;
+    exp->attribute = (Identifier*)parse_identifier();
     return exp;
 };
 
@@ -451,15 +474,10 @@ Expression *Parser::parse_infix_expression(Expression *left)
     return exp;
 };
 
-Expression* Parser::parse_assign_expression(Expression* obj){
+Expression* Parser::parse_assign_expression(Expression* left){
     AssignExpression* exp = new AssignExpression();
     exp->token = cur_token;
-    Identifier* ident = dynamic_cast<Identifier*>(obj);
-    if(ident == 0){
-        errors.push_back("left of assign expression must be an identifier");
-        return 0;
-    }
-    exp->name = ident;
+    exp->name = left;
     int precedence = cur_precedence();
     next_token();
     exp->value = parse_expression(precedence);

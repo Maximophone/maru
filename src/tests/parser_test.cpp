@@ -14,6 +14,14 @@ void test_return_statement(Statement*);
 void check_parser_errors(Parser*);
 ExpressionStatement* get_first_expr_stmt(Program*);
 
+template<typename T_new, typename T_old>
+T_new req_cast(T_old obj){
+    INFO("Can't cast object");
+    T_new casted = dynamic_cast<T_new>(obj);
+    REQUIRE(obj != 0);
+    return casted;
+};
+
 Program* get_program(string input, int wanted_size){
     Lexer* l = new Lexer(input);
     Parser* p = new Parser(l);
@@ -550,6 +558,51 @@ TEST_CASE("test call expression parsing"){
     test_integer_literal(exp->arguments[0], 1);
     test_infix_expression<int, int>(exp->arguments[1], 2, "*", 3);
     test_infix_expression<int, int>(exp->arguments[2], 4, "+", 5);
+};
+
+TEST_CASE("test class literal parsing"){
+    string input = "x = class{"
+    "a=2;"
+    "b=fn(){}"
+    "fn(a){self.a=a;}"
+    "}";
+    Program* p = get_program(input, 1);
+    ExpressionStatement* stmt = get_first_expr_stmt(p);
+
+    AssignExpression* exp = req_cast<AssignExpression*>(stmt->expression);
+    test_identifier(exp->name, "x");
+
+    ClassLiteral* class_lit = req_cast<ClassLiteral*>(exp->value);
+
+    BlockStatement* class_body = req_cast<BlockStatement*>(class_lit->body);
+    
+    REQUIRE(class_body->statements.size() == 3);
+    
+    ExpressionStatement* stmt_a = req_cast<ExpressionStatement*>(class_body->statements[0]);
+    AssignExpression* attr_a = req_cast<AssignExpression*>(stmt_a->expression);
+    test_identifier(attr_a->name, "a");
+    test_integer_literal(attr_a->value, 2);
+
+    ExpressionStatement* stmt_b = req_cast<ExpressionStatement*>(class_body->statements[1]);
+    AssignExpression* attr_b = req_cast<AssignExpression*>(stmt_b->expression);
+    test_identifier(attr_b->name, "b");
+    FunctionLiteral* fn = req_cast<FunctionLiteral*>(attr_b->value);
+
+    ExpressionStatement* stmt_c = req_cast<ExpressionStatement*>(class_body->statements[2]);
+    FunctionLiteral* constructor = req_cast<FunctionLiteral*>(stmt_c->expression);
+    REQUIRE(constructor->parameters.size() == 1);
+    test_identifier(constructor->parameters[0], "a");
+};
+
+TEST_CASE("test access expression parsing"){
+    string input = "my_obj.my_attr;";
+
+    Program* p = get_program(input, 1);
+    ExpressionStatement* stmt = get_first_expr_stmt(p);
+
+    AccessExpression* exp = req_cast<AccessExpression*>(stmt->expression);
+    test_identifier(exp->object, "my_obj");
+    test_identifier(exp->attribute, "my_attr");
 };
 
 TEST_CASE("test string literal expression"){

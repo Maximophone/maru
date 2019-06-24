@@ -79,8 +79,14 @@ class FunctionLiteral: public Expression{
 
 class AssignExpression: public Expression{
     public:
-        Identifier* name;
+        Expression* name;
         Expression* value;
+        string to_string();
+};
+
+class ClassLiteral: public Expression{
+    public:
+        BlockStatement* body;
         string to_string();
 };
 
@@ -95,6 +101,13 @@ class IndexExpression: public Expression{
     public:
         Expression* left;
         Expression* index;
+        string to_string();
+};
+
+class AccessExpression: public Expression{
+    public:
+        Expression* object;
+        Identifier* attribute;
         string to_string();
 };
 

@@ -17,6 +17,7 @@ const int PRODUCT = 5;
 const int PREFIX = 6;
 const int CALL = 8;
 const int INDEX = 9;
+const int ATTR = 10;
 
 extern map<TokenType, int> precedences;
 
@@ -43,7 +44,9 @@ class Parser{
         Expression* parse_function_literal();
         vector<Identifier*> parse_function_parameters(bool&);
         Expression* parse_call_expression(Expression*);
+        Expression* parse_class_literal();
         Expression* parse_index_expression(Expression*);
+        Expression* parse_access_expression(Expression*);
         Expression* parse_if_expression();
         Expression* parse_for_expression();
         Expression* parse_while_expression();

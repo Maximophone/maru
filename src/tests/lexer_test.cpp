@@ -30,7 +30,8 @@ TEST_CASE("test next_token"){
     "class Test{"
     " a;"
     " b=1;"
-    "}";
+    "}"
+    "a.x;";
 
     struct test{
         TokenType expected_type;
@@ -71,6 +72,7 @@ TEST_CASE("test next_token"){
     test a_ = {IDENT, "a"};
     test one_ = {INT, "1"};
     test class_ = {CLASS, "class"};
+    test dot_ = {DOT, "."};
 
     vector<test> tests = {
         let, {IDENT, "five"}, assign, {INT, "5"}, semi,
@@ -96,6 +98,7 @@ TEST_CASE("test next_token"){
         a_, semi,
         b_, assign, one_, semi,
         rb,
+        a_, dot_, x_, semi,
         {END, ""}
     };
 

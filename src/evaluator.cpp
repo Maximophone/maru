@@ -310,8 +310,10 @@ Object* eval_assign_expression(AssignExpression* exp, Environment* env){
     Object* value = eval(exp->value, env);
     if(is_error(value))
         return value;
-    env->set(exp->name->value, value);
-    return value;
+    if(Identifier* ident = dynamic_cast<Identifier*>(exp->name))
+        env->set(ident->value, value);
+        return value;
+    return new_error("can't assign to expression of this type ");
 };
 
 Object* eval_index_expression(Object* left, Object* index){
