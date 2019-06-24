@@ -276,18 +276,20 @@ Object* eval_class_literal(ClassLiteral* cl_lit, Environment* env){
         if(exp_stmt == 0){
             return new_error("class declaration does not accept statements of this type: " + stmt->to_string());
         }
+        Environment* self_env = new Environment(env);
+        self_env->set("self", cl);
         if(AssignExpression* exp = dynamic_cast<AssignExpression*>(exp_stmt->expression)){
             Identifier* name = dynamic_cast<Identifier*>(exp->name);
             if(name==0)
                 return new_error("class attributes error: " + name->to_string());
             cl->attributes.push_back(name);
-            Object* value = eval(exp->value, env);
+            Object* value = eval(exp->value, self_env);
             if(is_error(value))
                 return value;
             cl->env->set(name->value, value);
         }
         else if (FunctionLiteral* fn_lit = dynamic_cast<FunctionLiteral*>(exp_stmt->expression)){
-            Object* fn = eval(fn_lit, env);
+            Object* fn = eval(fn_lit, self_env);
             if(is_error(fn))
                 return fn;
             cl->constructor = (Function*) fn;
