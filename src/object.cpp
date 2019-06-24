@@ -105,3 +105,11 @@ string Hash::inspect(){
     }
     return "{"+pairs_string+"}";
 };
+
+string Class::inspect(){
+    string attr_string = "";
+    for(Identifier* attr : attributes){
+        attr_string += attr->to_string() + ";";
+    }
+    return "class{" + attr_string + constructor->inspect() + "}";
+};

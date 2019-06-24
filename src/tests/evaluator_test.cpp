@@ -561,3 +561,7 @@ TEST_CASE("test assign expressions"){
         test_var_object(evaluated, t.expected);
     }
 };
+
+TEST_CASE("test create class"){
+
+};

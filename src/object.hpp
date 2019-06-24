@@ -21,6 +21,7 @@ const ObjectType RETURN_OBJ = "RETURN";
 const ObjectType ERROR_OBJ = "ERROR";
 const ObjectType FUNCTION_OBJ = "FUNCTION";
 const ObjectType BUILTIN_OBJ = "BUILTIN";
+const ObjectType CLASS_OBJ = "CLASS";
 
 class Environment;
 class Object;
@@ -87,6 +88,14 @@ class Hash: public Object {
         map<HashKey, HashPair> pairs;
         string inspect();
         Hash(){type=HASH_OBJ;};
+};
+
+class Class: public Object {
+    public:
+        vector<Identifier*> attributes;
+        Function* constructor;
+        Environment* env;
+        string inspect();
 };
 
 class Null: public Object {
