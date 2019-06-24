@@ -89,6 +89,9 @@ Object* eval(Node* node, Environment* env){
     if(Identifier* ident = dynamic_cast<Identifier*>(node)){
         return eval_identifier(ident, env);
     }
+    if(ClassLiteral* cl_lit = dynamic_cast<ClassLiteral*>(node)){
+        return eval_class_literal(cl_lit, env);
+    }
     if(FunctionLiteral* fn_lit = dynamic_cast<FunctionLiteral*>(node)){
         Function* fn = new Function();
         fn->parameters = fn_lit->parameters;
@@ -263,6 +266,37 @@ Object* eval_while_expression(WhileExpression* exp, Environment* env){
             return condition;
     }
     return body_value;
+};
+
+Object* eval_class_literal(ClassLiteral* cl_lit, Environment* env){
+    Class* cl = new Class();
+    cl->env = new Environment();
+    for(Statement* stmt : cl_lit->body->statements){
+        ExpressionStatement* exp_stmt = dynamic_cast<ExpressionStatement*>(stmt);
+        if(exp_stmt == 0){
+            return new_error("class declaration does not accept statements of this type: " + stmt->to_string());
+        }
+        if(AssignExpression* exp = dynamic_cast<AssignExpression*>(exp_stmt->expression)){
+            Identifier* name = dynamic_cast<Identifier*>(exp->name);
+            if(name==0)
+                return new_error("class attributes error: " + name->to_string());
+            cl->attributes.push_back(name);
+            Object* value = eval(exp->value, env);
+            if(is_error(value))
+                return value;
+            cl->env->set(name->value, value);
+        }
+        else if (FunctionLiteral* fn_lit = dynamic_cast<FunctionLiteral*>(exp_stmt->expression)){
+            Object* fn = eval(fn_lit, env);
+            if(is_error(fn))
+                return fn;
+            cl->constructor = (Function*) fn;
+        }
+        else {
+            return new_error("class declaration does not accept expressions of this type: " + exp->to_string());
+        }
+    }
+    return cl;
 };
 
 Object* eval_identifier(Identifier* ident, Environment* env){

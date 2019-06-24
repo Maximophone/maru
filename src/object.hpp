@@ -29,6 +29,7 @@ class Hashable;
 class Boolean;
 class Integer;
 class String;
+class Function;
 
 class Object {
     public:

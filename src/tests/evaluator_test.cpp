@@ -563,5 +563,18 @@ TEST_CASE("test assign expressions"){
 };
 
 TEST_CASE("test create class"){
+    string input = "my_class = class{"
+    "a=2;"
+    "b=fn(){self.a};"
+    "fn(){a=3};"
+    "}; my_class;";
 
+    Object* evaluated = test_eval(input);
+    Class* class_object = req_cast<Class*>(evaluated);
+
+    if(class_object == 0){
+        cout << "YEWSS\n";
+    }
+
+    REQUIRE(class_object->attributes.size() == 2);
 };

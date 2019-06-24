@@ -14,14 +14,6 @@ void test_return_statement(Statement*);
 void check_parser_errors(Parser*);
 ExpressionStatement* get_first_expr_stmt(Program*);
 
-template<typename T_new, typename T_old>
-T_new req_cast(T_old obj){
-    INFO("Can't cast object");
-    T_new casted = dynamic_cast<T_new>(obj);
-    REQUIRE(obj != 0);
-    return casted;
-};
-
 Program* get_program(string input, int wanted_size){
     Lexer* l = new Lexer(input);
     Parser* p = new Parser(l);
