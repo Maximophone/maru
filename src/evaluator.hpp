@@ -19,6 +19,7 @@ Object* eval_integer_infix_expression(string, Object*, Object*, Environment* env
 Object* eval_string_infix_expression(string, Object*, Object*, Environment* env);
 Object* eval_if_expression(IfExpression*, Environment*);
 Object* eval_for_expression(ForExpression*, Environment*);
+Object* eval_while_expression(WhileExpression*, Environment*);
 Object* eval_identifier(Identifier*, Environment*);
 vector<Object*> eval_expressions(vector<Expression*>, Environment* env);
 Object* apply_function(Object*, vector<Object*>);

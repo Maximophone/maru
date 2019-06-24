@@ -79,8 +79,10 @@ Object* print(vector<Object*> args){
 };
 
 Object* printline(vector<Object*> args){
-    print(args);
-    cout << "\n";
+    Object* ret = print(args);
+    if(!is_error(ret))
+        cout << "\n";
+    return ret;
 };
 
 map<string, Builtin*> builtins = {

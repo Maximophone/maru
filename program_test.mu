@@ -5,4 +5,6 @@ let c = fn(x, y){return x+y;};
 
 print(c(a,b) + "!");
 
+printl("blah");
+
 return "";

@@ -83,6 +83,9 @@ Object* eval(Node* node, Environment* env){
     if(ForExpression* exp = dynamic_cast<ForExpression*>(node)){
         return eval_for_expression(exp, env);
     }
+    if(WhileExpression* exp = dynamic_cast<WhileExpression*>(node)){
+        return eval_while_expression(exp, env);
+    }
     if(Identifier* ident = dynamic_cast<Identifier*>(node)){
         return eval_identifier(ident, env);
     }
@@ -209,7 +212,7 @@ Object* eval_string_infix_expression(string op, Object* left, Object* right, Env
     String* left_str = dynamic_cast<String*>(left);
     String* right_str = dynamic_cast<String*>(right);
     if((left_str == 0) || (right_str == 0)){
-        return new_error("not a string (how did you even get that here??)");
+        return new_error("not a string (how did you even get that here?)");
     }
     string left_val = left_str->value;
     string right_val = right_str->value;
@@ -242,6 +245,22 @@ Object* eval_for_expression(ForExpression* exp, Environment* env){
         body_value = eval_block_statement(exp->body, env);
         if(is_error(body_value) || is_return(body_value))
             return body_value;
+    }
+    return body_value;
+};
+
+Object* eval_while_expression(WhileExpression* exp, Environment* env){
+    Object* condition = eval(exp->condition, env);
+    if(is_error(condition))
+        return condition;
+    Object* body_value = NULL_;
+    while(is_truthy(condition)){
+        body_value = eval_block_statement(exp->body, env);
+        if(is_error(body_value) || is_return(body_value))
+            return body_value;
+        condition = eval(exp->condition, env);
+        if(is_error(condition))
+            return condition;
     }
     return body_value;
 };

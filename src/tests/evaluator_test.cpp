@@ -194,6 +194,22 @@ TEST_CASE("test eval for loop"){
     }
 };
 
+TEST_CASE("test eval while loop"){
+    struct test{
+        string input;
+        Var expected;
+    };
+    vector<test> tests = {
+        {"x=0; while(x<1){x=x+1;}; x;", Var(1)},
+        {"x=0; while(x<10){x=x+1;}", Var(10)},
+    };
+
+    for(test t : tests){
+        INFO("Input: " + t.input);
+        test_var_object(test_eval(t.input), t.expected);
+    }
+};
+
 TEST_CASE("test return statements"){
     struct test{
         string input;

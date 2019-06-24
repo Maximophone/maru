@@ -37,7 +37,7 @@ void start(){
         }
 
         Object* evaluated = eval(program, env);
-        if(evaluated != 0){
+        if(evaluated != 0 && evaluated->type!=NULL_OBJ){
             cout << evaluated->inspect();
             cout << "\n";
         }
