@@ -19,4 +19,5 @@ map<string, TokenType> keywords = {
     {"false", FALS},
     {"for", FOR},
     {"in", IN},
+    {"while", WHILE},
 }; 

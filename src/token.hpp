@@ -57,5 +57,6 @@ const TokenType TRU = "TRUE";
 const TokenType FALS = "FALSE";
 const TokenType FOR = "FOR";
 const TokenType IN = "IN";
+const TokenType WHILE = "WHILE";
 
 #endif
