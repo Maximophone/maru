@@ -552,6 +552,7 @@ TEST_CASE("test assign expressions"){
         {"(x=3)*2;", Var(6)},
         {"(x=3)*2; x;", Var(3)},
         {"x=3*(y=2);y;", Var(2)},
+        {"3=5", Var("can't assign to expression of this type"s)}
     };
 
     for(test t : tests){
