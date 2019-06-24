@@ -463,6 +463,27 @@ TEST_CASE("test for loop"){
     test_identifier(ident, "x");
 };
 
+TEST_CASE("test parsing while loop"){
+    string input = "while(x>0){x}";
+    INFO("Input: " + input);
+
+    Program* p = get_program(input, 1);
+    ExpressionStatement* stmt = get_first_expr_stmt(p);
+
+    WhileExpression* exp = dynamic_cast<WhileExpression*>(stmt->expression);
+    REQUIRE(exp != 0);
+
+    test_infix_expression<string, int>(exp->condition, "x", ">", 0);
+
+    BlockStatement* body = exp->body;
+    REQUIRE(body->statements.size() == 1);
+
+    ExpressionStatement* exp_stmt = dynamic_cast<ExpressionStatement*>(body->statements[0]);
+    REQUIRE(exp_stmt!=0);
+
+    test_identifier(exp_stmt->expression, "x");
+};
+
 TEST_CASE("test function literal parsing"){
     string input = "fn(x, y){x + y;}";
 

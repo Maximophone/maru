@@ -151,3 +151,7 @@ string IfExpression::to_string(){
 string ForExpression::to_string(){
     return "for(" + iterator->to_string() + " in " + iterated->to_string() + "){" + body->to_string() + "}";
 };
+
+string WhileExpression::to_string(){
+    return "while(" + condition->to_string() + "){" + body->to_string() + "}";
+};
