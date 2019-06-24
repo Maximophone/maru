@@ -7,4 +7,8 @@ print(c(a,b) + "!");
 
 printl("blah");
 
+x = class{a=1;};
+
+repr(x);
+
 return "";

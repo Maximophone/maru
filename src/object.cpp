@@ -111,5 +111,6 @@ string Class::inspect(){
     for(Identifier* attr : attributes){
         attr_string += attr->to_string() + ";";
     }
-    return "class{" + attr_string + constructor->inspect() + "}";
+    string const_str = (constructor!=0)?constructor->inspect():"";
+    return "class{" + attr_string + const_str + "}";
 };
