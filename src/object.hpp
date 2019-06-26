@@ -22,6 +22,7 @@ const ObjectType ERROR_OBJ = "ERROR";
 const ObjectType FUNCTION_OBJ = "FUNCTION";
 const ObjectType BUILTIN_OBJ = "BUILTIN";
 const ObjectType CLASS_OBJ = "CLASS";
+const ObjectType INSTANCE_OBJ = "INSTANCE";
 
 class Environment;
 class Object;
@@ -97,6 +98,7 @@ class Class: public Object {
         Function* constructor;
         Environment* env;
         string inspect();
+        Class(){type=CLASS_OBJ;};
 };
 
 class ClassInstance: public Object {
@@ -104,6 +106,7 @@ class ClassInstance: public Object {
         vector<Identifier*> attributes;
         Environment* env;
         string inspect();
+        ClassInstance(){type=INSTANCE_OBJ;};
 };
 
 class Null: public Object {

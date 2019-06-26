@@ -1,9 +1,18 @@
-let counter = fn(n){
-    if(n<1){
-        return true;
-    } else {
-        return counter(n-1);
-    }
+SubClass = class{
+    a = 0;
+    b = 0;
 };
 
-counter(5000);
+NestedClass = class{
+    sub_class = SubClass();  
+};
+
+nested = NestedClass();
+
+nested.sub_class.a = "x";
+nested.sub_class.b = "y";
+
+printl(nested.sub_class.a);
+
+repr(nested);
+printl();

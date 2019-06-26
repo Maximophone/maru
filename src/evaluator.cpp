@@ -117,6 +117,7 @@ Object* eval(Node* node, Environment* env){
             ClassInstance* cl_i = new ClassInstance();
             cl_i->attributes = cl->attributes;
             Environment* instance_env = new Environment(cl->env);
+            cl_i->env = instance_env;
             //instance_env->set("self", cl_i);
             if(cl->constructor!=0){
                 apply_method(cl_i, cl->constructor, args);
@@ -133,6 +134,12 @@ Object* eval(Node* node, Environment* env){
         if(is_error(index))
             return index;
         return eval_index_expression(left, index);
+    }
+    if(AccessExpression* exp = dynamic_cast<AccessExpression*>(node)){
+        Object* object = eval(exp->object, env);
+        if(is_error(object))
+            return object;
+        return eval_access_expression(object, exp->attribute);
     }
     return 0;
 }
@@ -293,7 +300,6 @@ Object* eval_class_literal(ClassLiteral* cl_lit, Environment* env){
             return new_error("class declaration does not accept statements of this type: " + stmt->to_string());
         }
         Environment* self_env = new Environment(env);
-        //self_env->set("self", cl);
         if(AssignExpression* exp = dynamic_cast<AssignExpression*>(exp_stmt->expression)){
             Identifier* name = dynamic_cast<Identifier*>(exp->name);
             if(name==0)
@@ -311,7 +317,7 @@ Object* eval_class_literal(ClassLiteral* cl_lit, Environment* env){
             cl->constructor = (Function*) fn;
         }
         else {
-            return new_error("class declaration does not accept expressions of this type: " + exp->to_string());
+            return new_error("class declaration does not accept expressions of this type: " + exp_stmt->to_string());
         }
     }
     return cl;
@@ -383,6 +389,16 @@ Object* eval_assign_expression(AssignExpression* exp, Environment* env){
         env->set(ident->value, value);
         return value;
     }
+    if(AccessExpression* acc_exp = dynamic_cast<AccessExpression*>(exp->name)){
+        Object* obj = eval(acc_exp->object, env);
+        if(is_error(obj))
+            return obj;
+        ClassInstance* inst = dynamic_cast<ClassInstance*>(obj);
+        if(inst == 0)
+            return new_error("can't set attributes on object of type " + obj->type);
+        inst->env->set(acc_exp->attribute->value, value);
+        return value;
+    }
     return new_error("can't assign to expression of this type");
 };
 
@@ -416,6 +432,28 @@ Object* eval_hash_index_expression(Object* left, Object* index){
         return NULL_;
     HashPair pair = hash->pairs[hash_key(index_hashable)];
     return pair.value;
+};
+
+Object* eval_access_expression(Object* left, Identifier* ident){
+    Object* value = NULL_;
+    bool ok = true;
+    if(left->type == INSTANCE_OBJ){
+        ClassInstance* instance = (ClassInstance*) left;
+        value = instance->env->get(ident->value, ok);
+        if(ok)
+            if(Function* fn = dynamic_cast<Function*>(value))
+                fn->env->set("self", instance);
+            return value;
+        return NULL_;
+    }
+    if(left->type == CLASS_OBJ){
+        Class* cl = (Class*) left;
+        value = cl->env->get(ident->value, ok);
+        if(ok)
+            return value;
+        return NULL_;
+    }
+    return new_error("can't access attribute on type " + left->type);
 };
 
 Object* eval_hash_literal(HashLiteral* hash_lit, Environment* env){

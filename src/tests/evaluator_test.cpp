@@ -572,6 +572,7 @@ TEST_CASE("test create class"){
     Object* evaluated = test_eval(input);
     Class* class_object = req_cast<Class*>(evaluated);
 
+    REQUIRE(class_object->env != 0);
     REQUIRE(class_object->attributes.size() == 2);
 
     test_identifier(class_object->attributes[0], "a");
@@ -589,7 +590,42 @@ TEST_CASE("test create instance"){
     Object* evaluated = test_eval(input);
     ClassInstance* cl_i = req_cast<ClassInstance*>(evaluated);
 
+    REQUIRE(cl_i->env != 0);
     REQUIRE(cl_i->attributes.size() == 1);
 
     test_identifier(cl_i->attributes[0], "a");
-}
+};
+
+TEST_CASE("test access object attribute"){
+    string input = ""
+    "cl = class{a=1;};"
+    "inst = cl();"
+    "inst.a;";
+
+    Object* evaluated = test_eval(input);
+    test_integer_object(evaluated, 1);
+};
+
+TEST_CASE("test set object attribute"){
+    string input = ""
+    "cl = class{a=0;};"
+    "inst = cl();"
+    "inst.a = 2;"
+    "inst.a;";
+
+    Object* evaluated = test_eval(input);
+    test_integer_object(evaluated, 2);
+};
+
+TEST_CASE("test calling object method"){
+    string input = ""
+    "cl = class{"
+        "a = 2;"
+        "m = fn(){self.a;};"
+    "};"
+    "inst = cl();"
+    "inst.m();";
+
+    Object* evaluated = test_eval(input);
+    test_integer_object(evaluated, 2);
+};
