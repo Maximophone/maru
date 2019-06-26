@@ -99,6 +99,13 @@ class Class: public Object {
         string inspect();
 };
 
+class ClassInstance: public Object {
+    public:
+        vector<Identifier*> attributes;
+        Environment* env;
+        string inspect();
+};
+
 class Null: public Object {
     public:
         string inspect();

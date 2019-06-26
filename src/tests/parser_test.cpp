@@ -2,7 +2,7 @@
 #include <string>
 #include <vector>
 #include "../parser.hpp"
-#include "test_utils.cpp"
+#include "test_utils.hpp"
 
 using namespace std;
 using namespace std::literals::string_literals;
@@ -43,14 +43,6 @@ void test_return_statement(Statement* statement){
 
 void test_expression_statement(Statement* statement){
     REQUIRE(dynamic_cast<ExpressionStatement*>(statement)!=0);
-};
-
-void test_identifier(Expression* exp, string value){
-    Identifier* ident = dynamic_cast<Identifier*>(exp);
-    REQUIRE(ident != 0);
-    CHECK(ident->token_literal() == value);
-    CHECK(ident->token.type == IDENT);
-    CHECK(ident->value == value);
 };
 
 void test_integer_literal(Expression* exp, int value){
@@ -544,7 +536,7 @@ TEST_CASE("test call expression parsing"){
     CallExpression* exp = dynamic_cast<CallExpression*>(stmt->expression);
     REQUIRE(exp != 0);
 
-    test_identifier(exp->function, "add");
+    test_identifier(exp->callable, "add");
 
     REQUIRE(exp->arguments.size() == 3);
     test_integer_literal(exp->arguments[0], 1);

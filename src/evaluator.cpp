@@ -100,14 +100,30 @@ Object* eval(Node* node, Environment* env){
         return fn;
     }
     if(CallExpression* exp = dynamic_cast<CallExpression*>(node)){
-        Object* function = eval(exp->function, env);
-        if(is_error(function))
-            return function;
+        Object* callable = eval(exp->callable, env);
+        if(is_error(callable))
+            return callable;
         vector<Object*> args = eval_expressions(exp->arguments, env);
-        if(args.size()==1 && is_error(args[0])){
-            return args[0];
+            if(args.size()==1 && is_error(args[0])){
+                return args[0];
+            }
+        if(Function* function = dynamic_cast<Function*>(callable)){
+            return apply_function(function, args);
         }
-        return apply_function(function, args);
+        if(Builtin* builtin = dynamic_cast<Builtin*>(callable)){
+            return apply_function(builtin, args);
+        }
+        if(Class* cl = dynamic_cast<Class*>(callable)){
+            ClassInstance* cl_i = new ClassInstance();
+            cl_i->attributes = cl->attributes;
+            Environment* instance_env = new Environment(cl->env);
+            //instance_env->set("self", cl_i);
+            if(cl->constructor!=0){
+                apply_method(cl_i, cl->constructor, args);
+            }
+            return cl_i;
+        }
+        return new_error("object of type " + callable->type + " cannot be called");
     }
     if(IndexExpression* exp = dynamic_cast<IndexExpression*>(node)){
         Object* left = eval(exp->left, env);
@@ -277,7 +293,7 @@ Object* eval_class_literal(ClassLiteral* cl_lit, Environment* env){
             return new_error("class declaration does not accept statements of this type: " + stmt->to_string());
         }
         Environment* self_env = new Environment(env);
-        self_env->set("self", cl);
+        //self_env->set("self", cl);
         if(AssignExpression* exp = dynamic_cast<AssignExpression*>(exp_stmt->expression)){
             Identifier* name = dynamic_cast<Identifier*>(exp->name);
             if(name==0)
@@ -339,7 +355,24 @@ Object* apply_function(Object* fn, vector<Object*> args){
         return builtin->fn(args);
     }
     return new_error("Not a function: " + fn->type);
-    
+};
+
+Object* apply_method(Object* inst, Object* fn, vector<Object*> args){
+    if(ClassInstance* instance = dynamic_cast<ClassInstance*>(inst)){
+        if(Function* function = dynamic_cast<Function*>(fn)){
+            if(args.size()<function->parameters.size()){
+                return new_error("not enough arguments, expected " + to_string(function->parameters.size()));
+            }
+            Environment* extended_env = extend_function_env(function, args);
+            CURRENT_RECURSION_DEPTH += 1;
+            extended_env->set("self", instance);
+            Object* evaluated = eval(function->body, extended_env);
+            CURRENT_RECURSION_DEPTH -= 1;
+            return unwrap_return_value(evaluated);
+        }
+        return new_error("Not a function: " + fn->type);
+    }
+    return new_error("Not an instance: " + inst->type);
 };
 
 Object* eval_assign_expression(AssignExpression* exp, Environment* env){

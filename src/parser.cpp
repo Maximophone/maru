@@ -288,10 +288,10 @@ vector<Identifier *> Parser::parse_function_parameters(bool& ok)
     return identifiers;
 };
 
-Expression* Parser::parse_call_expression(Expression* function){
+Expression* Parser::parse_call_expression(Expression* callable){
     CallExpression* exp = new CallExpression();
     exp->token = cur_token;
-    exp->function = function;
+    exp->callable = callable;
     bool ok = true;
     exp->arguments = parse_expression_list(RPAREN, ok);
     if(!ok){

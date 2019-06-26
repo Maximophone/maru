@@ -125,7 +125,7 @@ string CallExpression::to_string(){
         if(i<arguments.size()-1)
             args_string += ",";
     }
-    return function->to_string() + "(" + args_string + ")";
+    return callable->to_string() + "(" + args_string + ")";
 };
 
 string IndexExpression::to_string(){

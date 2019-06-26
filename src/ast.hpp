@@ -92,7 +92,7 @@ class ClassLiteral: public Expression{
 
 class CallExpression: public Expression{
     public:
-        Expression* function;
+        Expression* callable;
         vector<Expression*> arguments;
         string to_string();
 };

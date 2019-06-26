@@ -1,7 +1,7 @@
 #include "catch.hpp"
 #include "../evaluator.hpp"
 #include "../parser.hpp"
-#include "test_utils.cpp"
+#include "test_utils.hpp"
 #include <string>
 
 using namespace std;
@@ -572,9 +572,24 @@ TEST_CASE("test create class"){
     Object* evaluated = test_eval(input);
     Class* class_object = req_cast<Class*>(evaluated);
 
-    if(class_object == 0){
-        cout << "YEWSS\n";
-    }
-
     REQUIRE(class_object->attributes.size() == 2);
+
+    test_identifier(class_object->attributes[0], "a");
+    test_identifier(class_object->attributes[1], "b");
 };
+
+TEST_CASE("test create instance"){
+    string input = ""
+    "cl = class{"
+    "a=1;"
+    "fn(){self.a=2}"
+    "};"
+    "inst = cl();";
+
+    Object* evaluated = test_eval(input);
+    ClassInstance* cl_i = req_cast<ClassInstance*>(evaluated);
+
+    REQUIRE(cl_i->attributes.size() == 1);
+
+    test_identifier(cl_i->attributes[0], "a");
+}
