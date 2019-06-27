@@ -163,3 +163,11 @@ string ClassLiteral::to_string(){
 string AccessExpression::to_string(){
     return "(" + object->to_string() + "." + attribute->to_string() + ")";
 };
+
+string BreakStatement::to_string(){
+    return "break;";
+};
+
+string ContinueStatement::to_string(){
+    return "continue;";
+};

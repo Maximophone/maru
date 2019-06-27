@@ -20,5 +20,7 @@ map<string, TokenType> keywords = {
     {"for", FOR},
     {"in", IN},
     {"while", WHILE},
+    {"break", BREAK},
+    {"continue", CONTINUE},
     {"class", CLASS},
 }; 

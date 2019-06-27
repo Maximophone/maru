@@ -80,6 +80,10 @@ Statement *Parser::parse_statement()
         return parse_let_statement();
     if (cur_token.type == RETURN)
         return parse_return_statement();
+    if (cur_token.type == BREAK)
+        return parse_continue_break_statement(BREAK);
+    if (cur_token.type == CONTINUE)
+        return parse_continue_break_statement(CONTINUE);
     return parse_expression_statement();
 };
 
@@ -114,7 +118,22 @@ ReturnStatement *Parser::parse_return_statement()
     if(peek_token_is(SEMICOLON))
         next_token();
     return stmt;
-}
+};
+
+Statement *Parser::parse_continue_break_statement(TokenType t){
+    Statement* stmt;
+    if(t==BREAK){
+        stmt = new BreakStatement();
+        stmt->token = cur_token;
+    }
+    if(t==CONTINUE){
+        stmt = new ContinueStatement();
+        stmt->token = cur_token;
+    }
+    if(peek_token_is(SEMICOLON))
+        next_token();
+    return stmt;
+};
 
 ExpressionStatement *Parser::parse_expression_statement()
 {

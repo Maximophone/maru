@@ -28,6 +28,12 @@ Object* eval(Node* node, Environment* env){
             return val;
         return new ReturnValue(val);
     }
+    if(BreakStatement* stmt = dynamic_cast<BreakStatement*>(node)){
+        return new Break();
+    }
+    if(ContinueStatement* stmt = dynamic_cast<ContinueStatement*>(node)){
+        return new Continue();
+    }
     if(LetStatement* stmt = dynamic_cast<LetStatement*>(node)){
         Object* val = eval(stmt->value, env);
         if(is_error(val))
@@ -168,6 +174,12 @@ Object* eval_block_statement(BlockStatement* block, Environment* env){
         if(Error* err = dynamic_cast<Error*>(result)){
             return err;
         }
+        if(Break* br = dynamic_cast<Break*>(result)){
+            return br;
+        }
+        if(Continue* ct = dynamic_cast<Continue*>(result)){
+            return ct;
+        }
     }
     return result;
 };
@@ -271,6 +283,9 @@ Object* eval_for_expression(ForExpression* exp, Environment* env){
         body_value = eval_block_statement(exp->body, env);
         if(is_error(body_value) || is_return(body_value))
             return body_value;
+        if(is_break(body_value)){
+            return NULL_;
+        }
     }
     return body_value;
 };
@@ -284,6 +299,9 @@ Object* eval_while_expression(WhileExpression* exp, Environment* env){
         body_value = eval_block_statement(exp->body, env);
         if(is_error(body_value) || is_return(body_value))
             return body_value;
+        if(is_break(body_value)){
+            return NULL_;
+        }
         condition = eval(exp->condition, env);
         if(is_error(condition))
             return condition;
@@ -515,4 +533,12 @@ bool is_error(Object* obj){
 
 bool is_return(Object* obj){
     return dynamic_cast<ReturnValue*>(obj)!=0;
+};
+
+bool is_break(Object* obj){
+    return dynamic_cast<Break*>(obj)!=0;
+};
+
+bool is_continue(Object* obj){
+    return dynamic_cast<Continue*>(obj)!=0;
 };

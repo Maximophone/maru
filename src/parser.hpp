@@ -32,6 +32,7 @@ class Parser{
         Statement* parse_statement();
         LetStatement* parse_let_statement();
         ReturnStatement* parse_return_statement();
+        Statement* parse_continue_break_statement(TokenType);
         ExpressionStatement* parse_expression_statement();
         Expression* parse_expression(int);
         Expression* parse_assign_expression(Expression*);

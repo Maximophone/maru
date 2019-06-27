@@ -37,5 +37,7 @@ bool is_truthy(Object*);
 Error* new_error(string);
 bool is_error(Object*);
 bool is_return(Object*);
+bool is_break(Object*);
+bool is_continue(Object*);
 
 #endif

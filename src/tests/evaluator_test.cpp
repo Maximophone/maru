@@ -11,6 +11,9 @@ Object* test_eval(string input){
     Parser* p = new Parser(l);
     Program* program = p->parse_program();
 
+    check_parser_errors(p);
+    REQUIRE(program != 0);
+
     Environment* env = new Environment();
     return eval(dynamic_cast<Node*>(program), env);
 };
@@ -629,3 +632,55 @@ TEST_CASE("test calling object method"){
     Object* evaluated = test_eval(input);
     test_integer_object(evaluated, 2);
 };
+
+TEST_CASE("test break and continue from loop"){
+    struct test {
+        string input;
+        Var expected;
+    };
+    vector<test> tests = {
+        {
+            "for(i in range(10)){"
+            "if(i==5){"
+            "break;"
+            "return -1;"
+            "}"
+            "};"
+            "i;",
+            Var(5)
+        },
+        {
+            "s = 0;"
+            "for(i in range(5)){"
+            "if(i==3){"
+            "continue;"
+            "return -1;"
+            "}"
+            "s = s + i;"
+            "};"
+            "s;",
+            Var(7)
+        },
+        {
+            "i = 0;"
+            "while(true){"
+            "i = i + 1;"
+            "if(i > 10){"
+            "break;"
+            "}};"
+            "i;",
+            Var(11)
+        },
+    };
+
+    for(test t : tests){
+        INFO("Input: " + t.input);
+
+        Lexer* l = new Lexer(t.input);
+        Parser* p = new Parser(l);
+        Program* program = p->parse_program();
+
+        Object* evaluated = test_eval(t.input);
+        test_var_object(evaluated, t.expected);
+    }
+}

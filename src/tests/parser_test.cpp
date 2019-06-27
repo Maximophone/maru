@@ -68,16 +68,6 @@ void test_string_literal(Expression* exp, string value){
     CHECK(literal->token_literal() == value);
 }
 
-void check_parser_errors(Parser* p){
-    INFO("Parsing errors happened");
-    string error_messages = "";
-    for(string error : p->errors){
-        error_messages += error + "\n";
-    }
-    INFO(error_messages);
-    REQUIRE(p->errors.size() == 0);
-};
-
 void test_var_literal(Expression* exp, Var literal){
         switch(literal.type){
             case 'i':
@@ -652,4 +642,12 @@ TEST_CASE("test parsing empty hash literal"){
     HashLiteral* hash = dynamic_cast<HashLiteral*>(stmt->expression);
     REQUIRE(hash != 0);
     REQUIRE(hash->pairs.size()==0);
+};
+
+TEST_CASE("test parsing of break and continue statements"){
+    string input = "break; continue; 5+2; break;";
+
+    Program* p = get_program(input, 4);
+    req_cast<BreakStatement*>(p->statements[0]);
+    req_cast<ContinueStatement*>(p->statements[1]);
 };

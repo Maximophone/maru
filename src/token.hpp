@@ -59,6 +59,8 @@ const TokenType FALS = "FALSE";
 const TokenType FOR = "FOR";
 const TokenType IN = "IN";
 const TokenType WHILE = "WHILE";
+const TokenType BREAK = "BREAK";
+const TokenType CONTINUE = "CONTINUE";
 const TokenType CLASS = "CLASS";
 
 #endif

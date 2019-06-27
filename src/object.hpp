@@ -18,6 +18,8 @@ const ObjectType ARRAY_OBJ = "ARRAY";
 const ObjectType HASH_OBJ = "HASH";
 const ObjectType NULL_OBJ = "NULL";
 const ObjectType RETURN_OBJ = "RETURN";
+const ObjectType BREAK_OBJ = "BREAK";
+const ObjectType CONTINUE_OBJ = "CONTINUE";
 const ObjectType ERROR_OBJ = "ERROR";
 const ObjectType FUNCTION_OBJ = "FUNCTION";
 const ObjectType BUILTIN_OBJ = "BUILTIN";
@@ -121,6 +123,18 @@ class ReturnValue: public Object {
         string inspect();
         ReturnValue(){type=RETURN_OBJ;};
         ReturnValue(Object* obj):ReturnValue(){value=obj;};
+};
+
+class Break: public Object {
+    public:
+        string inspect(){return "break";};
+        Break(){type=BREAK_OBJ;};
+};
+
+class Continue: public Object {
+    public:
+        string inspect(){return "continue";};
+        Continue(){type=CONTINUE_OBJ;};
 };
 
 class Error: public Object {

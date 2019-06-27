@@ -25,8 +25,8 @@ TEST_CASE("test next_token"){
     "\"foo bar\""
     "[1, 2]"
     "{1: 3}"
-    "for(x in range(5)){}"
-    "while(x>1){}"
+    "for(x in range(5)){break}"
+    "while(x>1){continue}"
     "class Test{"
     " a;"
     " b=1;"
@@ -73,6 +73,8 @@ TEST_CASE("test next_token"){
     test one_ = {INT, "1"};
     test class_ = {CLASS, "class"};
     test dot_ = {DOT, "."};
+    test break_ = {BREAK, "break"};
+    test continue_ = {CONTINUE, "continue"};
 
     vector<test> tests = {
         let, {IDENT, "five"}, assign, {INT, "5"}, semi,
@@ -92,8 +94,8 @@ TEST_CASE("test next_token"){
         {STRING, "foo bar"},
         lbra, {INT, "1"}, comma, {INT, "2"}, rbra,
         lb, {INT, "1"}, colon, {INT, "3"}, rb,
-        for_, lp, {IDENT, "x"}, in_, {IDENT, "range"}, lp, {INT, "5"}, rp, rp, lb, rb,
-        while_, lp, x_, gt, one_, rp, lb, rb,
+        for_, lp, {IDENT, "x"}, in_, {IDENT, "range"}, lp, {INT, "5"}, rp, rp, lb, break_, rb,
+        while_, lp, x_, gt, one_, rp, lb, continue_, rb,
         class_, {IDENT, "Test"}, lb,
         a_, semi,
         b_, assign, one_, semi,

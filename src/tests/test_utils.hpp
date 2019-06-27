@@ -25,3 +25,4 @@ T_new req_cast(T_old obj){
 };
 
 void test_identifier(Expression*, string);
+void check_parser_errors(Parser*);

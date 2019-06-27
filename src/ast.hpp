@@ -174,4 +174,14 @@ class ExpressionStatement: public Statement{
         string to_string();
 };
 
+class BreakStatement: public Statement {
+    public:
+        string to_string();
+};
+
+class ContinueStatement: public Statement {
+    public:
+        string to_string();
+};
+
 #endif
