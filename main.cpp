@@ -17,8 +17,11 @@ void run_program(string input){
         print_parser_errors(p->errors);
         cout << "Exiting.";
         return;
-    }
-    eval(program, env);
+    };
+    Object* ret = eval(program, env);
+    if(Error* err = dynamic_cast<Error*>(ret)){
+        cout << err->inspect() << "\n";
+    };
 };
 
 int main(int argc, char *argv[]){
