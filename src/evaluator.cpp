@@ -11,6 +11,9 @@ Object* eval(Node* node, Environment* env){
     if(node == 0){
         return new_error("INTERNAL: trying to evaluate null pointer node");
     }
+    if(env == 0){
+        return new_error("INTERNAL: trying to evaluate node with null pointer environment");
+    }
     // STACK OVERFLOW ERROR
     if(CURRENT_RECURSION_DEPTH>=STACK_OVERFLOW_LIMIT){
         return new_error("stack overflow, recursion depth cannot exceed " + to_string(STACK_OVERFLOW_LIMIT));
@@ -128,6 +131,7 @@ Object* eval(Node* node, Environment* env){
         if(Class* cl = dynamic_cast<Class*>(callable)){
             ClassInstance* cl_i = new ClassInstance();
             cl_i->attributes = cl->attributes;
+            cl_i->env = 0;
             Environment* instance_env = new Environment(cl->env);
             // For all methods in the class, we will create a 
             // copy in the instance, with its own environment
@@ -141,11 +145,11 @@ Object* eval(Node* node, Environment* env){
                     new_fn -> parameters = fn->parameters;
                     new_fn -> body = fn->body;
                     if(fn->env == 0){
-                        cout << "OH OH...\n";
+                        return new_error("INTERNAL: class method internal environment is null pointer");
                     }
                     new_fn -> env = fn->env->copy();
                     if(new_fn == 0){
-                        cout << "Uh uh ... \n";
+                        return new_error("INTERNAL: class method copy of internal environment is null pointer");
                     }
                     instance_env->set(attr->value, new_fn);
                 }
@@ -500,13 +504,14 @@ Object* eval_access_expression(Object* left, Identifier* ident){
         }
         value = instance->env->get(ident->value, ok);
         if(ok){
-            if(Function* fn = dynamic_cast<Function*>(value))
+            if(Function* fn = dynamic_cast<Function*>(value)){
                 // VERY WRONG WAY TO DO IT
                 fn->env->set("self", instance);
                 // When I do it this way, I can't have recursive 
                 // method calls, because the environment of all 
                 // methods is set at the same time (the methods are
                 // not duplicated per instance, they are global...)
+            }
             return value;
         }
         return NULL_;
