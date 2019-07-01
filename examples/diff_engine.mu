@@ -41,34 +41,16 @@ Variable = class{
     };
 
     grad = fn(){
-        printl("Computing gradient of ", self.expression.name);
-        original_name = self.expression.name;
         if(self.expression.grad_value == ""){
             array = [];
-            print("number of dependencies: ");
-            repr(len(self.expression.dependencies));
-            printl();
             for(weight_var in self.expression.dependencies){
                 weight = weight_var[0];
                 var = weight_var[1];
-                printl("Looking at first dependency: ", var.expression.name);
-                if(original_name != self.expression.name){
-                    printl("NAME HAS CHANGED 1");
-                }
                 v_grad = var.grad();
-                if(original_name != self.expression.name){
-                    printl("NAME HAS CHANGED 2");
-                }
-                print("Computed gradient of ", var.expression.name, " value: ");repr(v_grad);printl();
                 array = append(array, weight*v_grad);
             };
-            print("array is: ");repr(array);printl();
             self.expression.grad_value = sum(array);
         };
-        print("Gradient of " + self.expression.name + " is "); repr(self.expression.grad_value); printl();
-        if(original_name != self.expression.name){
-            printl("NAME HAS CHANGED");
-        }
         return self.expression.grad_value;
     };
 
@@ -112,8 +94,7 @@ grad = fn(x){
 x = Variable(5, "x");
 y = Constant(10, "y");
 
-f = x.mul(x).mul(x);
+f = x.mul(x).add(y);
 
-g = grad(x);
-repr(g);
+repr(grad(x));
 printl()
