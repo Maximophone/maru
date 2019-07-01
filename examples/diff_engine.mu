@@ -1,3 +1,7 @@
+# ============================================
+# Compute derivatives of functions with MARU!
+# ============================================
+
 sum = fn(arr){
     s = 0;
     for(el in arr){

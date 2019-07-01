@@ -20,7 +20,14 @@ void Lexer::read_char(){
 Token Lexer::next_token(){
     Token tok;
     
-    skip_whitespace();
+    while(is_whitespace(ch) || is_line_comment_tag(ch)){
+        if(is_line_comment_tag(ch)){
+            read_comment();
+        }
+        else{
+            read_char();
+        }
+    }
     
     string sch(1, ch);
     switch(ch){
@@ -136,7 +143,13 @@ string Lexer::read_string(){
         read_char();
     }
     return input.substr(prev_pos, position-prev_pos);
-}
+};
+
+void Lexer::read_comment(){
+    while(ch!=0 and ch!='\n'){
+        read_char();
+    }
+};
 
 char Lexer::peek_char(){
     if(read_position >= input.length()){
@@ -144,12 +157,6 @@ char Lexer::peek_char(){
     } else {
         return input[read_position];
     };
-};
-
-void Lexer::skip_whitespace(){
-    while(ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r'){
-        read_char();
-    }
 };
 
 bool is_letter(char ch){
@@ -162,4 +169,12 @@ bool is_digit(char ch){
 
 bool is_letter_or_digit(char ch){
     return is_letter(ch) || is_digit(ch);
+};
+
+bool is_line_comment_tag(char ch){
+    return ch == '#';
+};
+
+bool is_whitespace(char ch){
+    return ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r';
 };

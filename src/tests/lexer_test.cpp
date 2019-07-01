@@ -9,7 +9,8 @@ using namespace std;
 
 TEST_CASE("test next_token"){
     string input = "let five = 5;\n"
-    "let ten = 10;\n"
+    "# this is a comment, it should all be ignored;\n"
+    "let ten = 10; # another comment...\n"
     "let add = fn(x, y){\n"
     "  x + y;\n"
     "};\n"

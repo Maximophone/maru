@@ -13,9 +13,9 @@ class Lexer {
         int position;
         int read_position;
         char ch;
-        void skip_whitespace();
         string read_number();
         string read_string();
+        void read_comment();
         char peek_char();
     public:
         Lexer(string);
@@ -27,5 +27,7 @@ class Lexer {
 bool is_letter(char ch);
 bool is_letter_or_digit(char ch);
 bool is_digit(char ch);
+bool is_line_comment_tag(char ch);
+bool is_whitespace(char ch);
 
 #endif
