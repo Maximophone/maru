@@ -56,7 +56,7 @@ class Parser{
         Expression* parse_infix_expression(Expression*);
         Expression* parse_grouped_expression();
         vector<Expression*> parse_expression_list(TokenType, bool&);
-        void no_prefix_parse_func_error(TokenType);
+        void no_prefix_parse_func_error(Token);
         bool cur_token_is(TokenType);
         bool peek_token_is(TokenType);
         bool expect_peek(TokenType);

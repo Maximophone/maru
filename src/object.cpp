@@ -52,6 +52,12 @@ Object* Environment::set(string name, Object* value){
     return value;
 };
 
+Environment* Environment::copy(){
+    Environment* new_env = new Environment(outer=this);
+    new_env->store.insert(store.begin(), store.end());
+    return new_env;
+};    
+
 string Function::inspect(){
     string param_string = "";
     for(int i = 0; i<parameters.size(); i++){

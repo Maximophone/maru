@@ -170,6 +170,9 @@ TEST_CASE("test if else expressions"){
         {"if (1 > 2) { 10 }", Var()},
         {"if (1 > 2) { 10 } else { 20 }", Var(20)},
         {"if (1 < 2) { 10 } else { 20 }", Var(10)},
+        {"if (\"\" == \"\") {1} else {0}", Var(1)},
+        {"let x = \"blah\"; if (\"blah\" == x){1}", Var(1)},
+        {"let x = \"\"; if(x != \"test\"){1;}", Var(1)},
     };
 
     for (test t : tests){
@@ -631,6 +634,67 @@ TEST_CASE("test calling object method"){
 
     Object* evaluated = test_eval(input);
     test_integer_object(evaluated, 2);
+};
+
+TEST_CASE("test methods"){
+    struct test {
+        string input;
+        Var expected;
+    };
+    vector<test> tests = {
+        {
+            "T = class{"
+            "rec = fn(i){"
+            "if(i<1){return 0};"
+            "return self.rec(i-1) + 1;"
+            "}};"
+            "t = T();"
+            "t.rec(10);",
+            Var(10)
+        },
+        {
+            "T = class{"
+            "a = 1;"
+            "m = fn(){return self.a;};"
+            "};"
+            "self = T();"
+            "self.a = 5;"
+            "t = T();"
+            "t.m();",
+            Var(1)
+        },
+        {
+            "T = class{"
+            "a = 0;"
+            "m = fn(t){"
+            "if(t.a==0){return self.a;};"
+            "t2 = T();"
+            "t2.a = 0;"
+            "return t.m(t2);"
+            "}};"
+            "t1 = T(); t2 = T(); t2.a = 1;"
+            "t1.m(t2);",
+            Var(1)
+        },
+        {
+            "T = class{ id = 0;"
+            "m = fn(t){"
+            "if(t==0){return -1;}"
+            "_ = t.m(0);"
+            "return self.id;"
+            "}};"
+            "t1 = T(); t1.id=0;"
+            "t2 = T(); t2.id=1;"
+            "t2.m(t1);",
+            Var(1)
+        }
+    };
+
+    for(test t : tests){
+        INFO("Input: " + t.input);
+        Object* evaluated = test_eval(t.input);
+        test_var_object(evaluated, t.expected);
+    };
 };
 
 TEST_CASE("test break and continue from loop"){

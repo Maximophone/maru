@@ -7,3 +7,11 @@
 </p>
 
 Maru only supports integers. Because who needs floats? They only create problems...
+
+
+### Known issues:
+ - ILLEGAL token error if the program starts with a whitespace
+ - Calling a non existing method causes a segmentation fault
+ - Calling a non existing attribute causes a segmentation fault
+ - Not really an issue but initialising a class element with an array means that the instances will share the same array
+ - If a method calls itself on a different object, its "self" env variable will be overwritten

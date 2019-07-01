@@ -156,7 +156,7 @@ Expression *Parser::parse_expression(int precedence)
     if (prefix == 0)
     {
         // cout << "No prefix parse function found. Error.";
-        no_prefix_parse_func_error(cur_token.type);
+        no_prefix_parse_func_error(cur_token);
         return 0;
     }
     Expression *left_exp = (this->*prefix)();
@@ -516,9 +516,9 @@ Expression *Parser::parse_grouped_expression()
     return exp;
 };
 
-void Parser::no_prefix_parse_func_error(TokenType t)
+void Parser::no_prefix_parse_func_error(Token t)
 {
-    string message = "no prefix parse function for " + t + " found";
+    string message = "no prefix parse function for (" + t.type + ":" + t.literal + ") found";
     errors.push_back(message);
 };
 
