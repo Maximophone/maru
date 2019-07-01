@@ -16,6 +16,8 @@ class Token{
 
 TokenType lookup_ident(string);
 
+const char COMMENT = '#';
+
 extern map<string, TokenType> keywords;
 extern const TokenType test;
 

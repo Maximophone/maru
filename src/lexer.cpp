@@ -172,7 +172,7 @@ bool is_letter_or_digit(char ch){
 };
 
 bool is_line_comment_tag(char ch){
-    return ch == '#';
+    return ch == COMMENT;
 };
 
 bool is_whitespace(char ch){
