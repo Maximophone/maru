@@ -1,14 +1,13 @@
-let a = "Hello";
-let b = " World";
+T = class{
+    m = fn(){
+        return T();
+    };
+};
 
-let c = fn(x, y){return x+y;};
+printl("instantiating t");
+t = T();
 
-print(c(a,b) + "!");
+printl("calling t.m");
+t.m();
 
-printl("blah");
-
-x = class{a=1;};
-
-repr(x);
-
-return "";
+printl("DONE");

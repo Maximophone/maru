@@ -119,9 +119,9 @@ Object* eval(Node* node, Environment* env){
         if(is_error(callable))
             return callable;
         vector<Object*> args = eval_expressions(exp->arguments, env);
-            if(args.size()==1 && is_error(args[0])){
-                return args[0];
-            }
+        if(args.size()==1 && is_error(args[0])){
+            return args[0];
+        }
         if(Function* function = dynamic_cast<Function*>(callable)){
             return apply_function(function, args);
         }

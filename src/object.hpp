@@ -169,7 +169,7 @@ class Environment{
         Object* get(string, bool&);
         Object* set(string, Object*);
         Environment(){outer=0;};
-        Environment(Environment* env){outer=env;};
+        Environment(Environment*);
         Environment* copy();
 };
 

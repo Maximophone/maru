@@ -38,6 +38,13 @@ string Error::inspect(){
     return "ERROR: " + message;
 };
 
+Environment::Environment(Environment* env){
+    if(env == this || env->outer == this){
+        throw "Environment self nesting";
+    }
+    outer = env;
+};
+
 Object* Environment::get(string name, bool& ok){
     Object* obj = store[name];
     ok = obj!=0;
@@ -53,7 +60,8 @@ Object* Environment::set(string name, Object* value){
 };
 
 Environment* Environment::copy(){
-    Environment* new_env = new Environment(outer=this);
+    Environment* new_env = new Environment();
+    new_env->outer = this;
     new_env->store.insert(store.begin(), store.end());
     return new_env;
 };    
