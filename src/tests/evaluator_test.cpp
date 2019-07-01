@@ -18,9 +18,17 @@ Object* test_eval(string input){
     return eval(dynamic_cast<Node*>(program), env);
 };
 
+void test_not_error(Object* obj){
+    if(Error* err = dynamic_cast<Error*>(obj)){
+        INFO("Evaluation returned an error: " + err->message);
+        REQUIRE(false);
+    }
+}
+
 void test_integer_object(Object* obj, int expected){
     INFO("Testing integer object");
 
+    test_not_error(obj);
     Integer* int_obj = dynamic_cast<Integer*>(obj);
     REQUIRE(int_obj != 0);
     CHECK(int_obj->value == expected);
@@ -29,6 +37,7 @@ void test_integer_object(Object* obj, int expected){
 void test_boolean_object(Object* obj, bool expected){
     INFO("Testing boolean object");
 
+    test_not_error(obj);
     Boolean* bool_obj = dynamic_cast<Boolean*>(obj);
     REQUIRE(bool_obj != 0);
     CHECK(bool_obj->value == expected);
@@ -37,6 +46,7 @@ void test_boolean_object(Object* obj, bool expected){
 void test_string_object(Object* obj, string expected){
     INFO("Testing string object");
 
+    test_not_error(obj);
     String* string_obj = dynamic_cast<String*>(obj);
     REQUIRE(string_obj != 0);
     CHECK(string_obj->value == expected);
@@ -45,6 +55,7 @@ void test_string_object(Object* obj, string expected){
 void test_null_object(Object* obj){
     INFO("Testing NULL object");
 
+    test_not_error(obj);
     Null* null_obj = dynamic_cast<Null*>(obj);
     REQUIRE(null_obj != 0);
     CHECK(null_obj == NULL_);
@@ -636,6 +647,16 @@ TEST_CASE("test calling object method"){
     test_integer_object(evaluated, 2);
 };
 
+TEST_CASE("test calling non existing method"){
+    string input = ""
+    "T = class{};"
+    "t = T();"
+    "t.my_method();";
+
+    Object* evaluated = test_eval(input);
+    test_error_object(evaluated, "object of type NULL cannot be called");
+};
+
 TEST_CASE("test methods"){
     struct test {
         string input;
@@ -654,8 +675,8 @@ TEST_CASE("test methods"){
         },
         {
             "T = class{"
-            "a = 1;"
-            "m = fn(){return self.a;};"
+                "a = 1;"
+                "m = fn(){return self.a;};"
             "};"
             "self = T();"
             "self.a = 5;"
@@ -665,13 +686,14 @@ TEST_CASE("test methods"){
         },
         {
             "T = class{"
-            "a = 0;"
-            "m = fn(t){"
-            "if(t.a==0){return self.a;};"
-            "t2 = T();"
-            "t2.a = 0;"
-            "return t.m(t2);"
-            "}};"
+                "a = 0;"
+                "m = fn(t){"
+                    "if(t.a==0){return self.a;};"
+                    "t2 = T();"
+                    "t2.a = 0;"
+                    "return t.m(t2);"
+                "};"
+            "};"
             "t1 = T(); t2 = T(); t2.a = 1;"
             "t1.m(t2);",
             Var(1)
@@ -747,4 +769,5 @@ TEST_CASE("test break and continue from loop"){
         Object* evaluated = test_eval(t.input);
         test_var_object(evaluated, t.expected);
     }
-}
+};
+

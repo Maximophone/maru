@@ -8,6 +8,9 @@ const int STACK_OVERFLOW_LIMIT = 2000;
 int CURRENT_RECURSION_DEPTH = 0;
 
 Object* eval(Node* node, Environment* env){
+    if(node == 0){
+        return new_error("INTERNAL: trying to evaluate null pointer node");
+    }
     // STACK OVERFLOW ERROR
     if(CURRENT_RECURSION_DEPTH>=STACK_OVERFLOW_LIMIT){
         return new_error("stack overflow, recursion depth cannot exceed " + to_string(STACK_OVERFLOW_LIMIT));
@@ -107,6 +110,9 @@ Object* eval(Node* node, Environment* env){
     }
     if(CallExpression* exp = dynamic_cast<CallExpression*>(node)){
         Object* callable = eval(exp->callable, env);
+        if(callable == 0){
+            return new_error("INTERNAL: Callable is null pointer");
+        }
         if(is_error(callable))
             return callable;
         vector<Object*> args = eval_expressions(exp->arguments, env);
@@ -138,6 +144,9 @@ Object* eval(Node* node, Environment* env){
                         cout << "OH OH...\n";
                     }
                     new_fn -> env = fn->env->copy();
+                    if(new_fn == 0){
+                        cout << "Uh uh ... \n";
+                    }
                     instance_env->set(attr->value, new_fn);
                 }
             }
@@ -337,6 +346,7 @@ Object* eval_while_expression(WhileExpression* exp, Environment* env){
 Object* eval_class_literal(ClassLiteral* cl_lit, Environment* env){
     Class* cl = new Class();
     cl->env = new Environment();
+    cl->constructor = 0;
     for(Statement* stmt : cl_lit->body->statements){
         ExpressionStatement* exp_stmt = dynamic_cast<ExpressionStatement*>(stmt);
         if(exp_stmt == 0){
@@ -482,8 +492,14 @@ Object* eval_access_expression(Object* left, Identifier* ident){
     bool ok = true;
     if(left->type == INSTANCE_OBJ){
         ClassInstance* instance = (ClassInstance*) left;
+        if(instance->env == 0){
+            return new_error("INTERNAL: instance environment is null pointer");
+        }
+        if(ident == 0){
+            return new_error("INTERNAL: in access expression, identifier is null pointer");
+        }
         value = instance->env->get(ident->value, ok);
-        if(ok)
+        if(ok){
             if(Function* fn = dynamic_cast<Function*>(value))
                 // VERY WRONG WAY TO DO IT
                 fn->env->set("self", instance);
@@ -492,6 +508,7 @@ Object* eval_access_expression(Object* left, Identifier* ident){
                 // methods is set at the same time (the methods are
                 // not duplicated per instance, they are global...)
             return value;
+        }
         return NULL_;
     }
     if(left->type == CLASS_OBJ){
