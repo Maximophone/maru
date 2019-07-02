@@ -46,4 +46,42 @@ array = class{
         }
         return s;
     };
+
+    __add__ = fn(other){
+        if(type(other)=="INSTANCE"){
+            new_elements = [];
+            i = 0;
+            for(x in self.elements){
+                append(new_elements, x + other.elements[i]);
+                i = i + 1;
+            }
+            return array(new_elements);
+	}
+	if(type(other)=="INTEGER"){
+	    new_elements = [];
+	    for(x in self.elements){
+		append(new_elements, x + other);
+	    }
+	    return array(new_elements);
+	}
+    };
+
+    __sub__ = fn(other){
+        if(type(other)=="INSTANCE"){
+            new_elements = [];
+            i = 0;
+            for(x in self.elements){
+                append(new_elements, x - other.elements[i]);
+                i = i + 1;
+            }
+            return array(new_elements);
+	}
+	if(type(other)=="INTEGER"){
+	    new_elements = [];
+	    for(x in self.elements){
+		append(new_elements, x - other);
+	    }
+	    return array(new_elements);
+	}
+    };
 };

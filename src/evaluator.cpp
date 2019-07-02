@@ -517,11 +517,15 @@ Object* eval_assign_expression(AssignExpression* exp, Environment* env){
         Object* obj = eval(acc_exp->object, env);
         if(is_error(obj))
             return obj;
-        ClassInstance* inst = dynamic_cast<ClassInstance*>(obj);
-        if(inst == 0)
-            return new_error("can't set attributes on object of type " + obj->type);
-        inst->env->set(acc_exp->attribute->value, value);
-        return value;
+        if(ClassInstance* inst = dynamic_cast<ClassInstance*>(obj)){ 
+            inst->env->set(acc_exp->attribute->value, value);
+            return value;
+        }
+        if(Class* cl = dynamic_cast<Class*>(obj)){
+            cl->env->set(acc_exp->attribute->value, value);
+            return value;
+        }
+        return new_error("can't set attributes on object of type " + obj->type);
     }
     return new_error("can't assign to expression of this type");
 };
