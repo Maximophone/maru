@@ -18,74 +18,6 @@ Object* test_eval(string input){
     return eval(dynamic_cast<Node*>(program), env);
 };
 
-void test_not_error(Object* obj){
-    if(Error* err = dynamic_cast<Error*>(obj)){
-        INFO("Evaluation returned an error: " + err->message);
-        REQUIRE(false);
-    }
-}
-
-void test_integer_object(Object* obj, int expected){
-    INFO("Testing integer object");
-
-    test_not_error(obj);
-    Integer* int_obj = dynamic_cast<Integer*>(obj);
-    REQUIRE(int_obj != 0);
-    CHECK(int_obj->value == expected);
-};
-
-void test_boolean_object(Object* obj, bool expected){
-    INFO("Testing boolean object");
-
-    test_not_error(obj);
-    Boolean* bool_obj = dynamic_cast<Boolean*>(obj);
-    REQUIRE(bool_obj != 0);
-    CHECK(bool_obj->value == expected);
-};
-
-void test_string_object(Object* obj, string expected){
-    INFO("Testing string object");
-
-    test_not_error(obj);
-    String* string_obj = dynamic_cast<String*>(obj);
-    REQUIRE(string_obj != 0);
-    CHECK(string_obj->value == expected);
-};
-
-void test_null_object(Object* obj){
-    INFO("Testing NULL object");
-
-    test_not_error(obj);
-    Null* null_obj = dynamic_cast<Null*>(obj);
-    REQUIRE(null_obj != 0);
-    CHECK(null_obj == NULL_);
-};
-
-void test_error_object(Object* obj, string expected_message){
-    INFO("Testing ERROR object");
-
-    Error* error_obj = dynamic_cast<Error*>(obj);
-    REQUIRE(error_obj != 0);
-    CHECK(error_obj->message == expected_message);
-};
-
-void test_var_object(Object* obj, Var expected){
-    switch(expected.type){
-        case 'n':
-            return test_null_object(obj);
-            break;
-        case 'i':
-            return test_integer_object(obj, expected.i);
-            break;
-        case 'b':
-            return test_boolean_object(obj, expected.b);
-            break;
-        case 's':
-            return test_error_object(obj, expected.s);
-            break;
-    }
-};
-
 TEST_CASE("test eval integer expression"){
     struct test {
         string input;
@@ -762,12 +694,112 @@ TEST_CASE("test break and continue from loop"){
     for(test t : tests){
         INFO("Input: " + t.input);
 
-        Lexer* l = new Lexer(t.input);
-        Parser* p = new Parser(l);
-        Program* program = p->parse_program();
-
         Object* evaluated = test_eval(t.input);
         test_var_object(evaluated, t.expected);
     }
 };
 
+TEST_CASE("test evaluating include statement"){
+    string input = "include \"src/resources/program.mu\" as x; x;";
+
+    Object* evaluated = test_eval(input);
+    NameSpace* nmspc = req_cast<NameSpace*>(evaluated);
+
+    Environment* nmspc_env = nmspc->env;
+    bool ok = true;
+    test_integer_object(nmspc_env->get("a", ok), 2);
+    test_string_object(nmspc_env->get("b", ok), "test");
+    test_boolean_object(nmspc_env->get("c", ok), true);
+};
+
+TEST_CASE("test accessing namespace attributes"){
+    struct test {
+        string input;
+        Var expected;
+    };
+
+    string inclusion_1 = "include \"src/resources/program.mu\" as inc;";
+    string inclusion_2 = "include \"src/resources/program.mu\";";
+
+    vector<test> tests = {
+        {
+            inclusion_1 + "inc.a",
+            Var(2)
+        },
+        {
+            inclusion_1 + "inc.c",
+            Var(true)
+        },
+        {
+            inclusion_1 + "inc.d();",
+            Var(3)
+        },
+        {
+            inclusion_1 + "inc.e();",
+            Var(2)
+        },
+        {
+            inclusion_2 + "a",
+            Var(2)
+        },
+        {
+            inclusion_2 + "c",
+            Var(true)
+        },
+        {
+            inclusion_2 + "d()",
+            Var(3)
+        },
+        {
+            inclusion_2 + "e()",
+            Var(2)
+        },
+    };
+
+    for(test t : tests){
+        Object* evaluated = test_eval(t.input);
+        test_var_object(evaluated, t.expected);
+    }
+};
+
+TEST_CASE("test operator overloading"){
+    string global_input = ""
+    "T = class{"
+        "a = 0;"
+        "__add__ = fn(other){self.a + other.a};"
+        "__sub__ = fn(other){self.a - other.a};"
+        "__mul__ = fn(other){self.a * other.a};"
+        "__div__ = fn(other){self.a / other.a};"
+    "};"
+    "t1 = T(); t1.a = 5;"
+    "t2 = T(); t2.a = 2;"
+    ;
+
+    struct test {
+        string input;
+        Var expected;
+    };
+    vector<test> tests = {
+        {
+            "t1 + t2",
+            Var(7)
+        },
+        {
+            "t1 - t2",
+            Var(3)
+        },
+        {
+            "t1 * t2",
+            Var(10)
+        },
+        {
+            "t1/t2",
+            Var(2)
+        },
+    };
+
+    for(test t : tests){
+        Object* evaluated = test_eval(global_input + t.input);
+        test_var_object(evaluated, t.expected);
+    }
+};

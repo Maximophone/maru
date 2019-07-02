@@ -1,6 +1,7 @@
 #include <string>
 #include "catch.hpp"
 #include "../parser.hpp"
+#include "../object.hpp"
 
 using namespace std;
 
@@ -26,3 +27,10 @@ T_new req_cast(T_old obj){
 
 void test_identifier(Expression*, string);
 void check_parser_errors(Parser*);
+void test_not_error(Object*);
+void test_integer_object(Object*, int);
+void test_boolean_object(Object*, bool);
+void test_string_object(Object*, string);
+void test_null_object(Object*);
+void test_error_object(Object*, string);
+void test_var_object(Object*, Var);

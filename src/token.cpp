@@ -23,4 +23,6 @@ map<string, TokenType> keywords = {
     {"break", BREAK},
     {"continue", CONTINUE},
     {"class", CLASS},
+    {"include", INCLUDE},
+    {"as", AS},
 }; 

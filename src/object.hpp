@@ -25,6 +25,7 @@ const ObjectType FUNCTION_OBJ = "FUNCTION";
 const ObjectType BUILTIN_OBJ = "BUILTIN";
 const ObjectType CLASS_OBJ = "CLASS";
 const ObjectType INSTANCE_OBJ = "INSTANCE";
+const ObjectType NAMESPACE_OBJ = "NAMESPACE";
 
 class Environment;
 class Object;
@@ -111,6 +112,13 @@ class ClassInstance: public Object {
         ClassInstance(){type=INSTANCE_OBJ;};
 };
 
+class NameSpace: public Object {
+    public:
+        Environment* env;
+        string inspect();
+        NameSpace(){type=NAMESPACE_OBJ;};
+};
+
 class Null: public Object {
     public:
         string inspect();
@@ -168,6 +176,8 @@ class Environment{
     public:
         Object* get(string, bool&);
         Object* set(string, Object*);
+        map<string, Object*> get_store(){return store;};
+        void set_from(Environment*);
         Environment(){outer=0;};
         Environment(Environment*);
         Environment* copy();

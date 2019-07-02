@@ -184,4 +184,11 @@ class ContinueStatement: public Statement {
         string to_string();
 };
 
+class IncludeStatement: public Statement {
+    public:
+        StringLiteral* path;
+        Identifier* namespace_;
+        string to_string();
+};
+
 #endif

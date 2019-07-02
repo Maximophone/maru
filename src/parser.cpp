@@ -84,6 +84,8 @@ Statement *Parser::parse_statement()
         return parse_continue_break_statement(BREAK);
     if (cur_token.type == CONTINUE)
         return parse_continue_break_statement(CONTINUE);
+    if (cur_token.type == INCLUDE)
+        return parse_include_statement();
     return parse_expression_statement();
 };
 
@@ -132,6 +134,46 @@ Statement *Parser::parse_continue_break_statement(TokenType t){
     }
     if(peek_token_is(SEMICOLON))
         next_token();
+    return stmt;
+};
+
+IncludeStatement *Parser::parse_include_statement(){
+    IncludeStatement* stmt = new IncludeStatement();
+    stmt->token = cur_token;
+    if(!expect_peek(STRING)){
+        return 0;
+    }
+    Expression* exp = parse_string_literal();
+    StringLiteral* string_lit = dynamic_cast<StringLiteral*>(exp);
+    if(string_lit == 0){
+        throw "parse_string_literal returned expression that cannot be converted to a StringLiteral";
+    }
+    stmt->path = string_lit;
+
+    if(peek_token_is(SEMICOLON)){
+        next_token();
+        stmt->namespace_ = 0;
+        return stmt;
+    }
+
+    if(!expect_peek(AS)){
+        return 0;
+    }
+    if(!expect_peek(IDENT)){
+        return 0;
+    }
+
+    Expression* ident_exp = parse_identifier();
+    Identifier* ident = dynamic_cast<Identifier*>(ident_exp);
+    if(ident == 0){
+        throw "parse_identifier returned expression that cannot be converted to an Identifier";
+    }
+
+    stmt->namespace_ = ident;
+
+    if(peek_token_is(SEMICOLON)){
+        next_token();
+    }
     return stmt;
 };
 

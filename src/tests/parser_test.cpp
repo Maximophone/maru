@@ -7,7 +7,6 @@
 using namespace std;
 using namespace std::literals::string_literals;
 
-void check_parser_errors(Parser*);
 Program* get_program(string, int);
 void test_let_statement(Statement*, string);
 void test_return_statement(Statement*);
@@ -26,6 +25,14 @@ Program* get_program(string input, int wanted_size){
     }
 
     return program;
+};
+
+Parser* get_program_errors(string input){
+    Lexer* l = new Lexer(input);
+    Parser* p = new Parser(l);
+    Program* program = p->parse_program();
+
+    return p;
 };
 
 void test_let_statement(Statement* statement, string exp_ident){
@@ -650,4 +657,53 @@ TEST_CASE("test parsing of break and continue statements"){
     Program* p = get_program(input, 4);
     req_cast<BreakStatement*>(p->statements[0]);
     req_cast<ContinueStatement*>(p->statements[1]);
+};
+
+TEST_CASE("test include statement"){
+    string input = ""
+    "include \"blah.mu\" as blah;"
+    "a = 3;"
+    "include \"bluh.mu\" as x;";
+
+    Program* p = get_program(input, 3);
+
+    IncludeStatement* inc_stmt = req_cast<IncludeStatement*>(p->statements[0]);
+
+    test_string_literal(inc_stmt->path, "blah.mu");
+    test_identifier(inc_stmt->namespace_, "blah");
+
+    inc_stmt = req_cast<IncludeStatement*>(p->statements[2]);
+
+    test_string_literal(inc_stmt->path, "bluh.mu");
+    test_identifier(inc_stmt->namespace_, "x");
+};
+
+TEST_CASE("test token errors"){
+    struct test {
+        string input;
+        tuple<string, string> error;
+    };
+    vector<test> tests = {
+        {
+            "include 3;",
+            {"STRING", "INT"}
+        },
+        {
+            "include \"test\" as 8",
+            {"IDENT", "INT"},
+        },
+    };
+
+    for(test t : tests){
+        INFO("Input: " + t.input);
+        Parser* p = get_program_errors(t.input);
+        REQUIRE(p->errors.size()>=1);
+        if(p->errors.size()>1){
+            INFO("More than 1 error.");
+            check_parser_errors(p);
+        }
+
+        string error_msg = p->errors[0];
+        REQUIRE(error_msg == ("expected next token to be " + get<0>(t.error) + " but got " + get<1>(t.error) + " instead"));
+    }
 };

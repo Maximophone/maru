@@ -65,4 +65,7 @@ const TokenType BREAK = "BREAK";
 const TokenType CONTINUE = "CONTINUE";
 const TokenType CLASS = "CLASS";
 
+const TokenType INCLUDE = "INCLUDE";
+const TokenType AS = "AS";
+
 #endif

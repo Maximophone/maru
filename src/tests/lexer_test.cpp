@@ -32,7 +32,10 @@ TEST_CASE("test next_token"){
     " a;"
     " b=1;"
     "}"
-    "a.x;";
+    "a.x;"
+    "include x;"
+    "include a as b;"
+    ;
 
     struct test{
         TokenType expected_type;
@@ -76,6 +79,8 @@ TEST_CASE("test next_token"){
     test dot_ = {DOT, "."};
     test break_ = {BREAK, "break"};
     test continue_ = {CONTINUE, "continue"};
+    test include_ = {INCLUDE, "include"};
+    test as_ = {AS, "as"};
 
     vector<test> tests = {
         let, {IDENT, "five"}, assign, {INT, "5"}, semi,
@@ -102,6 +107,8 @@ TEST_CASE("test next_token"){
         b_, assign, one_, semi,
         rb,
         a_, dot_, x_, semi,
+        include_, x_, semi,
+        include_, a_, as_, b_, semi,
         {END, ""}
     };
 

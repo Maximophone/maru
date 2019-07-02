@@ -59,6 +59,11 @@ Object* Environment::set(string name, Object* value){
     return value;
 };
 
+void Environment::set_from(Environment* env){
+    map<string, Object*> other_store = env->get_store();
+    store.insert(other_store.begin(), other_store.end());
+};
+
 Environment* Environment::copy(){
     Environment* new_env = new Environment();
     new_env->outer = this;
@@ -132,7 +137,26 @@ string Class::inspect(){
 string ClassInstance::inspect(){
     string attr_string = "";
     for(Identifier* attr: attributes){
-        attr_string += attr->to_string() + ";";
+        if(this->env == 0){
+            attr_string += attr->to_string() + ";";
+        }
+        else {
+            bool ok = true;
+            Object* value = this->env->get(attr->value, ok);
+            if(!ok || value == 0){
+                attr_string += attr->to_string() + ";";
+            }
+            else if(value->type == FUNCTION_OBJ){
+                continue;
+            }
+            else {
+                attr_string += attr->to_string() + "=" + value->inspect() + ";";
+            }
+        }
     }
     return "instance{" + attr_string + "}";
+};
+
+string NameSpace::inspect(){
+    return "namespace";
 };

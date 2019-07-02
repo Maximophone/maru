@@ -1,11 +1,15 @@
 #include "evaluator.hpp"
 #include "builtins.hpp"
+#include "includer.hpp"
 
 Null* NULL_ = new Null();
 Boolean* TRUE = new Boolean(true);
 Boolean* FALSE = new Boolean(false);
 const int STACK_OVERFLOW_LIMIT = 2000;
 int CURRENT_RECURSION_DEPTH = 0;
+
+FileReader* file_reader = new FileReader();
+Includer* includer = new Includer(file_reader);
 
 Object* eval(Node* node, Environment* env){
     if(node == 0){
@@ -46,7 +50,34 @@ Object* eval(Node* node, Environment* env){
             return val;
         env->set(stmt->name->value, val);
     }
-
+    if(IncludeStatement* stmt = dynamic_cast<IncludeStatement*>(node)){
+        incl_result res = includer->include(stmt->path->value);
+        Environment* included_env = get<0>(res);
+        vector<string> parser_errors = get<1>(res);
+        Error* eval_error = get<2>(res);
+        if(parser_errors.size()>0){
+            // TODO: include parser errors in error message
+            string error_msg = "Parser errors happened when including " + stmt->path->value + ":\n";
+            for(string err: parser_errors){
+                error_msg += "\t" + err + "\n";
+            }
+            return new_error(error_msg);
+        }
+        if(eval_error!=0){
+            return new_error("Error happened when including " + stmt->path->value + ": " + eval_error->message);
+        }
+        if(included_env==0){
+            return new_error("INTERNAL: No error when including file but returned environment is null pointer");
+        }
+        NameSpace* nmspc = new NameSpace();
+        nmspc->env = included_env;
+        if(stmt->namespace_ != 0){
+            env->set(stmt->namespace_->value, nmspc);
+        } else {
+            env->set_from(included_env);
+        }
+        return nmspc;
+    }
     // EXPRESSIONS
     if(IntegerLiteral* lit = dynamic_cast<IntegerLiteral*>(node)){
         Integer* i = new Integer();
@@ -247,6 +278,9 @@ Object* eval_infix_expression(string op, Object* left, Object* right, Environmen
         return (left==right)?TRUE:FALSE;
     if(op == "!=")
         return (left!=right)?TRUE:FALSE;
+    if(dynamic_cast<ClassInstance*>(left)){
+        return eval_left_instance_infix_expression(op, left, right, env);
+    }
     if(left->type != right->type){
         return new_error("type mismatch: " + left->type + op + right->type);
     }
@@ -294,6 +328,39 @@ Object* eval_string_infix_expression(string op, Object* left, Object* right, Env
     };
     return new_error("unknown operator: " + left->type + op + right->type);
 }
+
+Object* eval_left_instance_infix_expression(string op, Object* left, Object* right, Environment* env){
+    ClassInstance* left_inst = dynamic_cast<ClassInstance*>(left);
+    if(left_inst == 0){
+        return new_error("INTERNAL: not an instance in infix expressione");
+    }
+    Object* attr = 0;
+    bool ok = true;
+    if(op=="+"){
+        attr = left_inst->env->get("__add__", ok);
+    }
+    else if(op=="-"){
+        attr = left_inst->env->get("__sub__", ok);
+    }
+    else if(op=="*"){
+        attr = left_inst->env->get("__mul__", ok);
+    }
+    else if(op=="/"){
+        attr = left_inst->env->get("__div__", ok);
+    }
+    else{
+        return new_error("operator not supported for instances: " + op);
+    }
+    Function* method = dynamic_cast<Function*>(attr);
+    if(!ok || method == 0){
+        return new_error("operator overloading '" + op + "' not defined for instances of this class");
+    }
+    if(method->env == 0){
+        return new_error("operator overloading method has null pointer for environment");
+    }
+    method->env->set("self", left_inst);
+    return apply_function(method, {right});
+};
 
 Object* eval_if_expression(IfExpression* exp, Environment* env){
     Object* condition = eval(exp->condition, env);
@@ -494,23 +561,18 @@ Object* eval_hash_index_expression(Object* left, Object* index){
 Object* eval_access_expression(Object* left, Identifier* ident){
     Object* value = NULL_;
     bool ok = true;
+    if(ident == 0){
+            return new_error("INTERNAL: in access expression, identifier is null pointer");
+    }
     if(left->type == INSTANCE_OBJ){
         ClassInstance* instance = (ClassInstance*) left;
         if(instance->env == 0){
             return new_error("INTERNAL: instance environment is null pointer");
         }
-        if(ident == 0){
-            return new_error("INTERNAL: in access expression, identifier is null pointer");
-        }
         value = instance->env->get(ident->value, ok);
         if(ok){
             if(Function* fn = dynamic_cast<Function*>(value)){
-                // VERY WRONG WAY TO DO IT
                 fn->env->set("self", instance);
-                // When I do it this way, I can't have recursive 
-                // method calls, because the environment of all 
-                // methods is set at the same time (the methods are
-                // not duplicated per instance, they are global...)
             }
             return value;
         }
@@ -521,6 +583,17 @@ Object* eval_access_expression(Object* left, Identifier* ident){
         value = cl->env->get(ident->value, ok);
         if(ok)
             return value;
+        return NULL_;
+    }
+    if(left->type == NAMESPACE_OBJ){
+        NameSpace* nmspc = (NameSpace*) left;
+        if(nmspc->env == 0){
+            return new_error("INTERNAL: namespace environment is null pointer");
+        }
+        value = nmspc->env->get(ident->value, ok);
+        if(ok){
+            return value;
+        }
         return NULL_;
     }
     return new_error("can't access attribute on type " + left->type);

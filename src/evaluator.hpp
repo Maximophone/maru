@@ -17,6 +17,7 @@ Object* eval_minus_prefix_operator_expression(Object*, Environment*);
 Object* eval_infix_expression(string, Object*, Object*, Environment*);
 Object* eval_integer_infix_expression(string, Object*, Object*, Environment*);
 Object* eval_string_infix_expression(string, Object*, Object*, Environment*);
+Object* eval_left_instance_infix_expression(string, Object*, Object*, Environment*);
 Object* eval_if_expression(IfExpression*, Environment*);
 Object* eval_for_expression(ForExpression*, Environment*);
 Object* eval_while_expression(WhileExpression*, Environment*);

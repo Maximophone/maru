@@ -171,3 +171,11 @@ string BreakStatement::to_string(){
 string ContinueStatement::to_string(){
     return "continue;";
 };
+
+string IncludeStatement::to_string(){
+    string str = this->token.literal + " " + this->path->value;
+    if(this->namespace_ != 0){
+        str += " as " + this->namespace_->value;
+    }
+    return str + ";";
+};

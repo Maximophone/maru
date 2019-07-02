@@ -85,6 +85,28 @@ Object* printline(vector<Object*> args){
     return ret;
 };
 
+Object* env(vector<Object*> args){
+    if(args.size() != 1){
+        return new_error("wrong number of arguments. got=" + to_string(args.size()) + ", want=1");
+    }
+    if(NameSpace* arg = dynamic_cast<NameSpace*>(args[0])){
+        map<string, Object*> store = arg->env->get_store();
+        Array* arr = new Array();
+        for(map<string, Object*> ::iterator it = store.begin(); it != store.end(); ++it) {
+            arr->elements.push_back(new String(it->first));
+        }
+        return arr;
+    }
+    return new_error("argument to 'env' not supported, got "+args[0]->type);
+};
+
+Object* type_(vector<Object*> args){
+    if(args.size() != 1){
+        return new_error("wrong number of arguments. got=" + to_string(args.size()) + ", want=1");
+    }
+    return new String(args[0]->type);
+};
+
 map<string, Builtin*> builtins = {
     {"len", new Builtin(len)},
     {"append", new Builtin(append)},
@@ -93,4 +115,6 @@ map<string, Builtin*> builtins = {
     {"print", new Builtin(print)},
     {"printline", new Builtin(printline)},
     {"printl", new Builtin(printline)},
+    {"env", new Builtin(env)},
+    {"type", new Builtin(type_)},
 };
