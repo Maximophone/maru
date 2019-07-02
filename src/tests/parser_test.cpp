@@ -686,11 +686,11 @@ TEST_CASE("test token errors"){
     vector<test> tests = {
         {
             "include 3;",
-            {"STRING", "INT"}
+            tuple<string, string>{"STRING", "INT"}
         },
         {
             "include \"test\" as 8",
-            {"IDENT", "INT"},
+            tuple<string, string>{"IDENT", "INT"},
         },
     };
 

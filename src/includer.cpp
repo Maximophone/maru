@@ -28,7 +28,7 @@ incl_result Includer::include(string path){
     if(included.find(path) == included.end()){
         // Can't find key
         if(!reader->file_exists(path)){
-            return {0, {"File does not exist: " + path}, 0};
+            return incl_result{0, {"File does not exist: " + path}, 0};
         }
         string code_string = reader->read(path);
 
@@ -37,19 +37,19 @@ incl_result Includer::include(string path){
         Program* program = p->parse_program();
 
         if(p->errors.size()>0){
-            return {0, p->errors, 0};
+            return incl_result{0, p->errors, 0};
         }
 
         Environment* env = new Environment();
         Object* obj = eval(program, env);
 
         if(is_error(obj)){
-            return {0, {}, (Error*) obj};
+            return incl_result{0, {}, (Error*) obj};
         }
 
         included[path] = env;
-        return {env, {}, 0};
+        return incl_result{env, {}, 0};
     } else {
-        return {included[path], {}, 0};
+        return incl_result{included[path], {}, 0};
     }
 };
