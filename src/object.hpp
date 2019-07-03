@@ -100,6 +100,7 @@ class Class: public Object {
         vector<Identifier*> attributes;
         Function* constructor;
         Environment* env;
+        Class* parent;
         string inspect();
         Class(){type=CLASS_OBJ;};
 };

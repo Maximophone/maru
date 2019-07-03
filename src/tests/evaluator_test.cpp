@@ -512,7 +512,9 @@ TEST_CASE("test assign expressions"){
 };
 
 TEST_CASE("test create class"){
-    string input = "my_class = class{"
+    string input = ""
+    "parent_class = class{x=1;};"
+    "my_class = class(parent_class){"
     "a=2;"
     "b=fn(){self.a};"
     "fn(){a=3};"
@@ -526,6 +528,11 @@ TEST_CASE("test create class"){
 
     test_identifier(class_object->attributes[0], "a");
     test_identifier(class_object->attributes[1], "b");
+
+    REQUIRE(class_object->parent != 0);
+    REQUIRE(class_object->parent->attributes.size() == 1);
+
+    test_identifier(class_object->parent->attributes[0], "x");
 };
 
 TEST_CASE("test create instance"){

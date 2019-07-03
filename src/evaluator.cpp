@@ -418,6 +418,18 @@ Object* eval_class_literal(ClassLiteral* cl_lit, Environment* env){
     Class* cl = new Class();
     cl->env = new Environment();
     cl->constructor = 0;
+    cl->parent = 0;
+    if(cl_lit->parent!=0){
+        Object* parent_obj = eval(cl_lit->parent, env);
+        if(is_error(parent_obj)){
+            return parent_obj;
+        }
+        Class* parent_class = dynamic_cast<Class*>(parent_obj);
+        if(parent_class == 0){
+            return new_error("can only inherit from other class but got " + parent_obj->type + " instead");
+        }
+        cl->parent = parent_class;
+    }
     for(Statement* stmt : cl_lit->body->statements){
         ExpressionStatement* exp_stmt = dynamic_cast<ExpressionStatement*>(stmt);
         if(exp_stmt == 0){
