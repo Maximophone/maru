@@ -557,12 +557,39 @@ TEST_CASE("test inheritance"){
     string input = ""
     "X = class{"
     "   a=1;"
-    "   fn(){self.a=2}"
+    "   fn(x){self.a=x}"
     "};"
     "Y = class(X){"
     "   b=3;"
     "};"
-    "y = Y();"
+    "y = Y(2);"
+    "y;";
+
+    Object* evaluated = test_eval(input);
+    ClassInstance* cl_i = req_cast<ClassInstance*>(evaluated);
+
+    REQUIRE(cl_i->env != 0);
+    REQUIRE(cl_i->attributes.size() == 2);
+
+    test_identifier(cl_i->attributes[0], "b");
+    test_identifier(cl_i->attributes[1], "a");
+
+    bool ok = true;
+    test_integer_object(cl_i->env->get("a", ok), 2);
+    test_integer_object(cl_i->env->get("b", ok), 3);
+};
+
+TEST_CASE("test inheritance 2"){
+    string input = ""
+    "X = class{"
+    "   a=\"\";"
+    "   fn(x){self.a=0};"
+    "};"
+    "Y = class(X){"
+    "   b=3;"
+    "   fn(x){self.a=x};"
+    "};"
+    "y = Y(2);"
     "y;";
 
     Object* evaluated = test_eval(input);

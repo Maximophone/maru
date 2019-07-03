@@ -171,7 +171,10 @@ Object* eval(Node* node, Environment* env){
             }
             //instance_env->set("self", cl_i);
             if(cl->constructor!=0){
-                apply_method(cl_i, cl->constructor, args);
+                Object* obj = apply_method(cl_i, cl->constructor, args);
+                if(is_error(obj)){
+                    return obj;
+                }
             }
             return cl_i;
         }
