@@ -157,7 +157,11 @@ string WhileExpression::to_string(){
 };
 
 string ClassLiteral::to_string(){
-    return "class{" + body->to_string() + "}";
+    if(parent == 0){
+        return "class{" + body->to_string() + "}";
+    } else {
+        return "class(" + parent->to_string() + "){" + body->to_string() + "}";
+    }
 };
 
 string AccessExpression::to_string(){

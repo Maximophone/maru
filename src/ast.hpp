@@ -86,6 +86,7 @@ class AssignExpression: public Expression{
 
 class ClassLiteral: public Expression{
     public:
+        Identifier* parent = 0;
         BlockStatement* body;
         string to_string();
 };

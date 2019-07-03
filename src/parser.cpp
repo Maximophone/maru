@@ -294,6 +294,14 @@ Expression *Parser::parse_class_literal()
 {
     ClassLiteral *lit = new ClassLiteral();
     lit->token = cur_token;
+    if(peek_token_is(LPAREN)){
+        next_token();
+        if(!expect_peek(IDENT))
+            return 0;
+        lit->parent = (Identifier*) parse_identifier();
+        if(!expect_peek(RPAREN))
+            return 0;
+    }
     if(!expect_peek(LBRACE))
         return 0;
     lit->body = parse_block_statement();

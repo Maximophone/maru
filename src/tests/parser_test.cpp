@@ -575,6 +575,30 @@ TEST_CASE("test class literal parsing"){
     test_identifier(constructor->parameters[0], "a");
 };
 
+TEST_CASE("test class literal parsing with inheritance"){
+    string input = "x = class(parent_class){"
+    "a=2;"
+    "}";
+    Program* p = get_program(input, 1);
+    ExpressionStatement* stmt = get_first_expr_stmt(p);
+
+    AssignExpression* exp = req_cast<AssignExpression*>(stmt->expression);
+    test_identifier(exp->name, "x");
+
+    ClassLiteral* class_lit = req_cast<ClassLiteral*>(exp->value);
+
+    test_identifier(class_lit->parent, "parent_class");
+
+    BlockStatement* class_body = req_cast<BlockStatement*>(class_lit->body);
+    
+    REQUIRE(class_body->statements.size() == 1);
+    
+    ExpressionStatement* stmt_a = req_cast<ExpressionStatement*>(class_body->statements[0]);
+    AssignExpression* attr_a = req_cast<AssignExpression*>(stmt_a->expression);
+    test_identifier(attr_a->name, "a");
+    test_integer_literal(attr_a->value, 2);
+};
+
 TEST_CASE("test access expression parsing"){
     string input = "my_obj.my_attr;";
 
