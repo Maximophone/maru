@@ -33,6 +33,7 @@ Object* eval_array_index_expression(Object*, Object*);
 Object* eval_hash_index_expression(Object*, Object*);
 Object* eval_hash_literal(HashLiteral*, Environment*);
 Environment* extend_function_env(Function*, vector<Object*>);
+Object* set_instance_attributes(Class*, ClassInstance*);
 Object* unwrap_return_value(Object*);
 bool is_truthy(Object*);
 Error* new_error(string);

@@ -524,10 +524,11 @@ TEST_CASE("test create class"){
     Class* class_object = req_cast<Class*>(evaluated);
 
     REQUIRE(class_object->env != 0);
-    REQUIRE(class_object->attributes.size() == 2);
+    REQUIRE(class_object->attributes.size() == 3);
 
     test_identifier(class_object->attributes[0], "a");
     test_identifier(class_object->attributes[1], "b");
+    test_identifier(class_object->attributes[2], "x");
 
     REQUIRE(class_object->parent != 0);
     REQUIRE(class_object->parent->attributes.size() == 1);
@@ -550,6 +551,32 @@ TEST_CASE("test create instance"){
     REQUIRE(cl_i->attributes.size() == 1);
 
     test_identifier(cl_i->attributes[0], "a");
+};
+
+TEST_CASE("test inheritance"){
+    string input = ""
+    "X = class{"
+    "   a=1;"
+    "   fn(){self.a=2}"
+    "};"
+    "Y = class(X){"
+    "   b=3;"
+    "};"
+    "y = Y();"
+    "y;";
+
+    Object* evaluated = test_eval(input);
+    ClassInstance* cl_i = req_cast<ClassInstance*>(evaluated);
+
+    REQUIRE(cl_i->env != 0);
+    REQUIRE(cl_i->attributes.size() == 2);
+
+    test_identifier(cl_i->attributes[0], "b");
+    test_identifier(cl_i->attributes[1], "a");
+
+    bool ok = true;
+    test_integer_object(cl_i->env->get("a", ok), 2);
+    test_integer_object(cl_i->env->get("b", ok), 3);
 };
 
 TEST_CASE("test access object attribute"){

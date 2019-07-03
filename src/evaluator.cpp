@@ -162,30 +162,13 @@ Object* eval(Node* node, Environment* env){
         if(Class* cl = dynamic_cast<Class*>(callable)){
             ClassInstance* cl_i = new ClassInstance();
             cl_i->attributes = cl->attributes;
-            cl_i->env = 0;
-            Environment* instance_env = new Environment(cl->env);
+            cl_i->env = new Environment(cl->env);
             // For all methods in the class, we will create a 
             // copy in the instance, with its own environment
-            for(Identifier* attr: cl->attributes){
-                bool ok = true;
-                Object* val = instance_env->get(attr->value, ok);
-                if(!ok)
-                    continue;
-                if(Function* fn = dynamic_cast<Function*>(val)){
-                    Function* new_fn = new Function();
-                    new_fn -> parameters = fn->parameters;
-                    new_fn -> body = fn->body;
-                    if(fn->env == 0){
-                        return new_error("INTERNAL: class method internal environment is null pointer");
-                    }
-                    new_fn -> env = fn->env->copy();
-                    if(new_fn == 0){
-                        return new_error("INTERNAL: class method copy of internal environment is null pointer");
-                    }
-                    instance_env->set(attr->value, new_fn);
-                }
+            Object* result = set_instance_attributes(cl, cl_i);
+            if(is_error(result)){
+                return result;
             }
-            cl_i->env = instance_env;
             //instance_env->set("self", cl_i);
             if(cl->constructor!=0){
                 apply_method(cl_i, cl->constructor, args);
@@ -416,7 +399,6 @@ Object* eval_while_expression(WhileExpression* exp, Environment* env){
 
 Object* eval_class_literal(ClassLiteral* cl_lit, Environment* env){
     Class* cl = new Class();
-    cl->env = new Environment();
     cl->constructor = 0;
     cl->parent = 0;
     if(cl_lit->parent!=0){
@@ -430,30 +412,42 @@ Object* eval_class_literal(ClassLiteral* cl_lit, Environment* env){
         }
         cl->parent = parent_class;
     }
+    if(cl->parent == 0){
+        cl->env = new Environment();
+    } else {
+        cl->env = new Environment(cl->parent->env);
+    }
     for(Statement* stmt : cl_lit->body->statements){
         ExpressionStatement* exp_stmt = dynamic_cast<ExpressionStatement*>(stmt);
         if(exp_stmt == 0){
             return new_error("class declaration does not accept statements of this type: " + stmt->to_string());
         }
-        Environment* self_env = new Environment(env);
         if(AssignExpression* exp = dynamic_cast<AssignExpression*>(exp_stmt->expression)){
             Identifier* name = dynamic_cast<Identifier*>(exp->name);
             if(name==0)
                 return new_error("class attributes error: " + name->to_string());
             cl->attributes.push_back(name);
-            Object* value = eval(exp->value, self_env);
+            Object* value = eval(exp->value, env);
             if(is_error(value))
                 return value;
             cl->env->set(name->value, value);
         }
         else if (FunctionLiteral* fn_lit = dynamic_cast<FunctionLiteral*>(exp_stmt->expression)){
-            Object* fn = eval(fn_lit, self_env);
+            Object* fn = eval(fn_lit, env);
             if(is_error(fn))
                 return fn;
             cl->constructor = (Function*) fn;
         }
         else {
             return new_error("class declaration does not accept expressions of this type: " + exp_stmt->to_string());
+        }
+    }
+    if(cl->parent!=0){
+        for(Identifier* attr : cl->parent->attributes){
+            cl->attributes.push_back(attr);
+        }
+        if(cl->constructor == 0){
+            cl->constructor = cl->parent->constructor;
         }
     }
     return cl;
@@ -643,6 +637,29 @@ Environment* extend_function_env(Function* function, vector<Object*> args){
     }
 
     return env;
+};
+
+Object* set_instance_attributes(Class* cl, ClassInstance* cl_i){
+    for(Identifier* attr: cl->attributes){
+        bool ok = true;
+        Object* val = cl_i->env->get(attr->value, ok);
+        if(!ok)
+            continue;
+        if(Function* fn = dynamic_cast<Function*>(val)){
+            Function* new_fn = new Function();
+            new_fn -> parameters = fn->parameters;
+            new_fn -> body = fn->body;
+            if(fn->env == 0){
+                return new_error("INTERNAL: class method internal environment is null pointer");
+            }
+            new_fn -> env = fn->env->copy();
+            if(new_fn == 0){
+                return new_error("INTERNAL: class method copy of internal environment is null pointer");
+            }
+            cl_i->env->set(attr->value, new_fn);
+        }
+    }
+    return 0;
 };
 
 Object* unwrap_return_value(Object* obj){
