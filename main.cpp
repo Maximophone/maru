@@ -33,7 +33,7 @@ Environment* run_program(string input){
 };
 
 int main(int argc, char *argv[]){
-    CliParser parser;
+    CliParser parser("The Maru Programming Language.");
 
     parser.add_positional_optional("file", STRING_ARG, "", "program read from maru script file");
     parser.add_flag("-i", "starts interactive repl after running script");

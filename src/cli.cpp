@@ -12,6 +12,10 @@ string lstrip(string str, char c){
     return str.substr(i, str.length());
 };
 
+CliParser::CliParser(string help){
+    this->help = help;
+};
+
 void CliParser::add_argument(string name, ArgType type, string help){
     ArgumentDef arg_def = {type, false, true, "", help};
     arguments_def[name] = arg_def;

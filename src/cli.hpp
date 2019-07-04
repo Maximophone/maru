@@ -28,6 +28,7 @@ string lstrip(string, char);
 
 class CliParser {
     private:
+        string help = "";
         vector<pair<string, ArgumentDef>> positionals;
         map<string, ArgumentDef> arguments_def;
         map<string, string> aliases;
@@ -40,4 +41,6 @@ class CliParser {
         void add_flag(string name, string help);
         void add_alias(string alias, string name);
         Arguments parse(int, char*[]);
+        CliParser(){};
+        CliParser(string);
 };
