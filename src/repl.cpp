@@ -15,9 +15,11 @@ void print_parser_errors(vector<string> errors){
     }
 };
 
-void start(){
+void start(Environment* env){
     string line;
-    Environment* env = new Environment();
+    if(env == 0){
+        env = new Environment();
+    }
     while(true){
         
         cout << PROMPT;

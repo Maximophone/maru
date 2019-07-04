@@ -62,7 +62,7 @@ Object* range(vector<Object*> args){
 
 Object* repr(vector<Object*> args){
     for(Object* arg: args){
-        cout << arg->inspect();
+        cout << arg->inspect() << "\n";
     }
     return NULL_;
 };
