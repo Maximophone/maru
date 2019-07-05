@@ -731,3 +731,39 @@ TEST_CASE("test token errors"){
         REQUIRE(error_msg == ("expected next token to be " + get<0>(t.error) + " but got " + get<1>(t.error) + " instead"));
     }
 };
+
+TEST_CASE("test generic errors"){
+    struct test{
+        string input;
+        vector<string> expected;
+    };
+    vector<test> tests = {
+        {
+            "{",
+            {
+                "no prefix parse function for (EOF:) found",
+                "expected next token to be COLON but got EOF instead"
+            }
+        },
+        {
+            "class{",
+            {
+                "no prefix parse function for (EOF:) found"
+            }
+        }
+    };
+
+    for(test t : tests){
+        INFO("Input: " + t.input);
+        Parser* p = get_program_errors(t.input);
+        REQUIRE(p->errors.size()>=1);
+        if(p->errors.size() != t.expected.size()){
+            INFO("Wrong number of errors. Wanted " + to_string(t.expected.size()) + " but got " + to_string(p->errors.size()));
+            check_parser_errors(p);
+        }
+        for(int i = 0; i<t.expected.size(); i++){
+            REQUIRE(p->errors[i] == t.expected[i]);
+        }
+
+    }
+}

@@ -181,7 +181,11 @@ ExpressionStatement *Parser::parse_expression_statement()
 {
     ExpressionStatement *stmt = new ExpressionStatement();
     stmt->token = cur_token;
-    stmt->expression = parse_expression(LOWEST);
+    Expression *exp = parse_expression(LOWEST);
+    if(exp == 0){
+        return 0;
+    }
+    stmt->expression = exp;
     if (peek_token_is(SEMICOLON))
     {
         next_token();
@@ -513,6 +517,9 @@ BlockStatement *Parser::parse_block_statement()
         if (stmt != 0)
         {
             block->statements.push_back(stmt);
+        }
+        else {
+            return 0;
         }
         next_token();
     }
