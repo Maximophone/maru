@@ -10,6 +10,4 @@ Maru only supports integers. Because who needs floats? They only create problems
 
 
 ### Known issues:
- - ILLEGAL token error if the program starts with a whitespace
  - Not really an issue but initialising a class element with an array means that the instances will share the same array
- - An open left bracket enters an endless loop
