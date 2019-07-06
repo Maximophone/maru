@@ -139,7 +139,7 @@ string Lexer::read_number(){
 string Lexer::read_string(){
     read_char();
     int prev_pos = position;
-    while(ch!='"'){
+    while(ch!='"' && ch != 0){
         read_char();
     }
     return input.substr(prev_pos, position-prev_pos);

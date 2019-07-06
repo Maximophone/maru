@@ -619,6 +619,15 @@ TEST_CASE("test string literal expression"){
     test_string_literal(stmt->expression, "hello world");
 };
 
+TEST_CASE("test string literal expression no end"){
+    string input = "\"hello world";
+
+    Program* p = get_program(input, 1);
+    ExpressionStatement* stmt = get_first_expr_stmt(p);
+
+    test_string_literal(stmt->expression, "hello world");
+};
+
 TEST_CASE("test parsing array literals"){
     string input = "[1, 2*2, 3 + 3]";
     Program* p = get_program(input, 1);
@@ -750,7 +759,7 @@ TEST_CASE("test generic errors"){
             {
                 "no prefix parse function for (EOF:) found"
             }
-        }
+        },
     };
 
     for(test t : tests){
