@@ -4,6 +4,8 @@
 #include "object.hpp"
 #include "ast.hpp"
 
+const int STACK_OVERFLOW_LIMIT = 1000;
+
 extern Null* NULL_;
 extern Boolean* TRUE;
 extern Boolean* FALSE;

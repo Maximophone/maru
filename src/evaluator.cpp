@@ -5,7 +5,7 @@
 Null* NULL_ = new Null();
 Boolean* TRUE = new Boolean(true);
 Boolean* FALSE = new Boolean(false);
-const int STACK_OVERFLOW_LIMIT = 1000;
+
 int CURRENT_RECURSION_DEPTH = 0;
 
 FileReader* file_reader = new FileReader();
