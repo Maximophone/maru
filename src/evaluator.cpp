@@ -199,7 +199,7 @@ Object* eval(Node* node, Environment* env){
 }
 
 Object* eval_program(Program* program, Environment* env){
-    Object* result = 0;
+    Object* result = NULL_;
     for(Statement* stmt : program->statements){
         result = eval(stmt, env);
         if(ReturnValue* ret_val = dynamic_cast<ReturnValue*>(result)){
