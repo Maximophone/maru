@@ -269,7 +269,7 @@ TEST_CASE("test function object"){
     REQUIRE(fn->parameters.size() == 1);
     CHECK(fn->parameters[0]->to_string()=="x");
 
-    string expected_body = "(x+2)";
+    string expected_body = "(x+2); ";
     CHECK(fn->body->to_string() == expected_body);
 };
 

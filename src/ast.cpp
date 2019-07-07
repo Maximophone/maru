@@ -38,11 +38,11 @@ string LetStatement::to_string(){
 };
 
 string AssignExpression::to_string(){
-    string s = name->to_string() + " = ";
+    string s = "(" + name->to_string() + "=";
     if(value != 0){
         s += value->to_string();
     }
-    return s;
+    return s + ")";
 };
 
 string ReturnStatement::to_string(){
@@ -56,7 +56,7 @@ string ReturnStatement::to_string(){
 
 string ExpressionStatement::to_string(){
     if(expression!=0)
-        return expression->to_string();
+        return expression->to_string() + "; ";
     return "";
 };
 
