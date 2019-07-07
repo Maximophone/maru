@@ -37,6 +37,14 @@ void test_integer_object(Object* obj, int expected){
     CHECK(int_obj->value == expected);
 };
 
+void test_float_object(Object* obj, double expected){
+    INFO("Testing float object");
+
+    test_not_error(obj);
+    Float* float_obj = req_cast<Float*>(obj);
+    CHECK(float_obj->value == expected);
+};
+
 void test_boolean_object(Object* obj, bool expected){
     INFO("Testing boolean object");
 

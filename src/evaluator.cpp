@@ -84,6 +84,11 @@ Object* eval(Node* node, Environment* env){
         i->value = lit->value;
         return i;
     }
+    if(FloatLiteral* lit = dynamic_cast<FloatLiteral*>(node)){
+        Float* f = new Float();
+        f->value = lit->value;
+        return f;
+    }
     if(BooleanLiteral* lit = dynamic_cast<BooleanLiteral*>(node)){
         return lit->value?TRUE:FALSE;
     }
@@ -250,12 +255,14 @@ Object* eval_minus_prefix_operator_expression(Object* right, Environment* env){
     
     if(Integer* int_obj = dynamic_cast<Integer*>(right))
         return new Integer(-int_obj->value);
+    if(Float* float_obj = dynamic_cast<Float*>(right))
+        return new Float(-float_obj->value);
     return new_error("unknown operator: -" + right->type);
 };
 
 Object* eval_infix_expression(string op, Object* left, Object* right, Environment* env){
-    if(dynamic_cast<Integer*>(left) && dynamic_cast<Integer*>(right)){
-        return eval_integer_infix_expression(op, left, right, env);
+    if(is_numeric(left) && is_numeric(right)){
+        return eval_numeric_infix_expression(op, left, right, env);
     }
     if(dynamic_cast<String*>(left) && dynamic_cast<String*>(right)){
         return eval_string_infix_expression(op, left, right, env);
@@ -273,29 +280,37 @@ Object* eval_infix_expression(string op, Object* left, Object* right, Environmen
     return new_error("unknown operator: " + left->type + op + right->type);
 };
 
-Object* eval_integer_infix_expression(string op, Object* left, Object* right, Environment* env){
-    Integer* l = (Integer*) left;
-    Integer* r = (Integer*) right;
-    if(op=="+")
-        return new Integer(l->value + r->value);
-    if(op=="-")
-        return new Integer(l->value - r->value);
-    if(op=="*")
-        return new Integer(l->value * r->value);
+Object* eval_numeric_infix_expression(string op, Object* left, Object* right, Environment* env){
+    double lvalue = get_numeric_value(left);
+    double rvalue = get_numeric_value(right);
+    if(op=="+"||op=="-"||op=="*"){
+        bool has_float = (left->type == FLOAT_OBJ)||(right->type == FLOAT_OBJ);
+        double new_val;
+        if(op=="+")
+            new_val = lvalue + rvalue;
+        if(op=="-")
+            new_val = lvalue - rvalue;
+        if(op=="*")
+            new_val = lvalue * rvalue;
+        if(has_float){
+            return new Float(new_val);
+        }
+        return new Integer(new_val);
+    }
     if(op=="/"){
-        if(r->value == 0){
+        if(rvalue == 0){
             return new_error("division by zero is not allowed");
         }
-        return new Integer(l->value / r->value);
+        return new Float(lvalue / rvalue);
     }
     if(op=="<")
-        return (l->value < r->value)?TRUE:FALSE;
+        return (lvalue < rvalue)?TRUE:FALSE;
     if(op==">")
-        return (l->value > r->value)?TRUE:FALSE;
+        return (lvalue > rvalue)?TRUE:FALSE;
     if(op=="==")
-        return (l->value == r->value)?TRUE:FALSE;
+        return (lvalue == rvalue)?TRUE:FALSE;
     if(op=="!=")
-        return (l->value != r->value)?TRUE:FALSE;
+        return (lvalue != rvalue)?TRUE:FALSE;
     return new_error("unknown operator: " + left->type + op + right->type);
 };
 
@@ -707,3 +722,17 @@ bool is_break(Object* obj){
 bool is_continue(Object* obj){
     return dynamic_cast<Continue*>(obj)!=0;
 };
+
+bool is_numeric(Object* obj){
+    return dynamic_cast<Integer*>(obj)||dynamic_cast<Float*>(obj);
+};
+
+double get_numeric_value(Object* obj){
+    if(Float* f = dynamic_cast<Float*>(obj)){
+        return f->value;
+    }
+    if(Integer* i = dynamic_cast<Integer*>(obj)){
+        return (double) i->value;
+    }
+    throw "get_numeric_value should never be called on non numeric objects";
+}

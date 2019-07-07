@@ -8,6 +8,10 @@ string Integer::inspect(){
     return to_string(value);
 };
 
+string Float::inspect(){
+    return to_string(value);
+};
+
 string Boolean::inspect(){
     return value?"true":"false";
 };

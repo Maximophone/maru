@@ -16,6 +16,7 @@ repr(2);
 
 # In MARU, the syntax to create variables is simple:
 my_var = 1;
+my_float = 1.2;
 a_string_variable = "this is a string";
 a_boolean = true;
 
@@ -50,6 +51,7 @@ result = if(x){1}else{2};
 
 # BASIC Types
 printl(type(1)); # integer
+printl(type(5.)); # float
 printl(type(true)); # boolean
 printl(type("x")); # string
 

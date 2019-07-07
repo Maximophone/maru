@@ -31,6 +31,7 @@ void test_identifier(Expression*, string);
 void check_parser_errors(Parser*);
 void test_not_error(Object*);
 void test_integer_object(Object*, int);
+void test_float_object(Object*, double);
 void test_boolean_object(Object*, bool);
 void test_string_object(Object*, string);
 void test_null_object(Object*);

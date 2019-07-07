@@ -6,7 +6,7 @@
     <a href="https://travis-ci.com/Maximophone/maru"><img alt="Build Status" src="https://travis-ci.com/Maximophone/maru.svg?branch=master"></a>
 </p>
 
-Maru only supports integers. Because who needs floats? They only create problems...
+Maru is a programming language built on C++. Its syntax is inspired from python and javascript.
 
 ## MARU Playground
 You can try MARU in your browser! For this head to the [Maru Playground](http://35.246.8.185:5000/).

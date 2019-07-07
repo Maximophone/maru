@@ -12,6 +12,7 @@ typedef string ObjectType;
 typedef pair<ObjectType, int> HashKey;
 
 const ObjectType INTEGER_OBJ = "INTEGER";
+const ObjectType FLOAT_OBJ = "FLOAT";
 const ObjectType BOOLEAN_OBJ = "BOOLEAN";
 const ObjectType STRING_OBJ = "STRING";
 const ObjectType ARRAY_OBJ = "ARRAY";
@@ -56,6 +57,14 @@ class Integer: public Hashable {
         string inspect();
         Integer(){type=INTEGER_OBJ;};
         Integer(int val):Integer(){value=val;};
+};
+
+class Float: public Object {
+    public:
+        double value;
+        string inspect();
+        Float(){type=FLOAT_OBJ;};
+        Float(double val):Float(){value=val;};
 };
 
 class Boolean: public Hashable {

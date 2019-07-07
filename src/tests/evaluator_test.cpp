@@ -34,16 +34,42 @@ TEST_CASE("test eval integer expression"){
         {"5 * 2 + 10", 20},
         {"5 + 2 * 10", 25},
         {"20 + 2 * -10", 0},
-        {"50 / 2 * 2 + 10", 60},
         {"2 * (5 + 10)", 30},
         {"3 * 3 * 3 + 10", 37},
         {"3 * (3 * 3) + 10", 37},
-        {"(5 + 10 * 2 + 15 / 3) * 2 + -10", 50},
+        
+    };
+
+    for(test t : tests){
+        INFO("Input: " + t.input);
+        Object* evaluated = test_eval(t.input);
+        test_integer_object(evaluated, t.expected);
+    }
+};
+
+TEST_CASE("test eval float expression"){
+    struct test {
+        string input;
+        double expected;
+    };
+
+    vector<test> tests = {
+        {"1.2", 1.2},
+        {"3.", 3.},
+        {"0.556", 0.556},
+        {"50 / 2 * 2 + 10", 60.},
+        {"(5 + 10 * 2 + 15 / 3) * 2 + -10", 50.},
+        {"1*1.2", 1.2},
+        {"5-3.", 2.},
+        {"3/2", 1.5},
+        {"5.*2.", 10.},
+        {"-5.", -5.},
+        {"-5. + 2", -3.},
     };
 
     for(test t : tests){
         Object* evaluated = test_eval(t.input);
-        test_integer_object(evaluated, t.expected);
+        test_float_object(evaluated, t.expected);
     }
 };
 
@@ -72,6 +98,10 @@ TEST_CASE("test eval boolean expression"){
         {"(1 <2) == false", false},
         {"(1 >2) == true", false},
         {"(1 >2) == false", true},
+        {"0.9 < 1", true},
+        {"1.2 > -1.2", true},
+        {"1.!=1", false},
+        {"1.==2.", false},
     };
 
     for(test t : tests){
@@ -92,6 +122,7 @@ TEST_CASE("test bang operator"){
         {"!!true", true},
         {"!!false", false},
         {"!!5", true},
+        {"!2.3", false},
     };
 
     for(test t : tests){
@@ -234,6 +265,7 @@ TEST_CASE("test error handling"){
         },
         {"X = class{fn(){X();}};X();", "stack overflow, recursion depth cannot exceed " + to_string(STACK_OVERFLOW_LIMIT)},
         {"1/0", "division by zero is not allowed"},
+        {"10/0.", "division by zero is not allowed"},
     };
 
     for(test t : tests){
@@ -424,7 +456,7 @@ TEST_CASE("test hash literals"){
     "{"
     "\"one\": 10 - 9,"
     "two: 1 + 1,"
-    "\"thr\" + \"ee\": 6/2,"
+    "\"thr\" + \"ee\": 6*2,"
     "4: 4,"
     "true: 5,"
     "false: 6"
@@ -437,7 +469,7 @@ TEST_CASE("test hash literals"){
     map<HashKey, int> expected = {
         {hash_key(new String("one")), 1},
         {hash_key(new String("two")), 2},
-        {hash_key(new String("three")), 3},
+        {hash_key(new String("three")), 12},
         {hash_key(new Integer(4)), 4},
         {hash_key(TRUE), 5},
         {hash_key(FALSE), 6},
@@ -857,7 +889,7 @@ TEST_CASE("test operator overloading"){
         },
         {
             "t1/t2",
-            Var(2)
+            Var(2.)
         },
     };
 
