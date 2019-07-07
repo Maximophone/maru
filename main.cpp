@@ -45,7 +45,7 @@ int main(int argc, char *argv[]){
 
     Arguments args = parser.parse(argc, argv);
 
-    if(args.string_args["file"] != ""){
+    if(args.provided("file")){
         ifstream file;
         file.open(args.string_args["file"]);
         string line;
@@ -64,7 +64,7 @@ int main(int argc, char *argv[]){
         if(args.flags["i"]){
             start_repl(env);
         }
-    } else if(args.string_args["cmd"] != ""){
+    } else if(args.provided("--cmd")){
         Environment* env = run_program(args.string_args["cmd"], args.flags["show-last"]);
         if(args.flags["i"]){
             start_repl(env);

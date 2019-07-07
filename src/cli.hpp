@@ -1,6 +1,7 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <set>
 
 using namespace std;
 
@@ -9,11 +10,18 @@ const ArgType INT_ARG = "INT";
 const ArgType FLOAT_ARG = "FLOAT";
 const ArgType STRING_ARG = "STRING";
 
-struct Arguments {
-    map<string, bool> flags;
-    map<string, int> int_args;
-    map<string, float> float_args;
-    map<string, string> string_args;
+string lstrip(string, char);
+
+class Arguments {
+    public:
+        map<string, bool> flags;
+        map<string, int> int_args;
+        map<string, float> float_args;
+        map<string, string> string_args;
+        set<string> provided_args;
+        bool provided(string arg_name){
+            return provided_args.find(arg_name) != provided_args.end();
+        };
 };
 
 struct ArgumentDef {
@@ -23,8 +31,6 @@ struct ArgumentDef {
     string default_value;
     string help;
 };
-
-string lstrip(string, char);
 
 class CliParser {
     private:

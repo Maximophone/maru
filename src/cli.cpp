@@ -63,7 +63,6 @@ void CliParser::set_arg(Arguments &args, ArgumentDef arg_def, string name, strin
 
 Arguments CliParser::parse(int argc, char* argv[]){
     Arguments args;
-    set<string> found_args;
     int pos_index = 0;
     string arg_name;
     string arg_value;
@@ -82,13 +81,13 @@ Arguments CliParser::parse(int argc, char* argv[]){
             arg_def = positionals[pos_index].second;
             pos_index++;
             set_arg(args, arg_def, arg_name, arg_value);
-            found_args.insert(arg_name);
+            args.provided_args.insert(arg_name);
             continue;
         }
         else {
             arg_def = arguments_def[arg_name];
         }
-        found_args.insert(arg_name);
+        args.provided_args.insert(arg_name);
         if(arg_def.is_flag){
             args.flags[lstrip(arg_name, '-')] = true;
             continue;
@@ -100,7 +99,7 @@ Arguments CliParser::parse(int argc, char* argv[]){
 
     for(auto const& x : arguments_def){
         string arg_name = x.first;
-        if(found_args.find(arg_name) == found_args.end()){
+        if(!args.provided(arg_name)){
             ArgumentDef arg_def = x.second;
             if(arg_def.required){
                 throw "Missing required argument " + arg_name;
@@ -115,7 +114,7 @@ Arguments CliParser::parse(int argc, char* argv[]){
 
     for(pair<string, ArgumentDef> x : positionals){
         string arg_name = x.first;
-        if(found_args.find(arg_name) == found_args.end()){
+        if(!args.provided(arg_name)){
             ArgumentDef arg_def = x.second;
             if(arg_def.required){
                 throw "Missing required positional argument " + arg_name;

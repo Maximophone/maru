@@ -102,6 +102,12 @@ TEST_CASE("test cli positionals"){
     REQUIRE(args.string_args.size() == 2);
     REQUIRE(args.int_args.size() == 2);
 
+    REQUIRE(args.provided("--first"));
+    REQUIRE(args.provided("pos"));
+    REQUIRE(args.provided("pos_2"));
+    REQUIRE(!args.provided("-c"));
+    REQUIRE(!args.provided("pos_3"));
+
     REQUIRE(args.int_args["first"] == 3);
     REQUIRE(args.string_args["pos"] == "value of the first positional");
     REQUIRE(args.int_args["pos_2"] == 2);
