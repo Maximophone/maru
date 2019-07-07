@@ -59,6 +59,11 @@ void test_integer_literal(Expression* exp, int value){
     CHECK(literal->token_literal() == to_string(value));
 };
 
+void test_float_literal(Expression* exp, double value){
+    FloatLiteral* literal = req_cast<FloatLiteral*>(exp);
+    CHECK(literal->value == value);
+};
+
 void test_boolean_literal(Expression* exp, bool value){
     INFO("Testing boolean literal");
     BooleanLiteral* literal = dynamic_cast<BooleanLiteral*>(exp);
@@ -86,6 +91,9 @@ void test_var_literal(Expression* exp, Var literal){
             case 's':
                 test_identifier(exp, literal.s);
                 break;
+            case 'f':
+                test_float_literal(exp, literal.f);
+                break;
         }
 }
 
@@ -97,6 +105,7 @@ TEST_CASE("test let statements"){
     };
     vector<test> tests = {
         {"let x = 5;", "x", Var(5)},
+        {"let x = 0.2;", "x", Var(0.2)},
         {"let y = true;", "y", Var(true)},
         {"let foobar = y", "foobar", Var("y"s)},
     };
@@ -121,6 +130,7 @@ TEST_CASE("test parsing assign expressions"){
     };
     vector<test> tests = {
         {"x = 5;", "x", Var(5)},
+        {"x = 2.3", "x", Var(2.3)},
         {"y = true", "y", Var(true)},
         {"foobar = y", "foobar", Var("y"s)},
     };
@@ -144,6 +154,8 @@ TEST_CASE("test return statement"){
     vector<test> tests = {
         {"return 5;", Var(5)},
         {"return a;", Var("a"s)},
+        {"return 100.3874", Var(100.3874)},
+        {"return 100.0000001", Var(100.0000001)},
         {"return true;", Var(true)},
     };
 
@@ -204,6 +216,16 @@ TEST_CASE("test integer literal"){
 
     test_integer_literal(stmt->expression, 5);
 };
+
+TEST_CASE("test float literal"){
+    string input = "123.456789";
+
+    Program* program = get_program(input, 1);
+
+    ExpressionStatement* stmt = get_first_expr_stmt(program);
+
+    test_float_literal(stmt->expression, 123.456789);
+}
 
 TEST_CASE("test boolean literal"){
     string input = "true;false;";
@@ -306,6 +328,10 @@ TEST_CASE("test operator precedence parsing"){
         {
             "3+4; -5*5",
             "(3+4)((-5)*5)",
+        },
+        {
+            "2*(1.2+4.3)",
+            "(2*(1.200000+4.300000))"
         },
         {
             "true + false == true",

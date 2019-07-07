@@ -38,6 +38,7 @@ class Parser{
         Expression* parse_assign_expression(Expression*);
         Expression* parse_identifier();
         Expression* parse_integer_literal();
+        Expression* parse_float_literal();
         Expression* parse_boolean_literal();
         Expression* parse_string_literal();
         Expression* parse_array_literal();

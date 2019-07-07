@@ -8,11 +8,13 @@ using namespace std;
 class Var{
     public:
         int i;
+        double f;
         string s;
         bool b;
         char type;
     Var(){type='n';};
     Var(int i_){type='i'; i=i_;};
+    Var(double f_){type='f'; f=f_;};
     Var(string s_){type='s'; s=s_;};
     Var(bool b_){type='b'; b=b_;};
 };

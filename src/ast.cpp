@@ -76,6 +76,10 @@ string IntegerLiteral::to_string(){
     return std::to_string(value);
 };
 
+string FloatLiteral::to_string(){
+    return std::to_string(value);
+};
+
 string BooleanLiteral::to_string(){
     return value?"true":"false";
 };

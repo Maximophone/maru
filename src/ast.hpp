@@ -46,6 +46,12 @@ class IntegerLiteral: public Expression{
         string to_string();
 };
 
+class FloatLiteral: public Expression{
+    public:
+        double value;
+        string to_string();
+};
+
 class BooleanLiteral: public Expression{
     public:
         bool value;
