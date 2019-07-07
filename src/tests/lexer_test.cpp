@@ -35,6 +35,8 @@ TEST_CASE("test next_token"){
     "a.x;"
     "include x;"
     "include a as b;"
+    "1.5;"
+    "1.8.3;"
     ;
 
     struct test{
@@ -109,6 +111,8 @@ TEST_CASE("test next_token"){
         a_, dot_, x_, semi,
         include_, x_, semi,
         include_, a_, as_, b_, semi,
+        {FLOAT, "1.5"}, semi,
+        {FLOAT, "1.8.3"}, semi,
         {END, ""}
     };
 

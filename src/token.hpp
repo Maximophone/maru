@@ -26,6 +26,7 @@ const TokenType END = "EOF";
 
 const TokenType IDENT = "IDENT";
 const TokenType INT = "INT";
+const TokenType FLOAT = "FLOAT";
 const TokenType STRING = "STRING";
 
 const TokenType ASSIGN = "ASSIGN";

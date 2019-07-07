@@ -109,8 +109,9 @@ Token Lexer::next_token(){
                 return tok;
             }
             else if(is_digit(ch)){
-                tok.literal = read_number();
-                tok.type = INT;
+                bool is_float = false;
+                tok.literal = read_number(is_float);
+                tok.type = is_float?FLOAT:INT;
                 return tok;
             } else {
                 tok = Token{ILLEGAL, sch};
@@ -128,9 +129,12 @@ string Lexer::read_identifier(){
     return input.substr(prev_pos, position-prev_pos);
 };
 
-string Lexer::read_number(){
+string Lexer::read_number(bool& is_float){
     int prev_pos = position;
-    while(is_digit(ch)){
+    while(is_digit(ch) || ch=='.'){
+        if(ch=='.'){
+            is_float = true;
+        }
         read_char();
     };
     return input.substr(prev_pos, position-prev_pos);

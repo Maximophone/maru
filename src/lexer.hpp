@@ -13,7 +13,7 @@ class Lexer {
         int position;
         int read_position;
         char ch;
-        string read_number();
+        string read_number(bool&);
         string read_string();
         void read_comment();
         char peek_char();
