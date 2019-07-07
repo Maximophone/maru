@@ -2,6 +2,29 @@
 #include "evaluator.hpp"
 #include <vector>
 
+Error* not_one_arg(vector<Object*> args){
+    if(args.size() != 1){
+        return new_error("wrong number of arguments. got=" + to_string(args.size()) + ", want=1");
+    }
+    return 0;
+}
+
+Object* to_str(vector<Object*> args){
+    if(Error* err = not_one_arg(args)){return err;};
+    Object* obj = args[0];
+    string value;
+    if(obj->type == INTEGER_OBJ){
+        value = to_string(((Integer*)obj)->value);
+    } else if(obj->type == FLOAT_OBJ){
+        value = to_string(((Float*)obj)->value);
+    } else if(obj->type == STRING_OBJ){
+        value = ((String*)obj)->value;
+    } else {
+        return new_error("argument to 'to_str' not supported: " + obj->type);
+    }
+    return new String(value);
+}
+
 Object* len(vector<Object*> args){
     if(args.size() != 1){
         return new_error("wrong number of arguments. got=" + to_string(args.size()) + ", want=1");
@@ -117,4 +140,5 @@ map<string, Builtin*> builtins = {
     {"printl", new Builtin(printline)},
     {"env", new Builtin(env)},
     {"type", new Builtin(type_)},
+    {"to_str", new Builtin(to_str)},
 };
