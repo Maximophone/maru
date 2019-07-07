@@ -15,6 +15,27 @@ void start_repl(Environment* env){
     start(env);
 };
 
+void run_lexer(string input){
+    Lexer* l = new Lexer(input);
+    Token tok;
+    do{
+        tok = l->next_token();
+        cout << "(" << tok.type << "," << tok.literal << ") ";
+    } while (tok.type != END);
+    cout << "\n";
+};
+
+void run_parser(string input){
+    Lexer* l = new Lexer(input);
+    Parser* p = new Parser(l);
+    Program* program = p->parse_program();
+    if(p->errors.size() != 0){
+        print_parser_errors(p->errors);
+        return;
+    }
+    cout << program->to_string() << "\n";
+};
+
 Environment* run_program(string input, bool show_result){
     Environment* env = new Environment();
     Lexer* l = new Lexer(input);
@@ -33,6 +54,19 @@ Environment* run_program(string input, bool show_result){
     return env;
 };
 
+void process_string(string code, Arguments args){
+    if(args.flags["lexer-only"]){
+        run_lexer(code);
+    } else if (args.flags["parser-only"]) {
+        run_parser(code);
+    } else {
+        Environment* env = run_program(code, args.flags["show-last"]);
+        if(args.flags["i"]){
+            start_repl(env);
+        }
+    }
+};
+
 int main(int argc, char *argv[]){
     CliParser parser("The Maru Programming Language.");
 
@@ -42,6 +76,10 @@ int main(int argc, char *argv[]){
     parser.add_alias("-c", "--cmd");
     parser.add_flag("--show-last", "prints the value of the last statement before exiting");
     parser.add_alias("-sl", "--show-last");
+    parser.add_flag("--lexer-only", "Only runs lexer and shows output");
+    parser.add_alias("-l", "--lexer-only");
+    parser.add_flag("--parser-only", "Only runs parser and shows output");
+    parser.add_alias("-p", "--parser-only");
 
     Arguments args = parser.parse(argc, argv);
 
@@ -60,15 +98,9 @@ int main(int argc, char *argv[]){
             cout << "Unable to open the file.\n";
             return 1;
         }
-        Environment* env = run_program(input, args.flags["show-last"]);
-        if(args.flags["i"]){
-            start_repl(env);
-        }
+        process_string(input, args);
     } else if(args.provided("--cmd")){
-        Environment* env = run_program(args.string_args["cmd"], args.flags["show-last"]);
-        if(args.flags["i"]){
-            start_repl(env);
-        }
+        process_string(args.string_args["cmd"], args);
     } else {
         start_repl(0);
     }
