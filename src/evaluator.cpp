@@ -282,8 +282,12 @@ Object* eval_integer_infix_expression(string op, Object* left, Object* right, En
         return new Integer(l->value - r->value);
     if(op=="*")
         return new Integer(l->value * r->value);
-    if(op=="/")
+    if(op=="/"){
+        if(r->value == 0){
+            return new_error("division by zero is not allowed");
+        }
         return new Integer(l->value / r->value);
+    }
     if(op=="<")
         return (l->value < r->value)?TRUE:FALSE;
     if(op==">")

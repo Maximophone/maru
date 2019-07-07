@@ -233,6 +233,7 @@ TEST_CASE("test error handling"){
             "unusable as hash key: FUNCTION",
         },
         {"X = class{fn(){X();}};X();", "stack overflow, recursion depth cannot exceed " + to_string(STACK_OVERFLOW_LIMIT)},
+        {"1/0", "division by zero is not allowed"},
     };
 
     for(test t : tests){
