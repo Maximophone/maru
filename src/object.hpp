@@ -24,6 +24,7 @@ const ObjectType CONTINUE_OBJ = "CONTINUE";
 const ObjectType ERROR_OBJ = "ERROR";
 const ObjectType FUNCTION_OBJ = "FUNCTION";
 const ObjectType BUILTIN_OBJ = "BUILTIN";
+const ObjectType CFUNC_OBJ = "CFUNCTION";
 const ObjectType CLASS_OBJ = "CLASS";
 const ObjectType INSTANCE_OBJ = "INSTANCE";
 const ObjectType NAMESPACE_OBJ = "NAMESPACE";
@@ -177,6 +178,13 @@ class Builtin: public Object {
         builtin_function fn;
         string inspect();
         Builtin(builtin_function f){type=BUILTIN_OBJ; fn=f;};
+};
+
+class CFunction: public Object {
+    public:
+        builtin_function fn;
+        string inspect();
+        CFunction(builtin_function f){type=CFUNC_OBJ; fn=f;};
 };
 
 class Environment{

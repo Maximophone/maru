@@ -89,6 +89,10 @@ string Builtin::inspect(){
     return "builtin function";
 };
 
+string CFunction::inspect(){
+    return "cfunction";
+};
+
 HashKey hash_key(Boolean* b){
     return b->value?HashKey{b->type, 1}:HashKey{b->type, 0};
 };
