@@ -1,6 +1,7 @@
 #include "includer.hpp"
 #include "evaluator.hpp"
 #include "parser.hpp"
+#include "maru_std/maru_std.hpp"
 
 #include <fstream>
 #include <streambuf>
@@ -27,10 +28,17 @@ Includer::Includer(Reader* reader){
 incl_result Includer::include(string path){
     if(included.find(path) == included.end()){
         // Can't find key
-        if(!reader->file_exists(path)){
-            return incl_result{0, {"File does not exist: " + path}, 0};
+        string code_string;
+        if(maru_libraries.find(path) != maru_libraries.end()){
+            // Library found in STD (written in maru)
+            code_string = maru_libraries[path];
+        } else {
+            // Library not found in STD, looking for file
+            if(!reader->file_exists(path)){
+                return incl_result{0, {"File does not exist: " + path}, 0};
+            }
+            code_string = reader->read(path);
         }
-        string code_string = reader->read(path);
 
         Lexer* l = new Lexer(code_string);
         Parser* p = new Parser(l);
