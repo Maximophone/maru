@@ -244,6 +244,10 @@ Expression *Parser::parse_integer_literal()
         errors.push_back("could not parse " + cur_token.literal + " as an integer");
         return 0;
     }
+    catch (out_of_range e)
+    {
+        errors.push_back("could not parse " + cur_token.literal + " as an integer: out of range");
+    }
     return lit;
 };
 
@@ -259,6 +263,10 @@ Expression *Parser::parse_float_literal()
     {
         errors.push_back("could not parse " + cur_token.literal + " as a float");
         return 0;
+    }
+    catch (out_of_range e)
+    {
+        errors.push_back("could not parse " + cur_token.literal + " as a float: out of range");
     }
     return lit;
 };
