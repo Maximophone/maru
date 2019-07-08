@@ -1,6 +1,11 @@
+#define STRINGIFY(x) #x
+
 #include "maru_std.hpp"
 
+const string math_str = 
+#include "math.mu"
+;
+
 map<string, string> maru_libraries = {
-    {"math",
-     "PI=3.141592653589793;"}
+    {"math", math_str},
 };
