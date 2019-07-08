@@ -1,0 +1,7 @@
+maru
+*dSYM/
+maru_debug
+*.o
+*.out
+*.gch
+tests
