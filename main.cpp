@@ -36,8 +36,8 @@ void run_parser(string input){
     cout << program->to_string() << "\n";
 };
 
-Environment* run_program(string input, bool show_result){
-    Environment* env = new Environment();
+Environment* run_program(string input, bool show_result, bool test){
+    Environment* env = new Environment(test);
     Lexer* l = new Lexer(input);
     Parser* p = new Parser(l);
     Program* program = p->parse_program();
@@ -48,8 +48,14 @@ Environment* run_program(string input, bool show_result){
     Object* ret = eval(program, env);
     if(Error* err = dynamic_cast<Error*>(ret)){
         cout << err->inspect() << "\n";
-    } else if (show_result && !(ret->type==NULL_OBJ)) {
-        cout << ret->inspect() << "\n";
+    } else {
+        if(show_result && !(ret->type==NULL_OBJ)){
+            cout << ret->inspect() << "\n";
+        }
+        if(test){
+            bool ok = true;
+            cout << env->get(TEST_RESULTS_ENV_VAR, ok)->inspect() << "\n";
+        }
     }
     return env;
 };
@@ -60,7 +66,7 @@ void process_string(string code, Arguments args){
     } else if (args.flags["parser-only"]) {
         run_parser(code);
     } else {
-        Environment* env = run_program(code, args.flags["show-last"]);
+        Environment* env = run_program(code, args.flags["show-last"], args.flags["test"]);
         if(args.flags["i"]){
             start_repl(env);
         }
@@ -71,6 +77,8 @@ int main(int argc, char *argv[]){
     CliParser parser("The Maru Programming Language.");
 
     parser.add_positional_optional("file", STRING_ARG, "", "program read from maru script file");
+    parser.add_flag("--test", "starts execution with tests");
+    parser.add_alias("-t", "--test");
     parser.add_flag("-i", "starts interactive repl after running script");
     parser.add_optional("--cmd", STRING_ARG, "", "maru program passed in as a string");
     parser.add_alias("-c", "--cmd");
@@ -102,6 +110,11 @@ int main(int argc, char *argv[]){
     } else if(args.provided("--cmd")){
         process_string(args.string_args["cmd"], args);
     } else {
-        start_repl(0);
+        if(args.flags["test"]){
+            start_repl(new Environment(true));
+        }
+        else{
+            start_repl(0);
+        }
     }
 };

@@ -191,6 +191,7 @@ class TestResults: public Object {
     public:
         map<string, Error*> results;
         string inspect();
+        int n_failures();
 };
 
 class Environment{

@@ -30,6 +30,18 @@ V3 = class{
     };
 };
 
+test("V2"){
+    v1 = V2(2,2);
+    v2 = V2(0,0);
+    (v1 + v2).x == 2;
+};
+
+test("V2 other test"){
+    v1 = V2(2,2);
+    v2 = V2(0,0);
+    v1/v2;
+};
+
 array = class{
     elements = -1;
     fn(elements){

@@ -178,5 +178,34 @@ string NameSpace::inspect(){
 };
 
 string TestResults::inspect(){
-    return "test_results";
+    int n_fail = n_failures();
+    int n_tests = results.size();
+    string heavy_line = "====================================================================\n";
+    string thin_line =  "--------------------------------------------------------------------\n";
+    string tab = "    ";
+    string ret = heavy_line + "TEST RESULTS\n" + heavy_line;
+    if(n_fail == 0){
+        ret +=  tab + "All tests passed (" + to_string(n_tests) + " tests)\n";
+    }
+    else{
+        for(auto const& test: results){
+            if(test.second == 0){
+                continue;
+            }
+            ret += tab + test.first + " failed.\n" + tab + tab + "Error: " + test.second->message + "\n" + thin_line;
+        }
+        ret += tab + "Some tests failed. " + to_string(n_tests-n_fail) + " passed, " + to_string(n_fail) + " failed.\n";
+    }
+    return ret + heavy_line;
+};
+
+int TestResults::n_failures(){
+    int n = 0;
+    for (auto const& x : results)
+    {
+        if(x.second!=0){
+            n+=1;
+        }
+    }
+    return n;
 };

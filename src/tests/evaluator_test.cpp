@@ -901,7 +901,6 @@ TEST_CASE("test test expression"){
     Object* evaluated = test_eval(input);
     test_integer_object(evaluated, 2);
 
-
     Environment* test_env = new Environment(true);
     Object* evaluated_with_test = test_eval(input, test_env);
     test_integer_object(evaluated_with_test, 2);
@@ -916,4 +915,6 @@ TEST_CASE("test test expression"){
 
     REQUIRE(results->results.find("my second test") != results->results.end());
     test_error_object(results->results["my second test"], "identifier not found: wot");
+
+    REQUIRE(results->n_failures() == 2);
 };
