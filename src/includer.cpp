@@ -31,7 +31,7 @@ incl_result Includer::include(string path){
         // Can't find key
         if(c_libraries.find(path) != c_libraries.end()){
             Environment* c_lib_env = c_libraries[path]();
-            return {c_lib_env, {}, 0};
+            return incl_result{c_lib_env, {}, 0};
         }
         string code_string;
         if(maru_libraries.find(path) != maru_libraries.end()){
