@@ -601,6 +601,22 @@ TEST_CASE("test class literal parsing"){
     test_identifier(constructor->parameters[0], "a");
 };
 
+TEST_CASE("test test expression parsing"){
+    string input = ""
+    "test(test_name){"
+    "a = 2;"
+    "};";
+
+    Program* p = get_program(input, 1);
+    ExpressionStatement* stmt = get_first_expr_stmt(p);
+
+    TestExpression* test_exp = req_cast<TestExpression*>(stmt->expression);
+    test_identifier(test_exp->name, "test_name");
+
+    BlockStatement* body = req_cast<BlockStatement*>(test_exp->body);
+    REQUIRE(body->statements.size() == 1);
+};
+
 TEST_CASE("test class literal parsing with inheritance"){
     string input = "x = class(parent_class){"
     "a=2;"

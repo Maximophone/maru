@@ -38,6 +38,7 @@ Parser::Parser(Lexer *l)
     prefix_parse_funcs[LBRACKET] = &Parser::parse_array_literal;
     prefix_parse_funcs[LBRACE] = &Parser::parse_hash_literal;
     prefix_parse_funcs[CLASS] = &Parser::parse_class_literal;
+    prefix_parse_funcs[TEST] = &Parser::parse_test_expression;
 
     infix_parse_funcs[PLUS] = &Parser::parse_infix_expression;
     infix_parse_funcs[MINUS] = &Parser::parse_infix_expression;
@@ -526,6 +527,25 @@ Expression* Parser::parse_while_expression()
     
     exp->body = parse_block_statement();
 
+    return exp;
+};
+
+Expression *Parser::parse_test_expression()
+{
+    TestExpression *exp = new TestExpression();
+    exp->token = cur_token;
+    if(peek_token_is(LPAREN)){
+        next_token();
+        next_token();
+        exp->name = parse_expression(LOWEST);
+        if(!expect_peek(RPAREN)){
+            return 0;
+        }
+    }
+    if(!expect_peek(LBRACE)){
+        return 0;
+    }
+    exp->body = parse_block_statement();
     return exp;
 };
 

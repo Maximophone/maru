@@ -122,6 +122,13 @@ string FunctionLiteral::to_string(){
     return "fn(" + param_string + "){" + body->to_string() + "}";
 };
 
+string TestExpression::to_string(){
+    if(name!=0){
+        return "test(" + name->to_string() + "){" + body->to_string() + "}";
+    }
+    return "test{" + body->to_string() + "}";
+};
+
 string CallExpression::to_string(){
     string args_string = "";
     for(int i = 0; i<arguments.size(); i++){

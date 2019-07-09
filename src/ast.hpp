@@ -118,6 +118,13 @@ class AccessExpression: public Expression{
         string to_string();
 };
 
+class TestExpression: public Expression{
+    public:
+        Expression* name = 0;
+        BlockStatement* body;
+        string to_string();
+};
+
 class PrefixExpression: public Expression{
     public:
         string op;
