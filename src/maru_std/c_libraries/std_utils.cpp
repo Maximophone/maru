@@ -23,7 +23,7 @@ Error* check_signature(vector<Object*> args, vector<set<ObjectType>> signature){
         set<ObjectType> types = signature[i];
         string types_string = "";
         for(string typ : types){
-            types_string += ", " + typ;
+            types_string += typ + ", ";
         }
         if(types.find(arg->type) == types.end()){
             return new_error("argument number " + to_string(i+1) + " accepted types are (" + types_string + ") but got " + arg->type);
