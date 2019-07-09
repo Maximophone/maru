@@ -68,5 +68,6 @@ const TokenType CLASS = "CLASS";
 
 const TokenType INCLUDE = "INCLUDE";
 const TokenType AS = "AS";
+const TokenType TEST = "TEST";
 
 #endif

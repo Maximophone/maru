@@ -37,6 +37,7 @@ TEST_CASE("test next_token"){
     "include a as b;"
     "1.5;"
     "1.8.3;"
+    "test(x){};"
     ;
 
     struct test{
@@ -83,6 +84,7 @@ TEST_CASE("test next_token"){
     test continue_ = {CONTINUE, "continue"};
     test include_ = {INCLUDE, "include"};
     test as_ = {AS, "as"};
+    test tst = {TEST, "test"};
 
     vector<test> tests = {
         let, {IDENT, "five"}, assign, {INT, "5"}, semi,
@@ -113,6 +115,7 @@ TEST_CASE("test next_token"){
         include_, a_, as_, b_, semi,
         {FLOAT, "1.5"}, semi,
         {FLOAT, "1.8.3"}, semi,
+        tst, lp, x_, rp, lb, rb, semi,
         {END, ""}
     };
 

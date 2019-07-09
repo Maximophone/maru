@@ -25,4 +25,5 @@ map<string, TokenType> keywords = {
     {"class", CLASS},
     {"include", INCLUDE},
     {"as", AS},
+    {"test", TEST},
 }; 
