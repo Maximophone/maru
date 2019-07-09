@@ -4,6 +4,11 @@
 
 
 Object* test_eval(string input){
+    Environment* env = new Environment();
+    return test_eval(input, env);
+};
+
+Object* test_eval(string input, Environment* env){
     Lexer* l = new Lexer(input);
     Parser* p = new Parser(l);
     Program* program = p->parse_program();
@@ -11,7 +16,6 @@ Object* test_eval(string input){
     check_parser_errors(p);
     REQUIRE(program != 0);
 
-    Environment* env = new Environment();
     return eval(dynamic_cast<Node*>(program), env);
 };
 

@@ -187,6 +187,12 @@ class CFunction: public Object {
         CFunction(builtin_function f){type=CFUNC_OBJ; fn=f;};
 };
 
+class TestResults: public Object {
+    public:
+        map<string, Error*> results;
+        string inspect();
+};
+
 class Environment{
     private:
         map<string, Object*> store;
@@ -198,6 +204,7 @@ class Environment{
         void set_from(Environment*);
         Environment(){outer=0;};
         Environment(Environment*);
+        Environment(bool);
         Environment(map<string, Object*> s):Environment(){store = s;};
         Environment* copy();
 };

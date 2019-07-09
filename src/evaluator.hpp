@@ -5,6 +5,8 @@
 #include "ast.hpp"
 
 const int STACK_OVERFLOW_LIMIT = 1000;
+const string TEST_ENV_VAR = "__test__";
+const string TEST_RESULTS_ENV_VAR = "__test_results__";
 
 extern Null* NULL_;
 extern Boolean* TRUE;
@@ -23,6 +25,7 @@ Object* eval_left_instance_infix_expression(string, Object*, Object*, Environmen
 Object* eval_if_expression(IfExpression*, Environment*);
 Object* eval_for_expression(ForExpression*, Environment*);
 Object* eval_while_expression(WhileExpression*, Environment*);
+Object* eval_test_expression(TestExpression*, Environment*);
 Object* eval_class_literal(ClassLiteral*, Environment*);
 Object* eval_identifier(Identifier*, Environment*);
 vector<Object*> eval_expressions(vector<Expression*>, Environment*);

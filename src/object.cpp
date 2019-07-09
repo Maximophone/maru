@@ -1,4 +1,5 @@
 #include "object.hpp"
+#include "evaluator.hpp"
 #include <string>
 #include <functional>
 
@@ -40,6 +41,13 @@ string ReturnValue::inspect(){
 
 string Error::inspect(){
     return "ERROR: " + message;
+};
+
+Environment::Environment(bool test_on):Environment(){
+    if(test_on){
+        store[TEST_ENV_VAR] = TRUE;
+        store[TEST_RESULTS_ENV_VAR] = new TestResults();
+    }
 };
 
 Environment::Environment(Environment* env){
@@ -167,4 +175,8 @@ string ClassInstance::inspect(){
 
 string NameSpace::inspect(){
     return "namespace";
+};
+
+string TestResults::inspect(){
+    return "test_results";
 };

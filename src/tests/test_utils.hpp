@@ -28,6 +28,7 @@ T_new req_cast(T_old obj){
 };
 
 Object* test_eval(string);
+Object* test_eval(string, Environment*);
 void test_identifier(Expression*, string);
 void check_parser_errors(Parser*);
 void test_not_error(Object*);

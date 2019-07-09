@@ -886,3 +886,34 @@ TEST_CASE("test operator overloading"){
         test_var_object(evaluated, t.expected);
     }
 };
+
+TEST_CASE("test test expression"){
+    string input = ""
+    "test(\"my test\"){"
+        "x;"
+    "}"
+    "test(\"my second test\"){"
+        "wot;"
+    "}"
+    "2;"
+    "";
+
+    Object* evaluated = test_eval(input);
+    test_integer_object(evaluated, 2);
+
+
+    Environment* test_env = new Environment(true);
+    Object* evaluated_with_test = test_eval(input, test_env);
+    test_integer_object(evaluated_with_test, 2);
+    bool ok = true;
+    test_boolean_object(test_env->get(TEST_ENV_VAR, ok), true);
+    TestResults* results = req_cast<TestResults*>(test_env->get(TEST_RESULTS_ENV_VAR, ok));
+
+    REQUIRE(results->results.size() == 2);
+
+    REQUIRE(results->results.find("my test") != results->results.end());
+    test_error_object(results->results["my test"], "identifier not found: x");
+
+    REQUIRE(results->results.find("my second test") != results->results.end());
+    test_error_object(results->results["my second test"], "identifier not found: wot");
+};

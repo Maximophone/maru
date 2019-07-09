@@ -134,6 +134,9 @@ Object* eval(Node* node, Environment* env){
     if(WhileExpression* exp = dynamic_cast<WhileExpression*>(node)){
         return eval_while_expression(exp, env);
     }
+    if(TestExpression* exp = dynamic_cast<TestExpression*>(node)){
+        return eval_test_expression(exp, env);
+    }
     if(Identifier* ident = dynamic_cast<Identifier*>(node)){
         return eval_identifier(ident, env);
     }
@@ -420,6 +423,41 @@ Object* eval_while_expression(WhileExpression* exp, Environment* env){
             return condition;
     }
     return body_value;
+};
+
+Object* eval_test_expression(TestExpression* test, Environment* env){
+    bool ok = true;
+    env->get(TEST_ENV_VAR, ok);
+    if(!ok){
+        return NULL_;
+    }
+    Object* obj = env->get(TEST_RESULTS_ENV_VAR, ok);
+    if(!ok){
+        return new_error("INTERNAL: tests are on but test results object not found in environment");
+    }
+    TestResults* test_results = dynamic_cast<TestResults*>(obj);
+    if(!test_results){
+        return new_error("INTERNAL: test_results variable does not contain test results object");
+    }
+    if(test->name == 0){
+        return new_error("Tests must have a name");
+    }
+    Object* test_name_val = eval(test->name, env);
+    if(is_error(test_name_val)){
+        return test_name_val;
+    }
+    String* test_name = dynamic_cast<String*>(test_name_val);
+    if(test_name == 0){
+        return new_error("Test name must be a string. got " + test_name_val->type);
+    }
+    Object* ret = eval(test->body, env);
+    if(is_error(ret)){
+        test_results->results[test_name->value] = (Error*) ret;
+    }
+    else{
+        test_results->results[test_name->value] = 0;
+    }
+    return NULL_;
 };
 
 Object* eval_class_literal(ClassLiteral* cl_lit, Environment* env){
