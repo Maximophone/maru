@@ -362,6 +362,7 @@ TEST_CASE("test builtin functions"){
         {"len(range(5));", Var(5)},
         {"append(range(5), 8)[5]", Var(8)},
         {"range();", Var("wrong number of arguments. range takes 1 or 2 but got=0"s)},
+        {"assert(false, \"problem\");", Var("Assertion: problem"s)},
     };
 
     for(test t : tests){

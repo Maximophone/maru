@@ -124,6 +124,16 @@ Object* type_(vector<Object*> args){
     return new String(args[0]->type);
 };
 
+Object* assert(vector<Object*> args){
+    if(Error* err = check_signature(args, {{BOOLEAN_OBJ}, {STRING_OBJ}})){return err;}
+    Boolean* condition = (Boolean*) args[0];
+    String* message = (String*) args[1];
+    if(condition->value){
+        return NULL_;
+    }
+    return new_error("Assertion: " + message->value);
+};
+
 map<string, Builtin*> builtins = {
     {"len", new Builtin(len)},
     {"append", new Builtin(append)},
@@ -135,4 +145,5 @@ map<string, Builtin*> builtins = {
     {"env", new Builtin(env)},
     {"type", new Builtin(type_)},
     {"to_str", new Builtin(to_str)},
+    {"assert", new Builtin(assert)},
 };
