@@ -2,6 +2,19 @@
 #include "../object.hpp"
 #include "../evaluator.hpp"
 
+
+Object* test_eval(string input){
+    Lexer* l = new Lexer(input);
+    Parser* p = new Parser(l);
+    Program* program = p->parse_program();
+
+    check_parser_errors(p);
+    REQUIRE(program != 0);
+
+    Environment* env = new Environment();
+    return eval(dynamic_cast<Node*>(program), env);
+};
+
 void check_parser_errors(Parser* p){
     INFO("Parsing errors happened");
     string error_messages = "";
@@ -94,5 +107,10 @@ void test_var_object(Object* obj, Var expected){
         case 's':
             return test_error_object(obj, expected.s);
             break;
+        case 'f':
+            return test_float_object(obj, expected.f);
+            break;
+        default:
+            FAIL("Unknown Var Type: " + to_string(expected.type));
     }
 };

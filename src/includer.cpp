@@ -2,6 +2,7 @@
 #include "evaluator.hpp"
 #include "parser.hpp"
 #include "maru_std/maru_std.hpp"
+#include "maru_std/c_std.hpp"
 
 #include <fstream>
 #include <streambuf>
@@ -28,6 +29,10 @@ Includer::Includer(Reader* reader){
 incl_result Includer::include(string path){
     if(included.find(path) == included.end()){
         // Can't find key
+        if(c_libraries.find(path) != c_libraries.end()){
+            Environment* c_lib_env = c_libraries[path]();
+            return {c_lib_env, {}, 0};
+        }
         string code_string;
         if(maru_libraries.find(path) != maru_libraries.end()){
             // Library found in STD (written in maru)

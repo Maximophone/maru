@@ -198,6 +198,7 @@ class Environment{
         void set_from(Environment*);
         Environment(){outer=0;};
         Environment(Environment*);
+        Environment(map<string, Object*> s):Environment(){store = s;};
         Environment* copy();
 };
 

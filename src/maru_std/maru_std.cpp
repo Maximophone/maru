@@ -2,10 +2,10 @@
 
 #include "maru_std.hpp"
 
-const string math_str = 
-#include "math.mu"
+const string vector_str = 
+#include "maru_libraries/vector.mu"
 ;
 
 map<string, string> maru_libraries = {
-    {"math", math_str},
+    {"vector", vector_str},
 };

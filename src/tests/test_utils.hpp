@@ -27,6 +27,7 @@ T_new req_cast(T_old obj){
     return casted;
 };
 
+Object* test_eval(string);
 void test_identifier(Expression*, string);
 void check_parser_errors(Parser*);
 void test_not_error(Object*);

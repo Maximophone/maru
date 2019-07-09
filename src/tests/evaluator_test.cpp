@@ -6,18 +6,6 @@
 
 using namespace std;
 
-Object* test_eval(string input){
-    Lexer* l = new Lexer(input);
-    Parser* p = new Parser(l);
-    Program* program = p->parse_program();
-
-    check_parser_errors(p);
-    REQUIRE(program != 0);
-
-    Environment* env = new Environment();
-    return eval(dynamic_cast<Node*>(program), env);
-};
-
 TEST_CASE("test eval integer expression"){
     struct test {
         string input;
@@ -889,7 +877,7 @@ TEST_CASE("test operator overloading"){
         },
         {
             "t1/t2",
-            Var(2.)
+            Var(2.5)
         },
     };
 

@@ -164,6 +164,9 @@ Object* eval(Node* node, Environment* env){
         if(Builtin* builtin = dynamic_cast<Builtin*>(callable)){
             return apply_function(builtin, args);
         }
+        if(CFunction* cfunc = dynamic_cast<CFunction*>(callable)){
+            return apply_function(cfunc, args);
+        }
         if(Class* cl = dynamic_cast<Class*>(callable)){
             ClassInstance* cl_i = new ClassInstance();
             cl_i->attributes = cl->attributes;
@@ -511,6 +514,9 @@ Object* apply_function(Object* fn, vector<Object*> args){
     }
     if(Builtin* builtin = dynamic_cast<Builtin*>(fn)){
         return builtin->fn(args);
+    }
+    if(CFunction* cfunc = dynamic_cast<CFunction*>(fn)){
+        return cfunc->fn(args);
     }
     return new_error("Not a function: " + fn->type);
 };

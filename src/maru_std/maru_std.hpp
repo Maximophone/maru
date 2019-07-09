@@ -12,5 +12,4 @@ using namespace std;
 // Libraries written in maru
 extern map<string, string> maru_libraries;
 
-
 #endif

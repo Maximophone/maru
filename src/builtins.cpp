@@ -1,13 +1,7 @@
 #include "builtins.hpp"
 #include "evaluator.hpp"
+#include "maru_std/c_libraries/std_utils.hpp"
 #include <vector>
-
-Error* not_one_arg(vector<Object*> args){
-    if(args.size() != 1){
-        return new_error("wrong number of arguments. got=" + to_string(args.size()) + ", want=1");
-    }
-    return 0;
-}
 
 Object* to_str(vector<Object*> args){
     if(Error* err = not_one_arg(args)){return err;};
