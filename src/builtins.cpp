@@ -125,13 +125,20 @@ Object* type_(vector<Object*> args){
 };
 
 Object* assert(vector<Object*> args){
-    if(Error* err = check_signature(args, {{BOOLEAN_OBJ}, {STRING_OBJ}})){return err;}
+    string message;
+    if(args.size() == 2){
+        if(Error* err = check_signature(args, {{BOOLEAN_OBJ}, {STRING_OBJ}})){return err;}
+        String* message_obj = (String*) args[1];
+        message = ": " + message_obj->value;
+    } else{
+        if(Error* err = check_signature(args, {{BOOLEAN_OBJ}})){return err;}
+        message = "";
+    }
     Boolean* condition = (Boolean*) args[0];
-    String* message = (String*) args[1];
     if(condition->value){
         return NULL_;
     }
-    return new_error("Assertion: " + message->value);
+    return new_error("Assertion" + message);
 };
 
 map<string, Builtin*> builtins = {
