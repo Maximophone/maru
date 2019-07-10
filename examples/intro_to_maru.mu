@@ -188,3 +188,38 @@ arr_1 = range(5);
 repr(arr_1);
 arr_2 = range(10, 15);
 repr(arr_2);
+
+# assert
+# Raises an error if the condition evaluates to false
+assert(arr[0] == 1, "custom error message");
+
+# Standard libraries
+include "math" as math;
+
+repr(math.cos(math.pi));
+
+# TESTS
+# Maru has native testing integration
+# You can write tests anywhere in the language
+
+factorial = fn(x){
+    f = 1;
+    while(x>1){
+	f = f*x;
+	x = x-1;
+    }
+    return f;
+};
+
+test("testing function factorial"){
+    assert(factorial(1) == 1);
+    assert(factorial(0) == 1);
+    assert(factorial(5) == 120);
+}
+
+# When running the script normally, nothing happens,
+# but if it runs in test mode, the tests will run.
+# Any error happening in a test section stops the current
+# test execution but does not affect the rest of the
+# program
+
